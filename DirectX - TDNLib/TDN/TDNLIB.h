@@ -674,6 +674,47 @@ private:
 };
 
 
+// 3Dオブジェクト
+class tdnMesh
+{
+public:
+	tdnMesh();
+	~tdnMesh();
+
+	struct CreateData
+	{
+		unsigned int      numVertexes;  // 頂点の数
+		unsigned int      vertexSize;   // 頂点構造体のバイト数
+		void              *vertexArray; // 頂点配列
+
+		unsigned int      numIndexes;   // インデックスの数
+		const DWORD       *indexArray;  // インデックスの配列
+
+		D3DVERTEXELEMENT9 *decl;        // シェーダーに送る頂点構造体の定義
+	};
+	bool Create( const CreateData &data );
+	bool CreateVertex( unsigned int numVertex, unsigned int vertexSize, void *vertexArray );
+	bool CreateIndexes( unsigned int numIndexes, const DWORD *indexArray );
+	bool CreateDeclaration( unsigned int declArySize, D3DVERTEXELEMENT9 *decl );
+
+	bool CreateTriangle( float radius, DWORD color );
+	bool CreateRectangle( float width, float height, DWORD color );
+	bool CreateTriangular( float radius, DWORD color );
+	bool CreateCube( float width, float height, float depth, DWORD color );
+
+	void Render( tdnShader *shader, char *technique );
+
+	IDirect3DVertexDeclaration9* decl;         // 頂点デコレーション（FVF）
+	unsigned int                 declSize;     // 頂点構造体のバイト数
+	IDirect3DVertexBuffer9*      vertexBuffer; // 頂点バッファ
+	unsigned int                 numVertexes;  // 頂点数
+	IDirect3DIndexBuffer9*       indexBuffer;  // 頂点インデックス
+	unsigned int                 numIndexes;   // インデックス数
+	unsigned int                 numFaces;     // 三角ポリゴン数
+
+	Matrix                       worldMatrix;
+};
+
 //*****************************************************************************
 //
 //		オーディオ関連

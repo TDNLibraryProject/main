@@ -8,6 +8,9 @@
 tdn2DObj* BG;
 tdn2DObj* Youmu;
 
+tdnShader *shader3D;
+tdnMesh* TestMesh;
+
 struct Player
 {
 	tdn2DObj* picture;
@@ -124,6 +127,20 @@ bool sceneMain::Initialize()
 	BG = new tdn2DObj("DATA/BG.png");
 	Youmu= new tdn2DObj("DATA/Youmu.png");
 
+	// 3Dメッシュ作成
+	shader3D = new tdnShader( "DATA/Shader/3D.fx" );
+	TestMesh = new tdnMesh;
+	TestMesh->CreateCube( 1, 1, 1, 0xFF4488FF );
+	// 行列作成
+	Matrix viewMatrix;
+	D3DXMatrixLookAtLH( &viewMatrix, &D3DXVECTOR3( 0, 0, -10 ), &D3DXVECTOR3( 0, 0, 0 ), &D3DXVECTOR3( 0, 1, 0 ) );
+	shader3D->SetValue( "viewMatrix", viewMatrix );
+	Matrix projectionMatrix;
+	RECT screenSize = tdnSystem::GetScreenSize();
+	D3DXMatrixPerspectiveFovLH( &projectionMatrix, PI / 3, screenSize.right / screenSize.bottom, 0.1f, 3000.0f );
+	shader3D->SetValue( "projectionMatrix", projectionMatrix );
+
+	// サウンド
 	bgm->Play("EoE_A");
 
 	return true;
@@ -135,6 +152,8 @@ sceneMain::~sceneMain()
 	SAFE_DELETE(player.picture);
 	SAFE_DELETE(BG);
 	SAFE_DELETE(Youmu);
+	SAFE_DELETE( TestMesh );
+	SAFE_DELETE( shader3D );
 	SoundManager::Release();
 }
 
@@ -153,6 +172,11 @@ bool sceneMain::Update()
 	if (KeyBoard('G'))cameraPos.z -= 1;
 	tdnView::Set(cameraPos, VECTOR_ZERO);
 
+	// メッシュテスト
+	static float meshAngle = 0;
+	meshAngle += 0.01f;
+	D3DXMatrixRotationYawPitchRoll( &TestMesh->worldMatrix, meshAngle, meshAngle * 0.9f, meshAngle * 0.7f);
+
 	return true;
 }
 
@@ -165,10 +189,16 @@ void sceneMain::Render()
 	Youmu->Render3D(0, 0, 0);
 	Youmu->Render3D(-3, 0, -20);
 	Youmu->Render3D(3, 0, -40);
+
+
 	//ぼかす以外で2D描画でLINERは微妙
 	tdnRenderState::Filter(false);
 	player.picture->Render((int)player.x, (int)player.y, 64, 64, player.motion * 64, player.Anime * 64, 64, 64, RS::COPY_NOZ);
 
+	 //メッシュテスト
+	TestMesh->Render( shader3D, "linecopy" );
+
+	// 音
 	LPSTR n;
 
 	switch ((DXA_FX)bgm->effect_no)

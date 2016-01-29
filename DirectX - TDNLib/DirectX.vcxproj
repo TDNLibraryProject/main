@@ -123,6 +123,7 @@
     <ClCompile Include="source\system\Framework.cpp" />
     <ClCompile Include="source\system\System.cpp" />
     <ClCompile Include="SOURCE\system\WinMain.cpp" />
+    <ClCompile Include="TDN\TDN_Mesh.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TDN\ogg\codec.h" />
