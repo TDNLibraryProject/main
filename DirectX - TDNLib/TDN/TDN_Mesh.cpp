@@ -1,7 +1,7 @@
 
 #include "TDNLIB.h"
 
-tdnMesh::tdnMesh() : decl( nullptr ), declSize( 0 ), vertexBuffer( nullptr ), numVertexes( 0 ), indexBuffer( nullptr ), numIndexes( 0 ), numFaces( 0 )
+tdnMesh::tdnMesh() : decl( nullptr ), declSize( 0 ), vertexBuffer( nullptr ), numVertexes( 0 ), indexBuffer( nullptr ), numIndexes( 0 ), numFaces( 0 ), pos( 0, 0, 0 ), scale( 1, 1, 1 ), rot( 0, 0, 0, 1 )
 {
 	D3DXMatrixIdentity( &worldMatrix );
 }
@@ -253,6 +253,27 @@ bool tdnMesh::CreateCube( float width, float height, float depth, DWORD color )
 	return Create( data );
 }
 
+void tdnMesh::UpdateWorldMatrix()
+{
+	D3DXMatrixRotationQuaternion( &worldMatrix, &rot );
+	worldMatrix._11 *= scale.x;
+	worldMatrix._12 *= scale.x;
+	worldMatrix._13 *= scale.x;
+	worldMatrix._14 *= scale.x;
+	worldMatrix._21 *= scale.y;
+	worldMatrix._22 *= scale.y;
+	worldMatrix._23 *= scale.y;
+	worldMatrix._24 *= scale.y;
+	worldMatrix._31 *= scale.z;
+	worldMatrix._32 *= scale.z;
+	worldMatrix._33 *= scale.z;
+	worldMatrix._34 *= scale.z;
+	worldMatrix._41 = pos.x;
+	worldMatrix._42 = pos.y;
+	worldMatrix._43 = pos.z;
+	worldMatrix._44 = 1;
+}
+
 void tdnMesh::Render( tdnShader *shader, char *technique )
 {
 	unsigned int numPass = shader->Begin( technique );
@@ -283,4 +304,37 @@ void tdnMesh::Render( tdnShader *shader, char *technique )
 	}
 
 	shader->End();
+}
+
+const Vector3& tdnMesh::Pos()
+{
+	return pos;
+}
+void tdnMesh::Pos( const Vector3& in )
+{
+	pos = in;
+}
+const Vector3& tdnMesh::Scale()
+{
+	return scale;
+}
+void tdnMesh::Scale( const Vector3& in )
+{
+	scale = in;
+}
+const Quaternion& tdnMesh::Rot()
+{
+	return rot;
+}
+void tdnMesh::Rot( const Quaternion& in )
+{
+	rot = in;
+}
+const Matrix& tdnMesh::WorldMatrix()
+{
+	return worldMatrix;
+}
+void tdnMesh::WorldMatrix( const Matrix& in )
+{
+	worldMatrix = in;
 }

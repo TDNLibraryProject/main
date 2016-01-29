@@ -4,6 +4,8 @@ float4x4 projectionMatrix;
 
 float4x4 worldMatrix;
 
+float3 viewPosition;
+
 struct VSINPUT_COLOR
 {
 	float4 Pos : POSITION;

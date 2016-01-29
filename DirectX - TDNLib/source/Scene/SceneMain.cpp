@@ -173,11 +173,27 @@ bool sceneMain::Update()
 	tdnView::Set(cameraPos, VECTOR_ZERO);
 
 	// メッシュテスト
+	shader3D->SetValue( "viewPosition", cameraPos );
 	static float meshAngle = 0;
 	meshAngle += 0.01f;
-	D3DXMatrixRotationYawPitchRoll( &TestMesh->worldMatrix, meshAngle, meshAngle * 0.9f, meshAngle * 0.7f);
+	TestMesh->Rot( *D3DXQuaternionRotationYawPitchRoll( &Quaternion(), meshAngle, meshAngle * 0.9f, meshAngle * 0.7f ) );
+	TestMesh->Pos(
+		Vector3(
+		sinf( meshAngle ) - cosf( meshAngle ),
+		cosf( meshAngle ) + sinf( meshAngle ),
+		0
+		)
+		);
+	TestMesh->Scale(
+		Vector3(
+		sinf( meshAngle * 0.1f ),
+		sinf( meshAngle * 0.2f ),
+		sinf( meshAngle * 0.4f )
+		)
+		);
+	TestMesh->UpdateWorldMatrix();
 
-	return true;
+		return true;	
 }
 
 void sceneMain::Render()

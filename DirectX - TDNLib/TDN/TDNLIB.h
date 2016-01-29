@@ -162,19 +162,16 @@ inline Vector Vector3Cross(Vector& v1, Vector& v2)
 }
 
 // クォータニオン
-typedef struct  Quaternion
+typedef struct  Quaternion : public D3DXQUATERNION
 {
 public:
-	//------------------------------------------------------
-	//	パラメータ
-	//------------------------------------------------------
-	float	x, y, z, w;
-
 	//------------------------------------------------------
 	//	コンストラクタ
 	//------------------------------------------------------
 	Quaternion(){}
-	Quaternion(float sx, float sy, float sz, float sw) : x(sx), y(sy), z(sz), w(sw) {}
+	Quaternion(const D3DXQUATERNION& in) :D3DXQUATERNION(in)
+	{}
+	Quaternion( float sx, float sy, float sz, float sw ) : D3DXQUATERNION( sx, sy, sz, sw ){}
 
 	//------------------------------------------------------
 	//	生成
@@ -681,6 +678,10 @@ public:
 	tdnMesh();
 	~tdnMesh();
 
+	/********/
+	/* 作成 */
+	/********/
+
 	struct CreateData
 	{
 		unsigned int      numVertexes;  // 頂点の数
@@ -693,26 +694,76 @@ public:
 		D3DVERTEXELEMENT9 *decl;        // シェーダーに送る頂点構造体の定義
 	};
 	bool Create( const CreateData &data );
-	bool CreateVertex( unsigned int numVertex, unsigned int vertexSize, void *vertexArray );
-	bool CreateIndexes( unsigned int numIndexes, const DWORD *indexArray );
-	bool CreateDeclaration( unsigned int declArySize, D3DVERTEXELEMENT9 *decl );
+	bool CreateVertex(
+		unsigned int numVertex,    // 頂点数
+		unsigned int vertexSize,   // 頂点構造体のバイト数
+		void *vertexArray );       // 頂点配列
+	bool CreateIndexes(
+		unsigned int numIndexes,   // インデックスの数
+		const DWORD *indexArray ); // インデックス配列
+	bool CreateDeclaration(
+		unsigned int declArySize,  // 頂点構造体のバイト数
+		D3DVERTEXELEMENT9 *decl ); // シェーダー上での頂点構造体の宣言
 
-	bool CreateTriangle( float radius, DWORD color );
-	bool CreateRectangle( float width, float height, DWORD color );
-	bool CreateTriangular( float radius, DWORD color );
-	bool CreateCube( float width, float height, float depth, DWORD color );
+	// xy平面に正三角形作成
+	bool CreateTriangle(
+		float radius,    // 外接円の半径
+		DWORD color ); 
+	// xy平面に長方形作成
+	bool CreateRectangle(
+		float width,
+		float height,
+		DWORD color );
+	// 正四面体作成
+	bool CreateTriangular(
+		float radius, // 外接円の半径
+		DWORD color );
+	// 直方体作成
+	bool CreateCube(
+		float width,
+		float height,
+		float depth,
+		DWORD color );
+
+	/********/
+	/* 更新 */
+	/********/
+
+	// pos, scale, rot からworldMatrix作成
+	void UpdateWorldMatrix();
+
+	/********/
+	/* 描画 */
+	/********/
 
 	void Render( tdnShader *shader, char *technique );
 
+	/*********************/
+	/* セッター ゲッター */
+	/*********************/
+
+	const Vector3& Pos();
+	void Pos( const Vector3& in );
+	const Vector3& Scale();
+	void Scale( const Vector3& in );
+	const Quaternion& Rot();
+	void Rot( const Quaternion& in );
+	const Matrix& WorldMatrix();
+	void WorldMatrix( const Matrix& in );
+
+private:
 	IDirect3DVertexDeclaration9* decl;         // 頂点デコレーション（FVF）
 	unsigned int                 declSize;     // 頂点構造体のバイト数
-	IDirect3DVertexBuffer9*      vertexBuffer; // 頂点バッファ
-	unsigned int                 numVertexes;  // 頂点数
-	IDirect3DIndexBuffer9*       indexBuffer;  // 頂点インデックス
-	unsigned int                 numIndexes;   // インデックス数
+	IDirect3DVertexBuffer9*      vertexBuffer;
+	unsigned int                 numVertexes;
+	IDirect3DIndexBuffer9*       indexBuffer;
+	unsigned int                 numIndexes;
 	unsigned int                 numFaces;     // 三角ポリゴン数
 
-	Matrix                       worldMatrix;
+	Vector3    pos;
+	Vector3    scale;
+	Quaternion rot;
+	Matrix     worldMatrix;
 };
 
 //*****************************************************************************
