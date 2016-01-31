@@ -130,7 +130,7 @@ bool sceneMain::Initialize()
 	// 3DÉÅÉbÉVÉÖçÏê¨
 	shader3D = new tdnShader( "DATA/Shader/3D.fx" );
 	TestMesh = new tdnMesh;
-	TestMesh->CreateCube( 1, 1, 1, 0xFF4488FF );
+	TestMesh->LoadMqo("Data/mqo/box/box.mqo");
 	// çsóÒçÏê¨
 	Matrix viewMatrix;
 	D3DXMatrixLookAtLH( &viewMatrix, &D3DXVECTOR3( 0, 0, -10 ), &D3DXVECTOR3( 0, 0, 0 ), &D3DXVECTOR3( 0, 1, 0 ) );

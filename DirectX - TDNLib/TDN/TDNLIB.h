@@ -725,6 +725,12 @@ public:
 		float depth,
 		DWORD color );
 
+	/************/
+	/* “Ç‚İ‚İ */
+	/************/
+
+	bool LoadMqo( char *filename );
+
 	/********/
 	/* XV */
 	/********/
