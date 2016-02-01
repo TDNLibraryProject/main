@@ -36,6 +36,7 @@ technique linecopy
 		BlendOp = Add;
 		SrcBlend = SrcAlpha;
 		DestBlend = InvSrcAlpha;
+		CullMode = CCW;
 
 		// シェーダ
 		VertexShader = compile vs_3_0 VS_COLOR();

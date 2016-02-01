@@ -32,14 +32,14 @@ bool tdnMesh::CreateVertex( unsigned int numVertexes, unsigned int vertexSize, v
 		vertexesSize,    // 頂点配列のバイト数
 		0,               // 使用方法 D3DUSAGE
 		D3DFVF_XYZ,      // ?
-		D3DPOOL_MANAGED, // ?
+		D3DPOOL_MANAGED, // 保存したデータの使用方法（読み込み専用, 最適化する ...）
 		&vertexBuffer,   // 頂点バッファ <out>
 		0 );             // ?
 	if( FAILED( hr ) )
 		return false;
 
 	// バッファにコピー
-	Vector3* workVertex( nullptr );
+	void* workVertex( nullptr );
 	hr = vertexBuffer->Lock( 0, 0, ( void** ) &workVertex, 0 );      // バッファロック (バファのポインター取得)
 	if( FAILED( hr ) )
 		return false;
@@ -101,6 +101,7 @@ bool tdnMesh::Create( const CreateData &data )
 		return false;
 	if( CreateDeclaration( data.vertexSize, data.decl ) == false )
 		return false;
+	numFaces = data.numIndexes / 3;
 	return true;
 }
 
@@ -128,12 +129,10 @@ bool tdnMesh::CreateTriangle( float radius, DWORD color )
 
 	D3DVERTEXELEMENT9 declAry[] = {
 		{ 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-		{ 0, sizeof(Vector3), D3DDECLTYPE_UBYTE4N, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
+		{ 0, sizeof( Vector3 ), D3DDECLTYPE_UBYTE4N, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
 		D3DDECL_END()
 	};
 	data.decl = declAry;
-
-	numFaces = data.numIndexes / 3;
 
 	return Create( data );
 }
@@ -167,8 +166,6 @@ bool tdnMesh::CreateRectangle( float width, float height, DWORD color )
 		D3DDECL_END()
 	};
 	data.decl = declAry;
-
-	numFaces = data.numIndexes / 3;
 
 	return Create( data );
 }
@@ -204,8 +201,6 @@ bool tdnMesh::CreateTriangular( float radius, DWORD color )
 		D3DDECL_END()
 	};
 	data.decl = declAry;
-
-	numFaces = data.numIndexes / 3;
 
 	return Create( data );
 }
@@ -255,8 +250,6 @@ bool tdnMesh::CreateCube( float width, float height, float depth, DWORD color )
 	};
 	data.decl = declAry;
 
-	numFaces = data.numIndexes / 3;
-
 	return Create( data );
 }
 
@@ -285,116 +278,132 @@ public:
 	virtual void Load( std::ifstream &mqoFile ) = 0;
 
 protected:
-	// 関数ポインタの戻り値
+	// LoadLoopで使う関数（関数ポインター）の戻り値
 	enum class FPCODE : byte
 	{
-		FAILURE, SUCCESS, END
+		FAILURE, // 失敗
+		SUCCESS, // 成功
+		END      // ループ終了
 	};
 
-	// "" で囲まれた文字を読み込む
+	// " " の間を取り出す
 	inline void LoadName(
-		std::ifstream &mqoFile,
-		std::string &name )
+		std::ifstream &mqoFile, // <in> : 読み込むファイル
+		std::string &name       // <out>: 読み込んだ文字列から " " の間を取り出したもの
+		)
 	{
 		mqoFile >> name;
 		name = name.substr( 1, name.size() - 2 ); // 前後の " " を消す
 	}
 
-	// type の配列を読み込む
-	template
-		<
-			class type,
-				size_t size
-		>
+	template< class type, // <省略可> outの形
+		size_t size>      // <省略可> 配列の要素数
+		// type の配列を読み込む
 		inline FPCODE LoadArray(
-		std::ifstream &mqoFile,
-		std::string& load,
-		const std::string& com,
-		type( &out )[size]
-		)
-			{
-				if( load == "}" )
-					return FPCODE::END;
-
-				if( load != com )
-					return FPCODE::FAILURE;
-
-				for( size_t i = 0; i < size; i++ )
-				{
-					mqoFile >> out[i];
-				}
-				return FPCODE::SUCCESS;
-			}
-
-	// com(float) の形の文字列を読み込みfloatを取り出す
-	inline FPCODE LoadFloatParenthesi(
-		std::string& load,
-		const std::string com, // 変数の名前
-		float* out
+		std::ifstream &mqoFile,  // <in> : 読み込むファイル
+		const std::string& load, // <in> : 前回読み込んだ文字列
+		const std::string& com,  // <in> : 判定用文字列
+		type( &out )[size]       // <out>: ここに読み込む
 		)
 	{
+		// 終了
 		if( load == "}" )
 			return FPCODE::END;
+		// 違う
+		if( load != com )
+			return FPCODE::FAILURE;
+		// 配列分読み込み
+		for( size_t i = 0; i < size; i++ )
+		{
+			mqoFile >> out[i];
+		}
+		return FPCODE::SUCCESS;
+	}
 
+	void sto( const std::string in, int *out )
+	{
+		*out = std::stoi( in );
+	}
+	void sto( const std::string in, unsigned int *out )
+	{
+		*out = std::stoi( in );
+	}
+	void sto( const std::string in, float *out )
+	{
+		*out = std::stof( in );
+	}
+
+	template <class type> // <省略可> 取り出す型
+	// com(type) の形の文字列を読み込みtypeの取り出す
+	inline FPCODE LoadParenthesi(
+		const std::string& load, // <in> : 前回読み込んだ文字列
+		const std::string com,   // <in> : 判定用文字列
+		type *out                // <out>: ここに読み込む
+		)
+	{
+		// 終了
+		if( load == "}" )
+			return FPCODE::END;
+		// 違う
 		if( load.substr( 0, com.size() ) != com )
 			return FPCODE::FAILURE;
-
-		*out = stof( load.substr( com.size() + 1 ) ); // 数字を取り出す
+		// 取り出す
+		sto( load.substr( com.size() + 1 ), out );
 		return FPCODE::SUCCESS;
 	}
 
 	// com("string") の形の文字列を読み込みstringを取り出す
 	inline FPCODE LoadStringParenthesi(
-		std::string& load,
-		const std::string com, // 変数の名前
-		std::string* out
+		const std::string& load, // <in> : 前回読み込んだ文字列
+		const std::string com,   // <in> : 判定用文字列
+		std::string* out         // <out>: ここに読み込む
 		)
 	{
+		// 終了
 		if( load == "}" )
 			return FPCODE::END;
-
+		// 違う
 		if( load.substr( 0, com.size() ) != com )
 			return FPCODE::FAILURE;
-
-		*out = load.substr( com.size() + 2, load.size() - com.size() - 4 ); // 数字を取り出す
+		// 取り出す
+		*out = load.substr( com.size() + 2, load.size() - com.size() - 4 );
 		return FPCODE::SUCCESS;
 	}
 
-	// com(type type ...) の形の文字列を読み込みtypeの配列を取り出す
-	template<
-		class type,
-			size_t size
-	>
-	inline FPCODE LoadArrayParenthesi(
-	std::ifstream& mqoFile,
-	std::string& load,
-	const std::string com, // 変数の名前
-	type( &out )[size]
-	)
+	template<class type, // 取り出す型
+		size_t size>     // 配列の要素数
+		// com(type type ...) の形の文字列を読み込みtypeの配列を取り出す
+		inline FPCODE LoadArrayParenthesi(
+		std::ifstream& mqoFile, // <in> : 読み込むファイル
+		std::string& load,      // <in> : 前回読み込んだ文字列
+		const std::string com,  // <in> : 判定用文字列
+		type( &out )[size]      // <out>: ここに読み込む
+		)
+	{
+		// 終了
+		if( load == "}" )
+			return FPCODE::END;
+		// 違う
+		if( load.substr( 0, com.size() ) != com )
+			return FPCODE::FAILURE;
+		// 数字を取り出す
+		out[0] = stof( load.substr( com.size() + 1 ) );
+		for( size_t i = 1; i < size; i++ )
 		{
-			if( load == "}" )
-				return FPCODE::END;
-
-			if( load.substr( 0, com.size()) != com )
-				return FPCODE::FAILURE;
-
-			out[0] = stof( load.substr( com.size() + 1 ) ); // 数字を取り出す
-			for( size_t i = 1; i < size; i++ )
-			{
-				mqoFile >> out[i];
-			}
-			std::string workString;
-			mqoFile >> workString; // ")" を読む
-			return FPCODE::SUCCESS;
+			mqoFile >> out[i];
 		}
+		std::string workString;
+		mqoFile >> workString; // ")" を読む
+		return FPCODE::SUCCESS;
+	}
 
+	template<class LoadObjectClass> // MqoLoadObject を継承したクラス 
 	// 関数ポインターの配列を回す
-	template<class LoadObjectClass>
 	void LoadLoop(
-		LoadObjectClass* me,
-		std::ifstream &mqoFile,
-		FPCODE( LoadObjectClass::*loadFP[] )( std::ifstream&, std::string& load ),
-		unsigned int numFP
+		LoadObjectClass* me,    // <in> : thisポインター入れる
+		std::ifstream &mqoFile, // <in> : 読み込むファイル
+		FPCODE( LoadObjectClass::*loadFP[] )( std::ifstream&, std::string& load ), // <in> : 関数ポインタ配列
+		unsigned int numFP      // <in> : 配列お要素数
 		)
 	{
 		for( unsigned int step( 0 ); step < numFP; )
@@ -403,22 +412,22 @@ protected:
 			mqoFile >> workString;
 			if( mqoFile.eof() )
 				break;
-
+			// 関数ポインター分回す
 			for( unsigned int i = step; i < numFP; i++ )
 			{
 				switch( ( me->*loadFP[i] )( mqoFile, workString ) )
 				{
-					case FPCODE::FAILURE:
+					case FPCODE::FAILURE: // 違った
 						break;
 
-					case FPCODE::SUCCESS:
-						step = i;
-						i = numFP;
+					case FPCODE::SUCCESS: // 読み込んだ
+						step = i;         // stepを進める
+						i = numFP;        // ループ一つ抜ける
 						break;
 
-					case FPCODE::END:
-						step = numFP;
-						i = numFP;
+					case FPCODE::END: // ループ終了
+						i = numFP;    // ループ一つ抜ける
+						step = numFP; // ループ抜ける
 						break;
 				}
 			}
@@ -445,7 +454,7 @@ public:
 	float proj_scale[3]; // 拡大率 XYZ
 	float proj_angle[3]; // 角度 YXZ     -180~180
 
-	MqoMaterial() : dif(0), amb(0), emi(0), spc(0), power(0), reflect(0), refract(0)
+	MqoMaterial() : dif( 0 ), amb( 0 ), emi( 0 ), spc( 0 ), power( 0 ), reflect( 0 ), refract( 0 )
 	{
 		col[0] = col[1] = col[2] = col[3] = 1;
 		proj_pos[0] = proj_pos[1] = proj_pos[2] = 0;
@@ -475,31 +484,31 @@ private:
 	}
 	FPCODE LoadDif( std::ifstream &mqoFile, std::string& load )
 	{
-		return LoadFloatParenthesi( load, "dif", &dif );
+		return LoadParenthesi( load, "dif", &dif );
 	}
 	FPCODE LoadAmb( std::ifstream &mqoFile, std::string& load )
 	{
-		return LoadFloatParenthesi( load, "amb", &amb );
+		return LoadParenthesi( load, "amb", &amb );
 	}
 	FPCODE LoadEmi( std::ifstream &mqoFile, std::string& load )
 	{
-		return LoadFloatParenthesi( load, "emi", &emi );
+		return LoadParenthesi( load, "emi", &emi );
 	}
 	FPCODE LoadSpc( std::ifstream &mqoFile, std::string& load )
 	{
-		return LoadFloatParenthesi( load, "spc", &spc );
+		return LoadParenthesi( load, "spc", &spc );
 	}
 	FPCODE LoadPower( std::ifstream &mqoFile, std::string& load )
 	{
-		return LoadFloatParenthesi( load, "power", &power );
+		return LoadParenthesi( load, "power", &power );
 	}
 	FPCODE LoadReflect( std::ifstream &mqoFile, std::string& load )
 	{
-		return LoadFloatParenthesi( load, "reflect", &reflect );
+		return LoadParenthesi( load, "reflect", &reflect );
 	}
 	FPCODE LoadRefract( std::ifstream &mqoFile, std::string& load )
 	{
-		return LoadFloatParenthesi( load, "refract", &refract );
+		return LoadParenthesi( load, "refract", &refract );
 	}
 	FPCODE LoadTex( std::ifstream &mqoFile, std::string& load )
 	{
@@ -534,7 +543,7 @@ public:
 	{
 	public:
 		float pos[3];
-		
+
 		vertex()
 		{
 			pos[0] = pos[1] = pos[2] = 0;
@@ -582,7 +591,7 @@ public:
 			float UV[2];
 			DWORD COL;             // 頂点色 ABGR
 
-			Vertex() : V(0), COL(0xFFFFFFFF)
+			Vertex() : V( 0 ), COL( 0xFFFFFFFF )
 			{
 				UV[0] = UV[1] = 0;
 			}
@@ -590,7 +599,7 @@ public:
 		std::vector<Vertex> vertex; // 頂点インデックスと頂点情報
 		unsigned int M;             // 材質インデックス
 
-		Face() : M(0)
+		Face() : M( 0 )
 		{}
 
 		void LoadV( std::ifstream &mqoFile, const std::string& load )
@@ -755,42 +764,132 @@ private:
 	}
 };
 
+class MQOLoader
+{
+public:
+	std::vector<MqoMaterial> materialList;
+	std::vector<MqoObject> objectList;
+	// ↑の配列に読み込むだけ
+	void Load( std::ifstream& mqoFile )
+	{
+		while( true )
+		{
+			std::string command;
+			mqoFile >> command;
+			if( mqoFile.eof() )
+				break;
+
+			// マテリアル読み込み
+			if( command.find( "Material" ) != std::string::npos )
+			{
+				unsigned int numMaterial;
+				mqoFile >> numMaterial;
+				materialList.resize( numMaterial );
+
+				for( unsigned int i = 0; i < numMaterial; i++ )
+				{
+					materialList[i].Load( mqoFile );
+				}
+			}
+			// オブジェクト読み込み
+			else if( command.find( "Object" ) != std::string::npos )
+			{
+				objectList.push_back( MqoObject() );
+				objectList.rbegin()->Load( mqoFile );
+			}
+		}
+	}
+
+	unsigned int CreateVertexArray( VECTOR_LINE** vertexArray )
+	{
+		unsigned int  numVtx( 0 );
+		for( unsigned int i1 = 0; i1 < objectList.size(); i1++ )
+		{
+			numVtx += objectList[i1].vertexList.list.size();
+		}
+		( *vertexArray ) = new VECTOR_LINE[numVtx];
+
+		for( unsigned int vi = 0; vi < numVtx; )
+		{
+			for( unsigned int i1 = 0; i1 < objectList.size(); i1++ )
+			{
+				for( unsigned int i2 = 0; i2 < objectList[i1].vertexList.list.size(); i2++ )
+				{
+					( *vertexArray )[vi].x = objectList[i1].vertexList.list[i2].pos[0];
+					( *vertexArray )[vi].y = objectList[i1].vertexList.list[i2].pos[1];
+					( *vertexArray )[vi].z = objectList[i1].vertexList.list[i2].pos[2];
+					( *vertexArray )[vi].color = 0xFFFFFFFF;
+					vi++;
+				}
+			}
+		}
+
+		return numVtx;
+	}
+
+	unsigned int CreateIndexlArray( DWORD** indexArray )
+	{
+		unsigned int numIdx( 0 );
+		for( unsigned int i1 = 0; i1 < objectList.size(); i1++ )
+		{
+			for( unsigned int i2 = 0; i2 < objectList[i1].faceList.list.size(); i2++ )
+				numIdx += 3 * ( objectList[i1].faceList.list[i2].vertex.size() - 2 );
+		}
+
+		( *indexArray ) = new DWORD[numIdx];
+
+		for( unsigned int ii = 0; ii < numIdx; )
+		{
+			for( unsigned int i1 = 0; i1 < objectList.size(); i1++ )
+			{
+				for( unsigned int i2 = 0; i2 < objectList[i1].faceList.list.size(); i2++ )
+				{
+					for( unsigned int i3 = 0; i3 < objectList[i1].faceList.list[i2].vertex.size() - 2; i3++ )
+					{
+						( *indexArray )[ii] = objectList[i1].faceList.list[i2].vertex[0].V;
+						( *indexArray )[ii + 2] = objectList[i1].faceList.list[i2].vertex[i3 + 1].V;
+						( *indexArray )[ii + 1] = objectList[i1].faceList.list[i2].vertex[i3 + 2].V;
+						ii += 3;
+					}
+				}
+			}
+		}
+
+		return numIdx;
+	}
+};
+
 bool tdnMesh::LoadMqo( char *filename )
 {
 	std::ifstream mqoFile;
 	if( OpenFstream( &mqoFile, filename ) == false )
 		return false;
 
-	std::vector<MqoMaterial> materialList;
-	std::vector<MqoObject> objectList;
+	MQOLoader loader;
+	loader.Load( mqoFile );
 
-	// 読み込んでまとめる
-	while( true )
-	{
-		std::string command;
-		mqoFile >> command;
-		if( mqoFile.eof() )
-			break;
+	VECTOR_LINE *vertexList;
+	DWORD *indexList;
 
-		// マテリアル読み込み
-		if( command.find( "Material" ) != std::string::npos )
-		{
-			unsigned int numMaterial;
-			mqoFile >> numMaterial;
-			materialList.resize( numMaterial );
+	CreateData data;
+	data.vertexSize = sizeof( VECTOR_LINE );
+	data.numVertexes = loader.CreateVertexArray( &vertexList );
+	data.vertexArray = vertexList;
+	data.numIndexes = loader.CreateIndexlArray( &indexList );
+	data.indexArray = indexList;
 
-			for( unsigned int i = 0; i < numMaterial; i++ )
-			{
-				materialList[i].Load( mqoFile );
-			}
-		}
-		// オブジェクト読み込み
-		else if( command.find( "Object" ) != std::string::npos )
-		{
-			objectList.push_back( MqoObject() );
-			objectList.rbegin()->Load( mqoFile );
-		}
-	}
+	D3DVERTEXELEMENT9 declAry[] = {
+		{ 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+		{ 0, sizeof( Vector3 ), D3DDECLTYPE_UBYTE4N, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
+		D3DDECL_END()
+	};
+	data.decl = declAry;
+
+	if( Create( data ) == false )
+		return false;
+
+	delete ( data.vertexArray );
+	delete ( data.indexArray );
 
 	return true;
 }

@@ -689,7 +689,7 @@ public:
 		void              *vertexArray; // 頂点配列
 
 		unsigned int      numIndexes;   // インデックスの数
-		const DWORD       *indexArray;  // インデックスの配列
+		DWORD             *indexArray;  // インデックスの配列
 
 		D3DVERTEXELEMENT9 *decl;        // シェーダーに送る頂点構造体の定義
 	};
