@@ -6,26 +6,24 @@ float4x4 worldMatrix;
 
 float3 viewPosition;
 
-struct VSINPUT_COLOR
+struct VSINPUT
 {
 	float4 Pos : POSITION;
-	float4 Col : COLOR;
 };
 
-VSINPUT_COLOR VS_COLOR( VSINPUT_COLOR In )
+VSINPUT VS_COLOR( VSINPUT In )
 {
 	float4x4 WVPMatrix;
 	WVPMatrix = mul( worldMatrix, mul( viewMatrix, projectionMatrix ) );
 
-	VSINPUT_COLOR Out;
+	VSINPUT Out;
 	Out.Pos = mul( In.Pos, WVPMatrix );
-	Out.Col = In.Col;
 	return Out;
 }
 
-float4 PS_COLOR( VSINPUT_COLOR In ) : COLOR
+float4 PS_COLOR( VSINPUT In ) : COLOR
 {
-	return In.Col;
+	return float4( 1, 1, 1, 1 );
 }
 
 technique linecopy

@@ -769,6 +769,16 @@ class MQOLoader
 public:
 	std::vector<MqoMaterial> materialList;
 	std::vector<MqoObject> objectList;
+
+	MQOLoader() : vertexList( nullptr ), numVtx( 0 ), indexList( nullptr ), vertexDataList( nullptr ), numIdx( 0 )
+	{}
+	~MQOLoader()
+	{
+		SAFE_DELETE( vertexList );
+		SAFE_DELETE( indexList );
+		SAFE_DELETE( vertexDataList );
+	}
+
 	// ª‚Ì”z—ñ‚É“Ç‚Ýž‚Þ‚¾‚¯
 	void Load( std::ifstream& mqoFile )
 	{
@@ -802,19 +812,19 @@ public:
 
 	bool CreateMesh( tdnMesh *mesh )
 	{
-		VECTOR_LINE *vertexList;
-		DWORD *indexList;
+		CreateVertexArray();
+		CreateIndexlArray();
+		CreateVertexDataArray();
 
 		tdnMesh::CreateData data;
-		data.vertexSize = sizeof( VECTOR_LINE );
-		data.numVertexes = CreateVertexArray( &vertexList );
+		data.vertexSize = sizeof( Vector3 );
+		data.numVertexes = numVtx;
 		data.vertexArray = vertexList;
-		data.numIndexes = CreateIndexlArray( &indexList );
+		data.numIndexes = numIdx;
 		data.indexArray = indexList;
 
 		D3DVERTEXELEMENT9 declAry[] = {
 			{ 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-			{ 0, sizeof( Vector3 ), D3DDECLTYPE_UBYTE4N, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
 			D3DDECL_END()
 		};
 		data.decl = declAry;
@@ -822,20 +832,25 @@ public:
 		bool ret( true );
 		ret = mesh->Create( data );
 
-		delete ( data.vertexArray );
-		delete ( data.indexArray );
-
 		return ret;
 	}
 
-	unsigned int CreateVertexArray( VECTOR_LINE** vertexArray )
+private:
+	Vector3 *vertexList;
+	unsigned int numVtx;
+
+	DWORD *indexList;
+	VECTOR_LINE *vertexDataList;
+	unsigned int numIdx;
+
+	void CreateVertexArray()
 	{
-		unsigned int  numVtx( 0 );
 		for( unsigned int i1 = 0; i1 < objectList.size(); i1++ )
 		{
 			numVtx += objectList[i1].vertexList.list.size();
 		}
-		( *vertexArray ) = new VECTOR_LINE[numVtx];
+		SAFE_DELETE( vertexList );
+		vertexList = new Vector3[numVtx];
 
 		for( unsigned int vi = 0; vi < numVtx; )
 		{
@@ -843,28 +858,24 @@ public:
 			{
 				for( unsigned int i2 = 0; i2 < objectList[i1].vertexList.list.size(); i2++ )
 				{
-					( *vertexArray )[vi].x = objectList[i1].vertexList.list[i2].pos[0];
-					( *vertexArray )[vi].y = objectList[i1].vertexList.list[i2].pos[1];
-					( *vertexArray )[vi].z = objectList[i1].vertexList.list[i2].pos[2];
-					( *vertexArray )[vi].color = 0xFFFFFFFF;
+					vertexList[vi].x = objectList[i1].vertexList.list[i2].pos[0];
+					vertexList[vi].y = objectList[i1].vertexList.list[i2].pos[1];
+					vertexList[vi].z = objectList[i1].vertexList.list[i2].pos[2];
 					vi++;
 				}
 			}
 		}
-
-		return numVtx;
 	}
 
-	unsigned int CreateIndexlArray( DWORD** indexArray )
+	void CreateIndexlArray()
 	{
-		unsigned int numIdx( 0 );
 		for( unsigned int i1 = 0; i1 < objectList.size(); i1++ )
 		{
 			for( unsigned int i2 = 0; i2 < objectList[i1].faceList.list.size(); i2++ )
 				numIdx += 3 * ( objectList[i1].faceList.list[i2].vertex.size() - 2 );
 		}
-
-		( *indexArray ) = new DWORD[numIdx];
+		SAFE_DELETE( indexList );
+		indexList = new DWORD[numIdx];
 
 		for( unsigned int ii = 0; ii < numIdx; )
 		{
@@ -874,16 +885,29 @@ public:
 				{
 					for( unsigned int i3 = 0; i3 < objectList[i1].faceList.list[i2].vertex.size() - 2; i3++ )
 					{
-						( *indexArray )[ii] = objectList[i1].faceList.list[i2].vertex[0].V;
-						( *indexArray )[ii + 2] = objectList[i1].faceList.list[i2].vertex[i3 + 1].V;
-						( *indexArray )[ii + 1] = objectList[i1].faceList.list[i2].vertex[i3 + 2].V;
+						indexList[ii] = objectList[i1].faceList.list[i2].vertex[0].V;
+						indexList[ii + 2] = objectList[i1].faceList.list[i2].vertex[i3 + 1].V;
+						indexList[ii + 1] = objectList[i1].faceList.list[i2].vertex[i3 + 2].V;
 						ii += 3;
 					}
 				}
 			}
 		}
+	}
 
-		return numIdx;
+	void CreateVertexDataArray()
+	{
+		SAFE_DELETE( vertexDataList );
+		vertexDataList = new VECTOR_LINE[numIdx];
+
+		for( unsigned int i1 = 0; i1 < numIdx; i1++ )
+		{
+			vertexDataList[i1].x = vertexList[indexList[i1]].x;
+			vertexDataList[i1].y = vertexList[indexList[i1]].x;
+			vertexDataList[i1].z = vertexList[indexList[i1]].x;
+
+			vertexDataList[i1].color = 0xFFFFFF;
+		}
 	}
 };
 
