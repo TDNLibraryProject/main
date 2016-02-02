@@ -800,6 +800,34 @@ public:
 		}
 	}
 
+	bool CreateMesh( tdnMesh *mesh )
+	{
+		VECTOR_LINE *vertexList;
+		DWORD *indexList;
+
+		tdnMesh::CreateData data;
+		data.vertexSize = sizeof( VECTOR_LINE );
+		data.numVertexes = CreateVertexArray( &vertexList );
+		data.vertexArray = vertexList;
+		data.numIndexes = CreateIndexlArray( &indexList );
+		data.indexArray = indexList;
+
+		D3DVERTEXELEMENT9 declAry[] = {
+			{ 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+			{ 0, sizeof( Vector3 ), D3DDECLTYPE_UBYTE4N, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
+			D3DDECL_END()
+		};
+		data.decl = declAry;
+
+		bool ret( true );
+		ret = mesh->Create( data );
+
+		delete ( data.vertexArray );
+		delete ( data.indexArray );
+
+		return ret;
+	}
+
 	unsigned int CreateVertexArray( VECTOR_LINE** vertexArray )
 	{
 		unsigned int  numVtx( 0 );
@@ -868,28 +896,7 @@ bool tdnMesh::LoadMqo( char *filename )
 	MQOLoader loader;
 	loader.Load( mqoFile );
 
-	VECTOR_LINE *vertexList;
-	DWORD *indexList;
-
-	CreateData data;
-	data.vertexSize = sizeof( VECTOR_LINE );
-	data.numVertexes = loader.CreateVertexArray( &vertexList );
-	data.vertexArray = vertexList;
-	data.numIndexes = loader.CreateIndexlArray( &indexList );
-	data.indexArray = indexList;
-
-	D3DVERTEXELEMENT9 declAry[] = {
-		{ 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
-		{ 0, sizeof( Vector3 ), D3DDECLTYPE_UBYTE4N, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
-		D3DDECL_END()
-	};
-	data.decl = declAry;
-
-	if( Create( data ) == false )
-		return false;
-
-	delete ( data.vertexArray );
-	delete ( data.indexArray );
+	loader.CreateMesh( this );
 
 	return true;
 }
