@@ -75,6 +75,7 @@ typedef IDirect3DDevice9 DEVICE, *LPDEVICE;	// IDirect3DDevice9の略
 typedef struct Vector
 {
 	float x, y, z;
+	Vector() :x(0), y(0), z(0){}
 } Vector;
 
 // ベクトル
@@ -82,7 +83,7 @@ typedef struct Vector3 : public Vector
 {
 public:
 	//	コンストラクタ
-	Vector3() {};
+	Vector3() :Vector(){};
 	// Vector(x,y,x)とできるように
 	inline Vector3(float x, float y, float z){ this->x = x, this->y = y, this->z = z; }
 	inline Vector3(CONST Vector& v){ this->x = v.x, this->y = v.y, this->z = v.z; }
@@ -686,10 +687,13 @@ public:
 	{
 		unsigned int      numVertexes;  // 頂点の数
 		unsigned int      vertexSize;   // 頂点構造体のバイト数
-		void              *vertexArray; // 頂点配列
+		void              *vertexArray; // 頂点情報（頂点毎）配列
 
 		unsigned int      numIndexes;   // インデックスの数
 		DWORD             *indexArray;  // インデックスの配列
+		
+		unsigned int      streamSize;   // ストリーム構造体のバイト数
+		void              *streamArray; // 頂点情報（インデックス毎）の配列 インデックスと同数
 
 		D3DVERTEXELEMENT9 *decl;        // シェーダーに送る頂点構造体の定義
 	};
@@ -701,6 +705,7 @@ public:
 	bool CreateIndexes(
 		unsigned int numIndexes,   // インデックスの数
 		const DWORD *indexArray ); // インデックス配列
+	bool CreateStream( unsigned int dataSize, void *dataArray );
 	bool CreateDeclaration(
 		unsigned int declArySize,  // 頂点構造体のバイト数
 		D3DVERTEXELEMENT9 *decl ); // シェーダー上での頂点構造体の宣言
@@ -763,6 +768,8 @@ private:
 	IDirect3DVertexBuffer9*      vertexBuffer;
 	unsigned int                 numVertexes;
 	IDirect3DIndexBuffer9*       indexBuffer;
+	unsigned int                 streamSize;   // streamBuffer の一つのデータのバイト数
+	IDirect3DVertexBuffer9*      streamBuffer; // indexと同じ個数作成 頂点の位置以外の情報
 	unsigned int                 numIndexes;
 	unsigned int                 numFaces;     // 三角ポリゴン数
 
@@ -770,6 +777,9 @@ private:
 	Vector3    scale;
 	Quaternion rot;
 	Matrix     worldMatrix;
+
+public:
+	Texture2D *texture;
 };
 
 //*****************************************************************************

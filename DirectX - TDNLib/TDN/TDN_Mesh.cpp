@@ -4,15 +4,18 @@
 #include <string>
 #include <vector>
 
-tdnMesh::tdnMesh() : decl( nullptr ), declSize( 0 ), vertexBuffer( nullptr ), numVertexes( 0 ), indexBuffer( nullptr ), numIndexes( 0 ), numFaces( 0 ), pos( 0, 0, 0 ), scale( 1, 1, 1 ), rot( 0, 0, 0, 1 )
+tdnMesh::tdnMesh() : decl( nullptr ), declSize( 0 ), vertexBuffer( nullptr ), numVertexes( 0 ), indexBuffer( nullptr ), streamSize( 0 ), streamBuffer( nullptr ), numIndexes( 0 ), numFaces( 0 ), pos( 0, 0, 0 ), scale( 1, 1, 1 ), rot( 0, 0, 0, 1 )
 {
 	D3DXMatrixIdentity( &worldMatrix );
 }
 tdnMesh::~tdnMesh()
 {
-	decl->Release();
-	vertexBuffer->Release();
-	indexBuffer->Release();
+	if( decl )
+		decl->Release();
+	if( vertexBuffer )
+		vertexBuffer->Release();
+	if( indexBuffer )
+		indexBuffer->Release();
 }
 
 /********/
@@ -31,7 +34,7 @@ bool tdnMesh::CreateVertex( unsigned int numVertexes, unsigned int vertexSize, v
 	hr = tdnSystem::GetDevice()->CreateVertexBuffer(
 		vertexesSize,    // 頂点配列のバイト数
 		0,               // 使用方法 D3DUSAGE
-		D3DFVF_XYZ,      // ?
+		D3DFVF_MESHVERTEX2,      // ?
 		D3DPOOL_MANAGED, // 保存したデータの使用方法（読み込み専用, 最適化する ...）
 		&vertexBuffer,   // 頂点バッファ <out>
 		0 );             // ?
@@ -81,6 +84,37 @@ bool tdnMesh::CreateIndexes( unsigned int numIndexes, const DWORD *indexArray )
 
 	return true;
 }
+bool tdnMesh::CreateStream( unsigned int dataSize, void *dataArray )
+{
+	HRESULT hr( S_OK );
+
+	// 頂点配列のサイズ計算
+	unsigned int dataArraySize = dataSize * numIndexes;
+	streamSize = dataSize;
+
+	// バッファnew
+	hr = tdnSystem::GetDevice()->CreateVertexBuffer(
+		dataArraySize,   // 配列のバイト数
+		0,               // 使用方法 D3DUSAGE
+		0,               // ?
+		D3DPOOL_MANAGED, // 保存したデータの使用方法（読み込み専用, 最適化する ...）
+		&streamBuffer,   // バッファ <out>
+		0 );             // ?
+	if( FAILED( hr ) )
+		return false;
+
+	// バッファにコピー
+	void* workData( nullptr );
+	hr = streamBuffer->Lock( 0, 0, ( void** ) &workData, 0 );      // バッファロック (バファのポインター取得)
+	if( FAILED( hr ) )
+		return false;
+	memcpy_s( workData, dataArraySize, dataArray, dataArraySize ); // バッファに頂点情報をコピー
+	hr = streamBuffer->Unlock();                                     // バッファロックを解除
+	if( FAILED( hr ) )
+		return false;
+
+	return true;
+}
 bool tdnMesh::CreateDeclaration( unsigned int declSize, D3DVERTEXELEMENT9 *decl )
 {
 	HRESULT hr( S_OK );
@@ -97,8 +131,12 @@ bool tdnMesh::Create( const CreateData &data )
 {
 	if( CreateVertex( data.numVertexes, data.vertexSize, data.vertexArray ) == false )
 		return false;
-	if( CreateIndexes( data.numIndexes, data.indexArray ) == false )
-		return false;
+	if( data.numIndexes != 0 && data.indexArray != nullptr)
+		if( CreateIndexes( data.numIndexes, data.indexArray ) == false )
+			return false;
+	if( data.streamSize != 0 && data.streamArray != nullptr )
+		if( CreateStream( data.streamSize, data.streamArray ) == false )
+			return false;
 	if( CreateDeclaration( data.vertexSize, data.decl ) == false )
 		return false;
 	numFaces = data.numIndexes / 3;
@@ -813,18 +851,23 @@ public:
 	bool CreateMesh( tdnMesh *mesh )
 	{
 		CreateVertexArray();
-		CreateIndexlArray();
-		CreateVertexDataArray();
+		CreateIndexAndDataArray();
 
 		tdnMesh::CreateData data;
-		data.vertexSize = sizeof( Vector3 );
-		data.numVertexes = numVtx;
-		data.vertexArray = vertexList;
+		data.numVertexes = numIdx;
+		data.vertexSize = sizeof( MESHVERTEX2 );
+		data.vertexArray = vertexDataList;
 		data.numIndexes = numIdx;
 		data.indexArray = indexList;
+		data.streamSize = 0;
+		data.streamArray = nullptr;
 
 		D3DVERTEXELEMENT9 declAry[] = {
+			// vertexBufer
 			{ 0, 0, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0 },
+			{ 0, sizeof( float ) * 3, D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_NORMAL, 0 },
+			{ 0, sizeof( float ) * 6, D3DDECLTYPE_UBYTE4, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_COLOR, 0 },
+			{ 0, sizeof( float ) * 6 + sizeof(COLOR), D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0 },
 			D3DDECL_END()
 		};
 		data.decl = declAry;
@@ -832,17 +875,186 @@ public:
 		bool ret( true );
 		ret = mesh->Create( data );
 
+		mesh->texture = tdnTexture::Load( "DATA/mqo/box/box.png" );
+
 		return ret;
 	}
 
+	//bool CreateMesh2( tdnMesh *mesh, char *filename )
+	//{
+	//	std::ifstream mqoFile( filename );
+	//	std::istreambuf_iterator<char> it( mqoFile );
+	//	std::istreambuf_iterator<char> last;
+	//	std::string mqoString( it, last );
+	//	/**************/
+	//	/* マテリアル */
+	//	/**************/
+	//	struct Material
+	//	{
+	//		std::string name;
+	//		float col[4]; // RGBA 0~1
+	//		float dif = 0; // 0~1
+	//		float amb = 0; // 0~1
+	//		float emi = 0; // 0~1
+	//		float spc = 0; // 0~1
+	//		float power = 0; // 0~100
+	//		float reflect = 0; // 0~1
+	//		float refract = 0; // 0~5
+	//		std::string tex; // テクスチャパス
+	//		std::string aplane;
+	//		std::string bump;
+	//
+	//		Material()
+	//		{
+	//			col[0] = 0; col[1] = 0; col[2] = 0; col[3] = 0;
+	//		}
+	//	};
+	//	Material *materialList( nullptr );
+	//	unsigned int numMaterial( 0 );
+	//
+	//	std::string workString;
+	//	// Material まで移動
+	//	unsigned int seekl = mqoString.find( "Material" ) + 8;
+	//	mqoString = mqoString.substr( seekl );
+	//	// 個数
+	//	numMaterial = std::stoi( mqoString );
+	//	materialList = new Material[numMaterial];
+	//
+	//	for( unsigned int i1 = 0; i1 < numMaterial; i1++ )
+	//	{
+	//		// 名前 " と " の間を取り出す
+	//		seekl = mqoString.find( "\"" ) + 1;
+	//		mqoString = mqoString.substr( seekl );
+	//		seekl = mqoString.find( "\"" );
+	//		materialList[i1].name = mqoString.substr( 0, seekl );
+	//
+	//		seekl = mqoString.find( "\n" );
+	//		workString = mqoString.substr( 0, seekl );
+	//		mqoString = mqoString.substr( seekl + 1 );
+	//
+	//		while( !workString.empty() )
+	//		{
+	//			// スペースまで読む
+	//			seekl = workString.find( " " ) + 1;
+	//
+	//			if( workString.substr( 0, 3 ) == "col" )
+	//			{
+	//				materialList[i1].col[0] = std::stof( workString.substr( 4 ) );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//				materialList[i1].col[1] = std::stof( workString );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//				materialList[i1].col[2] = std::stof( workString );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//				materialList[i1].col[3] = std::stof( workString );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//			}
+	//			else if( workString.substr( 0, 3 ) == "dif" )
+	//			{
+	//				materialList[i1].dif = std::stof( workString.substr( 4 ) );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//			}
+	//			else if( workString.substr( 0, 3 ) == "amb" )
+	//			{
+	//				materialList[i1].amb = std::stof( workString.substr( 4 ) );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//			}
+	//			else if( workString.substr( 0, 3 ) == "emi" )
+	//			{
+	//				materialList[i1].emi = std::stof( workString.substr( 4 ) );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//			}
+	//			else if( workString.substr( 0, 3 ) == "spc" )
+	//			{
+	//				materialList[i1].spc = std::stof( workString.substr( 4 ) );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//			}
+	//			else if( workString.substr( 0, 5 ) == "power" )
+	//			{
+	//				materialList[i1].power = std::stof( workString.substr( 6 ) );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//			}
+	//			else if( workString.substr( 0, 5 ) == "reflect" )
+	//			{
+	//				materialList[i1].reflect = std::stof( workString.substr( 8 ) );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//			}
+	//			else if( workString.substr( 0, 5 ) == "refract" )
+	//			{
+	//				materialList[i1].refract = std::stof( workString.substr( 8 ) );
+	//				workString = workString.substr( workString.find( " " ) + 1 );
+	//			}
+	//			else if( workString.substr( 0, 3 ) == "tex" )
+	//			{
+	//				seekl = workString.find( "\"" ) + 1;
+	//				workString = workString.substr( seekl );
+	//				seekl = workString.find( "\"" );
+	//				materialList[i1].tex = workString.substr( 0, seekl );
+	//				workString = workString.substr( seekl + 2 );
+	//			}
+	//			else if( workString.substr( 0, 3 ) == "aplane" )
+	//			{
+	//				seekl = workString.find( "\"" ) + 1;
+	//				workString = workString.substr( seekl );
+	//				seekl = workString.find( "\"" );
+	//				materialList[i1].aplane = workString.substr( 0, seekl );
+	//				workString = workString.substr( seekl + 2 );
+	//			}
+	//			else if( workString.substr( 0, 3 ) == "bump" )
+	//			{
+	//				seekl = workString.find( "\"" ) + 1;
+	//				workString = workString.substr( seekl );
+	//				seekl = workString.find( "\"" );
+	//				materialList[i1].bump = workString.substr( 0, seekl );
+	//				workString = workString.substr( seekl + 2 );
+	//			}
+	//			else
+	//				workString = workString.substr( seekl );
+	//		}
+	//	}
+	//	/****************/
+	//	/* オブジェクト */
+	//	/****************/
+	//	struct Object
+	//	{
+	//		Vector3 scale; // XYZ
+	//		Vector3 rotation; // HPB
+	//		Vector3 translation; // XYZ
+	//		bool visible;
+	//		float color[4]; // RGB 0~1
+	//	};
+	//	while( true )
+	//	{
+	//		seekl = mqoString.find( "Object" );
+	//		if( seekl == std::string::npos )
+	//			break;
+	//
+	//		seekl = mqoString.find( "vertex" );
+	//		if( seekl != std::string::npos )
+	//		{
+	//		}
+	//
+	//		seekl = mqoString.find( "face" );
+	//		if( seekl != std::string::npos )
+	//		{
+	//		}
+	//	}
+	//
+	//	return true;
+	//}
+
 private:
-	Vector3 *vertexList;
+	struct Vertex
+	{
+		Vector3 position;
+		Vector3 normal;
+	};
+	Vertex *vertexList;
 	unsigned int numVtx;
 
 	DWORD *indexList;
-	VECTOR_LINE *vertexDataList;
+	MESHVERTEX2 *vertexDataList;
 	unsigned int numIdx;
-
+	// 位置だけ設定
 	void CreateVertexArray()
 	{
 		for( unsigned int i1 = 0; i1 < objectList.size(); i1++ )
@@ -850,7 +1062,8 @@ private:
 			numVtx += objectList[i1].vertexList.list.size();
 		}
 		SAFE_DELETE( vertexList );
-		vertexList = new Vector3[numVtx];
+		vertexList = new Vertex[numVtx]
+		{};
 
 		for( unsigned int vi = 0; vi < numVtx; )
 		{
@@ -858,57 +1071,97 @@ private:
 			{
 				for( unsigned int i2 = 0; i2 < objectList[i1].vertexList.list.size(); i2++ )
 				{
-					vertexList[vi].x = objectList[i1].vertexList.list[i2].pos[0];
-					vertexList[vi].y = objectList[i1].vertexList.list[i2].pos[1];
-					vertexList[vi].z = objectList[i1].vertexList.list[i2].pos[2];
+					vertexList[vi].position.x = objectList[i1].vertexList.list[i2].pos[0];
+					vertexList[vi].position.y = objectList[i1].vertexList.list[i2].pos[1];
+					vertexList[vi].position.z = objectList[i1].vertexList.list[i2].pos[2];
 					vi++;
 				}
 			}
 		}
 	}
 
-	void CreateIndexlArray()
+	void CreateIndexAndDataArray()
 	{
+		// インデックス数
 		for( unsigned int i1 = 0; i1 < objectList.size(); i1++ )
 		{
-			for( unsigned int i2 = 0; i2 < objectList[i1].faceList.list.size(); i2++ )
+			for( unsigned int i2 = 0; i2 < objectList[i1].faceList.list.size(); i2++ ) // 三角ポリゴンに変更
 				numIdx += 3 * ( objectList[i1].faceList.list[i2].vertex.size() - 2 );
 		}
+		// 配列new
 		SAFE_DELETE( indexList );
-		indexList = new DWORD[numIdx];
-
-		for( unsigned int ii = 0; ii < numIdx; )
+		indexList = new DWORD[numIdx]
+		{};
+		for( unsigned int i = 0; i < numIdx; i++ )
 		{
-			for( unsigned int i1 = 0; i1 < objectList.size(); i1++ )
-			{
-				for( unsigned int i2 = 0; i2 < objectList[i1].faceList.list.size(); i2++ )
-				{
-					for( unsigned int i3 = 0; i3 < objectList[i1].faceList.list[i2].vertex.size() - 2; i3++ )
-					{
-						indexList[ii] = objectList[i1].faceList.list[i2].vertex[0].V;
-						indexList[ii + 2] = objectList[i1].faceList.list[i2].vertex[i3 + 1].V;
-						indexList[ii + 1] = objectList[i1].faceList.list[i2].vertex[i3 + 2].V;
-						ii += 3;
-					}
-				}
-			}
+			indexList[i] = i;
 		}
-	}
-
-	void CreateVertexDataArray()
-	{
 		SAFE_DELETE( vertexDataList );
-		vertexDataList = new VECTOR_LINE[numIdx];
+		vertexDataList = new MESHVERTEX2[numIdx]
+		{};
 
-		for( unsigned int i1 = 0; i1 < numIdx; i1++ )
-		{
-			vertexDataList[i1].x = vertexList[indexList[i1]].x;
-			vertexDataList[i1].y = vertexList[indexList[i1]].x;
-			vertexDataList[i1].z = vertexList[indexList[i1]].x;
+		// 法線計算
+		for( unsigned int i1 = 0; i1 < objectList.size(); i1++ )
+			for( unsigned int i2 = 0; i2 < objectList[i1].faceList.list.size(); i2++ )
+				// 三角ポリゴンで法線計算
+				for( unsigned int i3 = 0; i3 + 2 < objectList[i1].faceList.list[i2].vertex.size(); i3++ )
+				{
+					// インデックス
+					unsigned int index[3];
+					index[0] = objectList[i1].faceList.list[i2].vertex[i3].V;
+					index[1] = objectList[i1].faceList.list[i2].vertex[i3 + 1].V;
+					index[2] = objectList[i1].faceList.list[i2].vertex[i3 + 2].V;
+					// 頂点
+					Vector3 vertex[3];
+					vertex[0] = vertexList[index[0]].position;
+					vertex[1] = vertexList[index[1]].position;
+					vertex[2] = vertexList[index[2]].position;
+					// 法線
+					Vector3 Normal;
+					Normal = Vector3Cross( vertex[2] - vertex[0], vertex[1] - vertex[0] );
+					Normal.Normalize();
 
-			vertexDataList[i1].color = 0xFFFFFF;
-		}
+					vertexList[index[0]].normal += Normal;
+					vertexList[index[1]].normal += Normal;
+					vertexList[index[2]].normal += Normal;
+				}
+		// 正規化
+		for( unsigned int i1 = 0; i1 < numVtx; i1++ )
+			vertexList[i1].normal.Normalize();
+
+		// 頂点配列設定
+		for( unsigned int iIndex = 0, i1 = 0; i1 < objectList.size(); i1++ )
+			for( unsigned int i2 = 0; i2 < objectList[i1].faceList.list.size(); i2++ )
+				for( unsigned int i3 = 0; i3 + 2 < objectList[i1].faceList.list[i2].vertex.size(); i3++ )
+				{
+					// インデックス
+					unsigned int index[3];
+					index[0] = objectList[i1].faceList.list[i2].vertex[0].V;
+					index[1] = objectList[i1].faceList.list[i2].vertex[i3 + 1].V;
+					index[2] = objectList[i1].faceList.list[i2].vertex[i3 + 2].V;
+
+					auto setData = [&]( unsigned int index1, unsigned int index2, unsigned int index3 )
+					{
+						vertexDataList[index1].x = vertexList[index2].position.x;
+						vertexDataList[index1].y = vertexList[index2].position.y;
+						vertexDataList[index1].z = vertexList[index2].position.z;
+						vertexDataList[index1].nx = vertexList[index2].normal.x;
+						vertexDataList[index1].ny = vertexList[index2].normal.y;
+						vertexDataList[index1].nz = vertexList[index2].normal.z;
+
+						vertexDataList[index1].tu = objectList[i1].faceList.list[i2].vertex[index3].UV[0];
+						vertexDataList[index1].tv = objectList[i1].faceList.list[i2].vertex[index3].UV[1];
+						vertexDataList[index1].color = objectList[i1].faceList.list[i2].vertex[index3].COL;
+					};
+					// 頂点
+					setData( iIndex, index[0], 0 );
+					setData( iIndex + 2, index[1], i3 + 1 );
+					setData( iIndex + 1, index[2], i3 + 2 );
+					iIndex += 3;
+				}
+
 	}
+
 };
 
 bool tdnMesh::LoadMqo( char *filename )
@@ -919,7 +1172,6 @@ bool tdnMesh::LoadMqo( char *filename )
 
 	MQOLoader loader;
 	loader.Load( mqoFile );
-
 	loader.CreateMesh( this );
 
 	return true;
@@ -959,10 +1211,15 @@ void tdnMesh::Render( tdnShader *shader, char *technique )
 	unsigned int numPass = shader->Begin( technique );
 
 	shader->SetValue( "worldMatrix", worldMatrix );
+	shader->SetValue( "Texture", texture );
 
 	//使用ストリーム指定と頂点バッファ設定
 	tdnSystem::GetDevice()->SetStreamSource( 0, vertexBuffer, 0, declSize );
+	tdnSystem::GetDevice()->SetStreamSourceFreq( 0, D3DSTREAMSOURCE_INDEXEDDATA | 1 );
+	//tdnSystem::GetDevice()->SetStreamSource( 1, streamBuffer, 0, streamSize );
+	//tdnSystem::GetDevice()->SetStreamSourceFreq( 1, D3DSTREAMSOURCE_INSTANCEDATA | 1 );
 	//頂点インデックス指定
+	bool isIndex = indexBuffer != null;
 	tdnSystem::GetDevice()->SetIndices( indexBuffer );
 	//頂点構造体指定
 	tdnSystem::GetDevice()->SetVertexDeclaration( decl );
@@ -971,6 +1228,7 @@ void tdnMesh::Render( tdnShader *shader, char *technique )
 		shader->BeginPass( i );
 
 		//描画(面二つと０から始まる頂点と指定)
+		if( isIndex )
 		tdnSystem::GetDevice()->DrawIndexedPrimitive(
 			D3DPT_TRIANGLELIST,
 			0, //開始地点からの相対位置
@@ -979,7 +1237,12 @@ void tdnMesh::Render( tdnShader *shader, char *technique )
 			0, //インデックス配列の読み取り位置	
 			numFaces //面の数
 			);
-
+		else
+			tdnSystem::GetDevice()->DrawPrimitive(
+			D3DPT_TRIANGLELIST,
+			0,
+			numFaces //面の数
+			);
 		shader->EndPass();
 	}
 
