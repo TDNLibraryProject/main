@@ -130,7 +130,17 @@ bool sceneMain::Initialize()
 	// 3DƒƒbƒVƒ…ì¬
 	shader3D = new tdnShader( "DATA/Shader/3D.fx" );
 	TestMesh = new tdnMesh;
-	TestMesh->LoadMqo("Data/mqo/box/box.mqo");
+	//TestMesh->LoadMqo("Data/mqo/box/box.mqo");
+	Vector3 posList[]
+	{
+		{-2, -2, 0},
+		{ -2, 2, 0 },
+		{ 0, 0, 0 },
+		{ 2, -2, 0 },
+		{ 2, 2, 0 },
+	};
+	TestMesh->CreateCube( 1, 1, 1, 0xFFFFFFFF, posList, 5 );
+
 	//TestMesh->CreateCube( 200, 200, 200, 0xFFFFFFFF );
 	// s—ñì¬
 	Matrix viewMatrix;
@@ -178,10 +188,10 @@ bool sceneMain::Update()
 	static float meshAngle = 0;
 	meshAngle += 0.01f;
 	TestMesh->Rot( *D3DXQuaternionRotationYawPitchRoll( &Quaternion(), meshAngle, meshAngle * 0.9f, meshAngle * 0.7f ) );
-	TestMesh->Scale( Vector3( 0.01f, 0.01f, 0.01f ) );
+	TestMesh->Pos( Vector3( 0.0f, 0.0f, 0.0f ) );
 	TestMesh->UpdateWorldMatrix();
 
-		return true;	
+	return true;	
 }
 
 void sceneMain::Render()

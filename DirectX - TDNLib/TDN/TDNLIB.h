@@ -692,8 +692,9 @@ public:
 		unsigned int      numIndexes;   // インデックスの数
 		DWORD             *indexArray;  // インデックスの配列
 		
+		unsigned int      numStream;    // ストリーム構造体の数
 		unsigned int      streamSize;   // ストリーム構造体のバイト数
-		void              *streamArray; // 頂点情報（インデックス毎）の配列 インデックスと同数
+		void              *streamArray; // 頂点情報（インデックス毎）の配列
 
 		D3DVERTEXELEMENT9 *decl;        // シェーダーに送る頂点構造体の定義
 	};
@@ -705,7 +706,7 @@ public:
 	bool CreateIndexes(
 		unsigned int numIndexes,   // インデックスの数
 		const DWORD *indexArray ); // インデックス配列
-	bool CreateStream( unsigned int dataSize, void *dataArray );
+	bool CreateStream( unsigned int numData, unsigned int dataSize, void *dataArray );
 	bool CreateDeclaration(
 		unsigned int declArySize,  // 頂点構造体のバイト数
 		D3DVERTEXELEMENT9 *decl ); // シェーダー上での頂点構造体の宣言
@@ -728,7 +729,9 @@ public:
 		float width,
 		float height,
 		float depth,
-		DWORD color );
+		DWORD color,
+		Vector3 *posList = nullptr,
+		unsigned int numPos = 0 );
 
 	/************/
 	/* 読み込み */
@@ -765,20 +768,24 @@ public:
 private:
 	IDirect3DVertexDeclaration9* decl;         // 頂点デコレーション（FVF）
 	unsigned int                 declSize;     // 頂点構造体のバイト数
+
 	IDirect3DVertexBuffer9*      vertexBuffer;
 	unsigned int                 numVertexes;
+
 	IDirect3DIndexBuffer9*       indexBuffer;
-	unsigned int                 streamSize;   // streamBuffer の一つのデータのバイト数
-	IDirect3DVertexBuffer9*      streamBuffer; // indexと同じ個数作成 頂点の位置以外の情報
 	unsigned int                 numIndexes;
+
+	IDirect3DVertexBuffer9*      streamBuffer; // オブジェクト毎の情報
+	unsigned int                 streamSize;   // streamBuffer の一つのデータのバイト数
+	unsigned int                 numStream;   // streamBuffer の個数
+
 	unsigned int                 numFaces;     // 三角ポリゴン数
 
 	Vector3    pos;
 	Vector3    scale;
 	Quaternion rot;
 	Matrix     worldMatrix;
-
-public:
+	public:
 	Texture2D *texture;
 };
 

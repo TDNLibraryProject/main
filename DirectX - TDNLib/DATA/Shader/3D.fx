@@ -12,6 +12,8 @@ struct VSINPUT
 	float4 Normal : NORMAL;
 	float4 Color : COLOR;
 	float2 UV : TEXCOORD0;
+	// インスタンシング
+	float4 worldPos : TEXCOORD1;
 };
 
 texture Texture;
@@ -28,11 +30,16 @@ sampler DecaleSamp = sampler_state
 
 VSINPUT VS( VSINPUT In )
 {
-	float4x4 WVPMatrix;
-	WVPMatrix = mul( worldMatrix, mul( viewMatrix, projectionMatrix ) );
+	VSINPUT Out = ( VSINPUT ) 0;
 
-	VSINPUT Out;
-	Out.Pos = mul( In.Pos, WVPMatrix );
+	Out.Pos = mul( In.Pos, worldMatrix );
+	Out.Pos += In.worldPos;
+
+	float4x4 VPMatrix;
+	VPMatrix = mul( viewMatrix, projectionMatrix );
+
+	Out.Pos = mul( Out.Pos, VPMatrix );
+
 	Out.UV = In.UV;
 	Out.Normal = In.Normal;
 	Out.Color = In.Color;
@@ -41,11 +48,11 @@ VSINPUT VS( VSINPUT In )
 
 float4 PS( VSINPUT In ) : COLOR
 {
-	float4 Out = 0;
-	Out = tex2D( DecaleSamp, In.UV );
+	float4 Out = 1;
 	In.Color = min( 1, In.Color );
+	Out.rgb *= tex2D( DecaleSamp, In.UV );
 	Out.rgb *= In.Color;
-	return Out;
+	return In.Color;
 }
 
 technique linecopy
