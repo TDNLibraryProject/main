@@ -822,9 +822,9 @@ enum class DXA_FX
 class tdnSoundBuffer
 {
 protected:
-	LPBYTE LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx);
 	LPDIRECTSOUNDBUFFER8	lpBuf;
 	LPDIRECTSOUND3DBUFFER8	lpBuf3D;
+	LPBYTE LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx);
 
 	DWORD PlayCursor;
 	DWORD BufferSize;
@@ -839,9 +839,8 @@ protected:
 	bool			loop_flag;
 
 public:
-	enum LOAD_FLAG{ OPEN, COPY };
-
 	tdnSoundBuffer(LPDIRECTSOUND8 lpDS, char* filename, bool b3D);
+	void Initialize(LPDIRECTSOUND8 lpDS, unsigned char* data, DWORD size, LPWAVEFORMATEX fmt, bool b3D);
 	tdnSoundBuffer(){}
 	~tdnSoundBuffer();
 
@@ -869,6 +868,7 @@ public:
 	DWORD GetPlayFrame();
 	int GetPlaySecond();
 	void SetPlaySecond(int sec);
+	DWORD GetPlayMSecond();
 	DWORD GetSize();
 	int GetLengthSecond();
 
@@ -943,7 +943,7 @@ public:
 
 };
 
-typedef tdnStreamSound DSSTREAM, *LPDSSTREAM;
+typedef tdnStreamSound tdn_DSSTREAM, *tdn_LPDSSTREAM;
 
 
 
@@ -988,6 +988,7 @@ public:
 //		サウンド管理(SE用)
 //
 //*****************************************************************************
+#include<vector>
 
 class tdnSoundSE : public tdnSoundBase
 {
@@ -1089,6 +1090,7 @@ public:
 	//	引数…ID:番号、ファイル名、3Dサウンドフラグ(BGMの場合、使う機会はほぼない)
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 	void Set(int ID, char* filename, bool b3D = false);
+	void Set(int ID, unsigned char *data, unsigned long size, LPWAVEFORMATEX wfx, bool b3D = false);
 
 	/* 再生 */
 	void Play(int ID, bool loop = true, DWORD cursor = 0);
@@ -1124,6 +1126,7 @@ public:
 	DWORD	GetPlayCursor(int ID);
 	DWORD	GetPlayFrame(int ID);
 	int 	GetPlaySecond(int ID);
+	DWORD	GetPlayMSecond(int ID);
 	void	SetPlaySecond(int ID, int sec);
 	DWORD	GetSize(int ID);
 	int		GetLengthSecond(int ID);
@@ -1148,8 +1151,8 @@ public:
 };
 
 
-
-
+// わぶよみこみ
+unsigned char* LoadWavData(char *filename, unsigned long *size, LPWAVEFORMATEX wfx);
 
 /********************************************/
 //				tdnText				     

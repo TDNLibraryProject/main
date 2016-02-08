@@ -230,8 +230,8 @@ void SE_Manager::Set_listener(const Vector3 &pos, const Vector3 &front, const Ve
 //	サウンドデータ(textで読み込むのも良いかもしれない)
 BGM_Manager::DATA all_dataB[] =
 {
-	{ "EoE_A", "DATA/Sound/BGM/砕石場A.wav", false },
-	{ "EoE_B", "DATA/Sound/BGM/砕石場B.wav", false },
+	{ "EoE_A", "DATA/Sound/BGM/Collision_of_ElementsA.wav", false },
+	{ "EoE_B", "DATA/Sound/BGM/Collision_of_ElementsB.wav", false },
 	{ "END", nullptr }
 };
 

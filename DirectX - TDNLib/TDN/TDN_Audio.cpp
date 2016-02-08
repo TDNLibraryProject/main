@@ -14,13 +14,6 @@ HRESULT result_sound;
 //**************************************************************************************************************
 tdnSoundBuffer::tdnSoundBuffer(LPDIRECTSOUND8 lpDS, char* filename, bool b3D)
 {
-	DSBUFFERDESC	dsbd;
-	LPVOID			lpbuf1, lpbuf2;
-	DWORD			dwbuf1, dwbuf2;
-
-	lpBuf3D = nullptr;
-	lpBuf = nullptr;
-
 	/*	WAVファイルのロード	*/
 	lpWBuf = LoadWAV(filename, &size, &wfx);
 	/*	ロード失敗	*/
@@ -30,6 +23,22 @@ tdnSoundBuffer::tdnSoundBuffer(LPDIRECTSOUND8 lpDS, char* filename, bool b3D)
 
 	/* ファイル名保存 */
 	sprintf_s(wav_file_path, sizeof(wav_file_path), "%s", filename);
+
+	Initialize(lpDS, lpWBuf, size, &wfx, b3D);
+}
+
+void tdnSoundBuffer::Initialize(LPDIRECTSOUND8 lpDS, unsigned char* data, DWORD size, LPWAVEFORMATEX fmt, bool b3D)
+{
+	DSBUFFERDESC	dsbd;
+	LPVOID			lpbuf1, lpbuf2;
+	DWORD			dwbuf1, dwbuf2;
+
+	size = size;
+	wfx = *fmt;
+	lpWBuf = data;
+
+	lpBuf3D = nullptr;
+	lpBuf = nullptr;
 
 	/* 二次バッファ作成	*/
 	ZeroMemory(&dsbd, sizeof(DSBUFFERDESC));
@@ -213,63 +222,93 @@ tdnSoundBuffer::~tdnSoundBuffer()
 //**************************************************************************************************************
 LPBYTE tdnSoundBuffer::LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
 {
-	HMMIO			hMMIO = nullptr;		/*	ファイルハンドル	*/
-	PCMWAVEFORMAT	pwf;				/*	WAVデータ形式		*/
-	MMCKINFO		ckparent, ckinfo;	/*	RIFFチャンク情報	*/
-	MMIOINFO		mminfo;				/*	ファイル情報		*/
-	DWORD			i;
-	LPBYTE			buf = nullptr;			/*	読み込みバッファ	*/
+	// バイナリ読み込み
+	std::ifstream infs(fname, std::ios::binary);
 
-	/* オープン	*/
-	if ((hMMIO = mmioOpen(fname, nullptr, MMIO_ALLOCBUF | MMIO_READ)) == nullptr)
+	char chunkID[4];
+	int ChunkSize;
+	BYTE *buf = nullptr;
+
+	/* RIFFチャンク侵入 */
+	infs.read(chunkID, 4);
+	MyAssert(
+		chunkID[0] == 'R'&&
+		chunkID[1] == 'I'&&
+		chunkID[2] == 'F'&&
+		chunkID[3] == 'F',
+		"エラーファイル名[%s]\n原因:wavファイルが入っていないか、wavファイル名が間違っているよ", fname);
+
+	infs.read((char*)&ChunkSize, 4);		// RIFFチャンクヘッダのサイズ
+	infs.read(chunkID, 4);					// フォーマットタイプ
+	MyAssert(
+		chunkID[0] == 'W'&&
+		chunkID[1] == 'A'&&
+		chunkID[2] == 'V'&&
+		chunkID[3] == 'E',
+		"エラーファイル名[%s]\n原因:これwavじゃない", fname);
+
+	/* フォーマットチャンク侵入 */
+	infs.read(chunkID, 4);
+	MyAssert(
+		chunkID[0] == 'f'&&
+		chunkID[1] == 'm'&&
+		chunkID[2] == 't',
+		"エラーファイル名[%s]\n原因:フォーマットチャンク内でエラー", fname);
+
+	infs.read((char*)&ChunkSize, 4);		// フォーマットチャンクヘッダのサイズ
+
+	// フォーマット吸い上げ
+	//infs.read((char*)wfx, sizeof(WAVEFORMATEX));
+	infs.read((char*)&wfx->wFormatTag, 2);				// フォーマットID
+	infs.read((char*)&wfx->nChannels, 2);				// チャンネル数
+	infs.read((char*)&wfx->nSamplesPerSec, 4);			// サンプリングレート
+	infs.read((char*)&wfx->nAvgBytesPerSec, 4);			// データ速度 byte/sec
+	infs.read((char*)&wfx->nBlockAlign, 2);				// ブロックサイズ
+	infs.read((char*)&wfx->wBitsPerSample, 2);			// サンプルあたりのビット数
+	//infs.read((char*)&wfx->cbSize, 2);					// よくわからん
+
+	MyAssert(
+		wfx->wFormatTag == WAVE_FORMAT_PCM,
+		"エラーファイル名[%s]\n原因:フォーマットがwavじゃない", fname);
+
+	/* データチャンク侵入 */
+
+	// チャンクID検索
+	const char DATACHUNKID[5] = "data";
+	for (int i = 0; i < 4; i++)
 	{
-		MessageBox(0, "wavファイルが入っていないか、wavファイル名が間違っているよ", nullptr, MB_OK);
-		assert(0);
-		return nullptr;
+		do
+		{
+			infs.read(&chunkID[i], 1);
+		} while (chunkID[i] != DATACHUNKID[i]);
 	}
-	if (mmioDescend(hMMIO, &ckparent, nullptr, 0) != 0) goto WAVE_LoadError;
-	/*	ＷＡＶ(RIFF)ファイルチェック		*/
-	if ((ckparent.ckid != FOURCC_RIFF) || (ckparent.fccType != mmioFOURCC('W', 'A', 'V', 'E'))) goto WAVE_LoadError;
-	/*	ｆｍｔチャンクに侵入		*/
-	ckinfo.ckid = mmioFOURCC('f', 'm', 't', ' ');
-	if (mmioDescend(hMMIO, &ckinfo, &ckparent, MMIO_FINDCHUNK) != 0) goto WAVE_LoadError;
-	if (ckinfo.cksize < sizeof(PCMWAVEFORMAT)) goto WAVE_LoadError;
-	/*	チャンクからリード	*/
-	if (mmioRead(hMMIO, (HPSTR)&pwf, sizeof(pwf)) != sizeof(pwf)) goto WAVE_LoadError;
-	if (pwf.wf.wFormatTag != WAVE_FORMAT_PCM) goto WAVE_LoadError;
-	/*	WAVフォーマットの保存	*/
-	memset(wfx, 0, sizeof(WAVEFORMATEX));
-	memcpy(wfx, &pwf, sizeof(pwf));
-	/*	データの読み込み	*/
-	if (mmioSeek(hMMIO, ckparent.dwDataOffset + sizeof(FOURCC), SEEK_SET) == -1) goto WAVE_LoadError;
-	/*	ｄａｔａチャンクに侵入		*/
-	ckinfo.ckid = mmioFOURCC('d', 'a', 't', 'a');
-	if (mmioDescend(hMMIO, &ckinfo, &ckparent, MMIO_FINDCHUNK) != 0) goto WAVE_LoadError;
-	if (mmioGetInfo(hMMIO, &mminfo, 0) != 0) goto WAVE_LoadError;
-	/*	バッファサイズ保存	*/
-	if (size != nullptr) *size = ckinfo.cksize;
-	/*	ＷＡＶ用バッファの取得	*/
-	buf = (LPBYTE)GlobalAlloc(LPTR, ckinfo.cksize);
-	if (buf == nullptr) goto WAVE_LoadError;
-	/*	データの読みとり	*/
-	for (i = 0; i < ckinfo.cksize; i++){
-		/*	エラーチェック	*/
-		if (mminfo.pchNext >= mminfo.pchEndRead){
-			if (mmioAdvance(hMMIO, &mminfo, MMIO_READ) != 0) goto WAVE_LoadError;
-			if (mminfo.pchNext >= mminfo.pchEndRead) goto WAVE_LoadError;
-		}
-		*(buf + i) = *((LPBYTE)mminfo.pchNext);
-		mminfo.pchNext++;
-	}
-	/*	ファイルアクセス終了	*/
-	mmioSetInfo(hMMIO, &mminfo, 0);
-	mmioClose(hMMIO, 0);
-	return buf;
 
-WAVE_LoadError:	/*	エラー終了	*/
-	mmioClose(hMMIO, 0);
-	if (buf != nullptr) GlobalFree(buf);
-	return nullptr;
+	MyAssert(
+		chunkID[0] == 'd'&&
+		chunkID[1] == 'a'&&
+		chunkID[2] == 't'&&
+		chunkID[3] == 'a',
+		"エラーファイル名[%s]\n原因:データチャンク内でエラー。フォーマットのずれが原因かもしれない", fname);
+
+	infs.read((char*)size, 4);				// データサイズ
+	buf = (LPBYTE)GlobalAlloc(LPTR, *size);
+
+	// 音データ吸い上げ
+	const int READBYTE = 1024;
+	DWORD remain = *size; // 書き込むべき残りのバイト数
+	BYTE work[READBYTE]; 
+
+	// 1024Bytesずつ読み込む(メモリパンクさせないように)
+	for (int i = 0; remain > 0; i++)
+	{
+		int readSize = min(READBYTE, remain);
+		infs.read((char*)work, readSize);
+		remain -= readSize;
+
+		memcpy(&buf[i*READBYTE], work, readSize);
+	}
+
+	return buf;
 }
 
 
@@ -400,6 +439,7 @@ bool tdnSoundBuffer::isPlay()
 //-------------------------------------------------------------
 DWORD tdnSoundBuffer::GetPlayCursor()
 {
+	/* 再生位置(データ量的な) */
 	DWORD ret;
 	lpBuf->GetCurrentPosition(&ret, nullptr);
 
@@ -413,12 +453,20 @@ void tdnSoundBuffer::SetPlayCursor(DWORD new_position)
 
 DWORD tdnSoundBuffer::GetPlayFrame()
 {
+	/* 再生位置(フレーム換算) */
 	return (GetPlayCursor() / (format.nAvgBytesPerSec / 60));
 }
 
 int tdnSoundBuffer::GetPlaySecond()
 {
+	/* 再生位置(秒換算) */
 	return (GetPlayCursor() / format.nAvgBytesPerSec);
+}
+
+DWORD tdnSoundBuffer::GetPlayMSecond()
+{
+	/* 再生位置(ミリ秒換算) */
+	return (int)(GetPlayCursor() / (format.nAvgBytesPerSec * .001f));
 }
 
 void tdnSoundBuffer::SetPlaySecond(int sec)
@@ -1403,6 +1451,24 @@ void tdnSoundBGM::Set(int ID, char* filename, bool b3D)
 	data.push_back(set);
 	assert(data[ID]->buffer->GetBuf());
 }
+void tdnSoundBGM::Set(int ID, BYTE *wav_data, DWORD size, LPWAVEFORMATEX wfx, bool b3D)
+{
+	//	初期化チェック
+	assert(lpDS);
+	//	既存のバッファの解放
+	if (ID < (int)data.size())SAFE_DELETE(data[ID]->buffer);
+
+	// 情報設定
+	BGMData *set = new BGMData;
+	set->b3D = b3D;
+	set->buffer = new tdnSoundBuffer();
+	set->buffer->Initialize(lpDS, wav_data, size, wfx, b3D);
+	set->fade_mode = MODE::NONE;
+	set->fade_speed = 0;
+	set->volume = 1;
+	data.push_back(set);
+	assert(data[ID]->buffer->GetBuf());
+}
 //
 //=============================================================================================
 
@@ -1602,6 +1668,12 @@ int	tdnSoundBGM::GetPlaySecond(int ID)
 	assert(data[ID]->buffer);
 	return data[ID]->buffer->GetPlaySecond();
 }
+DWORD tdnSoundBGM::GetPlayMSecond(int ID)
+{
+	assert(lpDS);
+	assert(data[ID]->buffer);
+	return data[ID]->buffer->GetPlayMSecond();
+}
 
 void tdnSoundBGM::SetPlaySecond(int ID, int sec)
 {
@@ -1711,4 +1783,61 @@ tdnStreamSound* tdnSoundBGM::PlayStream(char* filename, BYTE mode, int param)
 
 	lpStream = new tdnStreamSound(lpDS, filename, mode, param);
 	return lpStream;
+}
+
+
+unsigned char* LoadWavData(char *filename, unsigned long *size, LPWAVEFORMATEX wfx)
+{
+	HMMIO			hMMIO = nullptr;		/*	ファイルハンドル	*/
+	PCMWAVEFORMAT	pwf;				/*	WAVデータ形式		*/
+	MMCKINFO		ckparent, ckinfo;	/*	RIFFチャンク情報	*/
+	MMIOINFO		mminfo;				/*	ファイル情報		*/
+	DWORD			i;
+	LPBYTE			buf = nullptr;			/*	読み込みバッファ	*/
+
+	/* オープン	*/
+	MyAssert((hMMIO = mmioOpen(filename, nullptr, MMIO_ALLOCBUF | MMIO_READ)), "エラーファイル名[%s]\n原因:wavファイルが入っていないか、wavファイル名が間違っているよ", filename);
+	if (mmioDescend(hMMIO, &ckparent, nullptr, 0) != 0) goto WAVE_LoadError;
+	/*	ＷＡＶ(RIFF)ファイルチェック		*/
+	if ((ckparent.ckid != FOURCC_RIFF) || (ckparent.fccType != mmioFOURCC('W', 'A', 'V', 'E'))) goto WAVE_LoadError;
+	/*	ｆｍｔチャンクに侵入		*/
+	ckinfo.ckid = mmioFOURCC('f', 'm', 't', ' ');
+	if (mmioDescend(hMMIO, &ckinfo, &ckparent, MMIO_FINDCHUNK) != 0) goto WAVE_LoadError;
+	if (ckinfo.cksize < sizeof(PCMWAVEFORMAT)) goto WAVE_LoadError;
+	/*	チャンクからリード	*/
+	if (mmioRead(hMMIO, (HPSTR)&pwf, sizeof(pwf)) != sizeof(pwf)) goto WAVE_LoadError;
+	if (pwf.wf.wFormatTag != WAVE_FORMAT_PCM) goto WAVE_LoadError;
+	/*	WAVフォーマットの保存	*/
+	memset(wfx, 0, sizeof(WAVEFORMATEX));
+	memcpy(wfx, &pwf, sizeof(pwf));
+	/*	データの読み込み	*/
+	if (mmioSeek(hMMIO, ckparent.dwDataOffset + sizeof(FOURCC), SEEK_SET) == -1) goto WAVE_LoadError;
+	/*	ｄａｔａチャンクに侵入		*/
+	ckinfo.ckid = mmioFOURCC('d', 'a', 't', 'a');
+	if (mmioDescend(hMMIO, &ckinfo, &ckparent, MMIO_FINDCHUNK) != 0) goto WAVE_LoadError;
+	if (mmioGetInfo(hMMIO, &mminfo, 0) != 0) goto WAVE_LoadError;
+	/*	バッファサイズ保存	*/
+	if (size != nullptr) *size = ckinfo.cksize;
+	/*	ＷＡＶ用バッファの取得	*/
+	buf = (LPBYTE)GlobalAlloc(LPTR, ckinfo.cksize);
+	if (buf == nullptr) goto WAVE_LoadError;
+	/*	データの読みとり	*/
+	for (i = 0; i < ckinfo.cksize; i++){
+		/*	エラーチェック	*/
+		if (mminfo.pchNext >= mminfo.pchEndRead){
+			if (mmioAdvance(hMMIO, &mminfo, MMIO_READ) != 0) goto WAVE_LoadError;
+			if (mminfo.pchNext >= mminfo.pchEndRead) goto WAVE_LoadError;
+		}
+		*(buf + i) = *((LPBYTE)mminfo.pchNext);
+		mminfo.pchNext++;
+	}
+	/*	ファイルアクセス終了	*/
+	mmioSetInfo(hMMIO, &mminfo, 0);
+	mmioClose(hMMIO, 0);
+	return buf;
+
+WAVE_LoadError:	/*	エラー終了	*/
+	mmioClose(hMMIO, 0);
+	if (buf != nullptr) GlobalFree(buf);
+	return nullptr;
 }
