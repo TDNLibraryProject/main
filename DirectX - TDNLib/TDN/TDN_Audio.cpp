@@ -1442,7 +1442,7 @@ void tdnSoundBGM::Set(int ID, char* filename, bool b3D)
 	assert(filename);
 
 	// 情報設定
-	BGMData *set = new BGMData;
+	tagBGMData *set = new tagBGMData;
 	set->b3D = b3D;
 	set->buffer = new tdnSoundBuffer(lpDS, filename, b3D);
 	set->fade_mode = MODE::NONE;
@@ -1459,7 +1459,7 @@ void tdnSoundBGM::Set(int ID, BYTE *wav_data, DWORD size, LPWAVEFORMATEX wfx, bo
 	if (ID < (int)data.size())SAFE_DELETE(data[ID]->buffer);
 
 	// 情報設定
-	BGMData *set = new BGMData;
+	tagBGMData *set = new tagBGMData;
 	set->b3D = b3D;
 	set->buffer = new tdnSoundBuffer();
 	set->buffer->Initialize(lpDS, wav_data, size, wfx, b3D);
@@ -1786,7 +1786,7 @@ tdnStreamSound* tdnSoundBGM::PlayStream(char* filename, BYTE mode, int param)
 }
 
 
-unsigned char* LoadWavData(char *filename, unsigned long *size, LPWAVEFORMATEX wfx)
+LPBYTE LoadWavData(LPSTR filename, LPDWORD size, LPWAVEFORMATEX wfx)
 {
 	HMMIO			hMMIO = nullptr;		/*	ファイルハンドル	*/
 	PCMWAVEFORMAT	pwf;				/*	WAVデータ形式		*/

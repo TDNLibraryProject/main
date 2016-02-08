@@ -2,7 +2,6 @@
 #include	"../system/Framework.h"
 #include	"../system/System.h"
 #include	"SceneMain.h"
-#include	"../../tdn/OKB.h"
 #include	"../Sound/SoundManager.h"
 
 tdn2DObj* BG;

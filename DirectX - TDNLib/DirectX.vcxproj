@@ -108,8 +108,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="TDN\TDN_Audio.cpp" />
-    <ClCompile Include="TDN\OKB.cpp" />
     <ClCompile Include="TDN\TDN_2DObj.cpp" />
+    <ClCompile Include="TDN\TDN_Input.cpp" />
     <ClCompile Include="TDN\TDN_Math.cpp" />
     <ClCompile Include="TDN\TDN_Polygon.cpp" />
     <ClCompile Include="TDN\TDN_RenderState.cpp" />
@@ -131,7 +131,6 @@
     <ClInclude Include="TDN\ogg\os_types.h" />
     <ClInclude Include="TDN\ogg\vorbisenc.h" />
     <ClInclude Include="TDN\ogg\vorbisfile.h" />
-    <ClInclude Include="TDN\OKB.h" />
     <ClInclude Include="TDN\TDNLIB.h" />
     <ClInclude Include="source\Scene\SceneMain.h" />
     <ClInclude Include="source\Sound\SoundManager.h" />
