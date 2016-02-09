@@ -525,6 +525,8 @@ public:
 	static void Initialize();
 	//	“Ç‚İ‚İE‰ğ•ú
 	static Texture2D* Load(const char* filename);
+	static Texture2D* LoadMemory(char* filename, const char* pArchiver);
+
 	static void	Release(Texture2D* lpTexture);
 
 };
