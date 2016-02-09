@@ -28,7 +28,7 @@
 #include	<queue>
 #include	<fstream>		// ファイルを扱う関数などが定義されています
 #include	<assert.h>		// アサートを扱うヘッダー
-
+#include	<memory>
 /********************************************/
 //	定数	
 /********************************************/
@@ -411,6 +411,100 @@ public:
 };
 
 /********************************************/
+//				tdnArchive				     
+/********************************************/
+
+
+/**
+*	アーカイバー
+*	各種ファイルをアーカイブするクラス
+*/
+class tdnArchiver
+{
+public:
+
+	// 二つアーカイブファイルを作成する
+	bool CreateArchiveFile(const char* pHeaderFilename, const char* pDataFilename);
+
+	// データファイルをアーカイブファイルに追加する
+	bool AddData(const char* pDataFileName);
+
+	// アーカイブ終了処理(ダミーヘッダーの追加)
+	bool CloseArchiveFile(const char* pArchiveFilename, const char* pHeaderFilename, const char* pDataFilename);
+
+private:
+	// 二つに分けてみた。みるしかなかった.. (TODO)誰か分けずに作れるようにしてください
+	std::ofstream headerOfs;	// ヘッダー部
+	std::ofstream dataOfs;		// データ部
+	std::ofstream archiverOfs;	// 最終出力
+
+
+	// 現在追加したファイルの数(ヘッダー部のID値として使用)
+	char nameID[64];
+
+	// 頭の最大
+	uint32_t HEAD_MAX;
+
+	// アーカイブファイルの最大サイズ
+	enum : uint32_t{ eMaxArchiveFileSize = 4000000000 };
+	// 現在書き込んでいるアーカイブファイルの総サイズ
+	uint32_t wroteArchiveFileSize;
+};
+
+/**
+*	解凍処理クラス（Archiverとセット)
+*	アーカイブファイルの解凍を行う
+*/
+// ヘッダー部構造
+class ArchiveHeaderBlock
+{
+public:
+	// データネームID
+	char nameID[64];
+	// 開始場所データのサイズ
+	uint32_t wroteDataFileSize;
+	// データブロックのサイズ
+	uint32_t dataFileSize;
+
+};
+
+// スタティッカー
+class tdnUnArchiver
+{
+public:	
+	// アーカイブを開く
+	static char* OpenArchiveFile(const char* pArchiveFilename, const char* pName);
+	// メモリのサイズ取得
+	static int GetSize(const char* pArchiveFilename, const char* pName);
+	// アーカイブを開く＋メモリサイズを取得
+	static char* OpenArchiveFile(const char* pArchiveFilename, const char* pName, int& outMemorySize);
+};
+
+// シングルトンにした(理由)解除は一つで十分。
+//class tdnUnArchiver
+//{
+//private:
+//	static tdnUnArchiver* pInstance;
+//	// 封印
+//	tdnUnArchiver(){};
+//	~tdnUnArchiver(){};
+//public:
+//	static tdnUnArchiver& GetInstance();
+//	static void Release();
+//
+//public:	// 機能
+//	// アーカイブを開く
+//	char* OpenArchiveFile(const char* pArchiveFilename, const char* pName);
+//	// メモリのサイズ取得
+//	int GetSize(const char* pArchiveFilename, const char* pName);
+//	// アーカイブを開く＋メモリサイズを取得
+//	char* OpenArchiveFile(const char* pArchiveFilename, const char* pName, int& outMemorySize);
+//
+//};
+//#define UNArchive	(tdnUnArchiver::GetInstance())
+
+
+/********************************************/
 //				tdnTexture				     
 /********************************************/
 class tdnTexture
@@ -529,8 +623,8 @@ public:
 
 	// 情報取得
 	void RenderTarget(int index = 0);						// レンダーターゲット設定
-	Surface*	GetSurface(){ return lpSurface; };			// 板
-	Texture2D*	GetTexture(){ return lpTexture; };			// テクスチャ
+	inline Surface*	GetSurface(){ return lpSurface; };		// 板
+	inline Texture2D*	GetTexture(){ return lpTexture; };	// テクスチャ
 
 	// 描画
 	void Render(int x, int y, u32 dwFlags = RS::COPY);
