@@ -10,6 +10,9 @@ tdn2DObj* Youmu;
 tdnShader *shader3D;
 tdnMesh* TestMesh;
 
+tdnArchiver* arc;
+tdn2DObj* arcYoumu;
+
 struct Player
 {
 	tdn2DObj* picture;
@@ -118,13 +121,29 @@ bool sceneMain::Initialize()
 	OKB_Init();
 	SoundManager::Initialize();
 
+	// アーカイブ
+	arc = new tdnArchiver();
+	arc->CreateArchiveFile("Data/Archive/HeaderArchive.bin", "Data/Archive/DataArchive.bin");
+
+	//　妖夢パック
+	arc->AddData("DATA/youmu.png");
+
+	arc->CloseArchiveFile("Data/Archive/Archive.tdn", "Data/Archive/HeaderArchive.bin", "Data/Archive/DataArchive.bin");
+	delete arc;
+	arc = nullptr;
+	// アーカイブ終わり
+
+	// メモリから
+	arcYoumu = new tdn2DObj("DaTa/youmu.png", "Data/Archive/Archive.tdn");
+
+
 	player.picture = new tdn2DObj("DATA/Player1.png");
 	player.x = player.motion = player.Anime=player.flame = 0.0f;
 	player.y = 500;
 	player.invincible_action = false;
 	
 	BG = new tdn2DObj("DATA/BG.png");
-	Youmu= new tdn2DObj("DATA/Youmu.png");
+	Youmu= new tdn2DObj("DaTA/Youmu.png");
 
 	// 3Dメッシュ作成
 	shader3D = new tdnShader( "DATA/Shader/3D.fx" );
@@ -164,6 +183,7 @@ sceneMain::~sceneMain()
 	SAFE_DELETE(Youmu);
 	SAFE_DELETE( TestMesh );
 	SAFE_DELETE( shader3D );
+	SAFE_DELETE(arcYoumu);
 	SoundManager::Release();
 }
 
@@ -203,6 +223,8 @@ void sceneMain::Render()
 	Youmu->Render3D(-3, 0, -20);
 	Youmu->Render3D(3, 0, -40);
 
+	// パック化された妖夢
+	arcYoumu->Render(0, 0);
 
 	//ぼかす以外で2D描画でLINERは微妙
 	tdnRenderState::Filter(false);

@@ -10,7 +10,7 @@ static const float abjustSize = 0.5f;
 /****************************************************/
 
 // ファイルから画像読み込み
-tdn2DObj::tdn2DObj(char* fileName)
+tdn2DObj::tdn2DObj(const char* fileName)
 {
 	// 初期化
 	m_width = m_height = 0;
@@ -31,6 +31,42 @@ tdn2DObj::tdn2DObj(char* fileName)
 	lpTexture->GetLevelDesc(0, &sd);		// テクスチャの情報取得
 	m_width = sd.Width;						// メンバ変数にサイズ保存 
 	m_height = sd.Height;					
+
+	// メインサーフェイスの取得(保存)
+	lpTexture->GetSurfaceLevel(0, &lpSurface);
+
+	// ステータス初期化
+	scale = 1.0f;
+	angle = 0.0f;
+	color = 0xFFFFFFFF;
+	centerX = centerY = 0.0f;
+	isTurnOver = false;
+	isShiftCenter = false;
+
+}
+
+// メモリーから画像読み込み
+tdn2DObj::tdn2DObj(const char* IDName, const char* pArchiveName)
+{
+	// 初期化
+	m_width = m_height = 0;
+	lpSurface = NULL;
+	lpTexture = NULL;
+
+	// テクスチャの読み込み
+	lpTexture = tdnTexture::LoadMemory(IDName, pArchiveName);
+	if (lpTexture == NULL)
+	{
+		MessageBox(0, "メモリーからテクスチャの読み込みに失敗\nヒント:大文字小文字の入力の差は関係ない", "2DObj", MB_OK);
+		return;
+	}
+
+	/***************************************/
+	// 読み込んだテクスチャからサイズを保存
+	D3DSURFACE_DESC sd;						// サーフェイスを記述する。
+	lpTexture->GetLevelDesc(0, &sd);		// テクスチャの情報取得
+	m_width = sd.Width;						// メンバ変数にサイズ保存 
+	m_height = sd.Height;
 
 	// メインサーフェイスの取得(保存)
 	lpTexture->GetSurfaceLevel(0, &lpSurface);

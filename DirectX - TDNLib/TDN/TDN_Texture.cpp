@@ -35,7 +35,7 @@ Texture2D* tdnTexture::Load(const char* filename)
 	for (int i = 0; i<MAX_TEXTURE; i++)
 	{
 		if (!TexInfo[i].lpTexture) continue;						// テクスチャの中に何も入っていないならcontinueで戻る
-		if (lstrcmpi(TexInfo[i].filename, filename) != 0) continue;	// ファイル名の比較をして一致していないならcontinueで戻る
+		if (lstrcmpi(TexInfo[i].filename, filename) != 0) continue;	// 『大文字と小文字を区別せず』にファイル名の比較をして一致していないならcontinueで戻る
 		TexNo = i;													// 一度読み込んだテクスチャがあるならその配列番号を記録してループから出る
 		//if (TexInfo[(MAX_TEXTURE - 1)].lpTexture){ MessageBox(0, "保存できる最大のテクスチャ数まで到達しました!", "Texture", MB_OK); }
 		break;
@@ -80,7 +80,7 @@ Texture2D* tdnTexture::Load(const char* filename)
 }
 
 // メモリからの読み込み
-Texture2D* tdnTexture::LoadMemory(char* filename, const char* pArchiver)
+Texture2D* tdnTexture::LoadMemory(const char* filename, const char* pArchiver)
 {
 	// メンバ変数
 	char* saveBuf;	// 削除用

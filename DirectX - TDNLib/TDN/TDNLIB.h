@@ -525,7 +525,7 @@ public:
 	static void Initialize();
 	//	読み込み・解放
 	static Texture2D* Load(const char* filename);
-	static Texture2D* LoadMemory(char* filename, const char* pArchiver);
+	static Texture2D* LoadMemory(const char* filename, const char* pArchiver);
 
 	static void	Release(Texture2D* lpTexture);
 
@@ -618,7 +618,8 @@ typedef enum FMT2D
 class tdn2DObj
 {
 public:
-	tdn2DObj(char* fileName);								// ファイルから画像読み込み
+	tdn2DObj(const char* fileName);							// ファイルから画像読み込み
+	tdn2DObj(const char* IDName, const char* pArchiveName);	// メモリーから画像読み込み
 	tdn2DObj(UINT width, UINT height, FMT2D fmtFlag);		// レンダーターゲット作成
 
 	~tdn2DObj();											// 画像orレンダーターゲット解放

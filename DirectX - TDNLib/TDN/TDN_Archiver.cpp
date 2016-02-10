@@ -312,8 +312,8 @@ char* tdnUnArchiver::OpenArchiveFile(const char* pArchiveFilename, const char* p
 		size_t size = sizeof(ArchiveHeaderBlock);
 		archiveIfs.read((char*)&headerBlock, sizeof(ArchiveHeaderBlock));
 
-		// IDの名前と同じなら
-		if (strcmp(headerBlock.nameID, pName) == 0)// 比較した結果が同じなら
+		// 『大文字と小文字を区別せず』にIDの名前と同じなら
+		if (lstrcmpi(headerBlock.nameID, pName) == 0)// 比較した結果が同じなら
 		{
 			// データ部読み込み
 			//ArchiveDataBlock dataBlock;
@@ -387,8 +387,8 @@ int tdnUnArchiver::GetSize(const char* pArchiveFilename, const char* pName)
 		size_t size = sizeof(ArchiveHeaderBlock);
 		archiveIfs.read((char*)&headerBlock, sizeof(ArchiveHeaderBlock));
 
-		// IDの名前と同じなら
-		if (strcmp(headerBlock.nameID, pName) == 0)// 比較した結果が同じなら
+		// 『大文字と小文字を区別せず』にIDの名前と同じなら
+		if (lstrcmpi(headerBlock.nameID, pName) == 0)// 比較した結果が同じなら
 		{
 			// ifsを閉じておく
 			archiveIfs.close();
@@ -437,8 +437,8 @@ char* tdnUnArchiver::OpenArchiveFile(const char* pArchiveFilename, const char* p
 		size_t size = sizeof(ArchiveHeaderBlock);
 		archiveIfs.read((char*)&headerBlock, sizeof(ArchiveHeaderBlock));
 
-		// IDの名前と同じなら
-		if (strcmp(headerBlock.nameID, pName) == 0)// 比較した結果が同じなら
+		// 『大文字と小文字を区別せず』にIDの名前と同じなら
+		if (lstrcmpi(headerBlock.nameID, pName) == 0)// 比較した結果が同じなら
 		{
 			// データ部読み込み
 			//ArchiveDataBlock dataBlock;
