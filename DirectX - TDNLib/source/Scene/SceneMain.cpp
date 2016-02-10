@@ -121,20 +121,22 @@ bool sceneMain::Initialize()
 	OKB_Init();
 	SoundManager::Initialize();
 
-	// アーカイブ
-	arc = new tdnArchiver();
-	arc->CreateArchiveFile("Data/Archive/HeaderArchive.bin", "Data/Archive/DataArchive.bin");
+	//// アーカイブ
+	//arc = new tdnArchiver();
+	//arc->CreateArchiveFile("Data/Archive/HeaderArchive.bin", "Data/Archive/DataArchive.bin");
 
-	//　妖夢パック
-	arc->AddData("DATA/youmu.png");
+	////　妖夢パック
+	//arc->AddData("DATA/youmu.png");
+	////	A列車パック
+	//arc->AddData("DATA/A.png");
 
-	arc->CloseArchiveFile("Data/Archive/Archive.tdn", "Data/Archive/HeaderArchive.bin", "Data/Archive/DataArchive.bin");
-	delete arc;
-	arc = nullptr;
-	// アーカイブ終わり
+	//arc->CloseArchiveFile("Data/Archive/Archive.tdn", "Data/Archive/HeaderArchive.bin", "Data/Archive/DataArchive.bin");
+	//delete arc;
+	//arc = nullptr;
+	//// アーカイブ終わり
 
 	// メモリから
-	arcYoumu = new tdn2DObj("DaTa/youmu.png", "Data/Archive/Archive.tdn");
+	arcYoumu = new tdn2DObj("DATA/A.png", "Data/Archive/Archive.tdn");
 
 
 	player.picture = new tdn2DObj("DATA/Player1.png");
@@ -224,7 +226,9 @@ void sceneMain::Render()
 	Youmu->Render3D(3, 0, -40);
 
 	// パック化された妖夢
-	arcYoumu->Render(0, 0);
+	static int movex = 0;
+	movex++;
+	arcYoumu->Render(movex, 0);
 
 	//ぼかす以外で2D描画でLINERは微妙
 	tdnRenderState::Filter(false);
