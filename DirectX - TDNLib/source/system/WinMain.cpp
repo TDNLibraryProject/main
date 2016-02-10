@@ -28,8 +28,9 @@ BOOL InitApp(HINSTANCE hInstance, int nCmdShow)									// ƒQ[ƒ€‹N“®‚ÌÅ‰‚Ì
 	//tdnSystem::InitD3D();
 	tdnRenderState::Initialize();
 	tdnTexture::Initialize();
-	tdnText::Init();	
-
+	tdnText::Init();
+	tdnInput::Initialize();
+	
 	//IEX‚ÌƒVƒXƒeƒ€ŠÖ”‚ğˆê“IÌ—pA˜b‚µ‡‚¢‚ÅSystem.h‚ğ–•Á‚·‚é‚©Œˆ‚ß‚é
 	SYSTEM_Initialize();
 
@@ -48,6 +49,7 @@ BOOL EndApp()																	// ‚±‚Ì’†‚ÅƒVƒXƒeƒ€‚àŠÜ‚ß‚½‘S‚Ä‚ÌŒãˆ—‚ğ‚·‚é‚Ì‚Åƒ
 	SYSTEM_Release();
 	tdnSystem::Release();
 	tdnText::CleanUpModule();
+	tdnInput::Release();
 
 	return TRUE;
 }
@@ -95,7 +97,6 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 
 	//	‘S‰ğ•ú
 	EndApp();
-
 
 	return true;
 }

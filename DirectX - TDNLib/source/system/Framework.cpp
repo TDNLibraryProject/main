@@ -72,20 +72,7 @@ bool Framework::Update()
 	dwCurFrame ++;	//	フレーム数更新
 	dwGameFrame++;	//	ゲームフレーム数更新
 
-	//	更新処理(トイレ用)
-	//for (int i = 0; i < 4; i++)
-	//{
-	////	KEY_SetInfo(i);
-	//}
-	//KEY_SetInfo();
-	
-
-//#ifdef _DEBUG
-
-	// キーボード入力更新(このゲームはキーボードを使わないのでデバッグ用)
-	//OKB_Update();
-
-//#endif
+	tdnInput::Update();
 
 	/*動画を再生していたら描画させない*/
 	if (scene != NULL){

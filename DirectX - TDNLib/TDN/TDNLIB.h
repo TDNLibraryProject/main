@@ -39,7 +39,7 @@
 //	マクロ	
 /********************************************/
 #define SAFE_DELETE(p) if(p){ delete p;p=nullptr;}
-#define SAFE_RELEASE(p) { if(p){ (p)->Release(); (p)=NULL; } }
+#define SAFE_RELEASE(p) { if(p){ (p)->Release(); (p)=nullptr; } }
 #define FOR(len) for (int i = 0; i < len; i++)
 #define ARGB(a,r,g,b)	((DWORD)( (a<<24) | (r<<16) | (g<<8) | (b) ) )
 
@@ -891,14 +891,41 @@ private:
 //		tdnInput
 //*****************************************************************************************************************************
 //-----------------------------------------------------------------------------
+//		入力関連の定数
+//-----------------------------------------------------------------------------
+namespace tdnInputEnum
+{
+	static const int INPUT_DEVICE_MAX = 4;
+	static const int STICK_WIDTH = 1000;
+	static const int DEFAULT_KEY_CONFIG = -1;
+	static const float MIN_MOVE_STICK = .35f;
+	static const int NUM_ID_GROUPS = 4;
+	static const LPSTR ID_GOURPS[NUM_ID_GROUPS] =
+	{
+		"DEFAULT", "XBOX", "PS3", "GAMEPAD"
+	};
+}
+
+
+//-----------------------------------------------------------------------------
 //		入力デバイス管理
 //-----------------------------------------------------------------------------
 class tdnInputManager
 {
 private:
-	static LPDIRECTINPUT8 pDI;
+	static LPDIRECTINPUT8 lpDI;
+	static int num_device;
+	static DIDEVICEINSTANCE	device_instances[tdnInputEnum::INPUT_DEVICE_MAX];
+	static char groupID[tdnInputEnum::INPUT_DEVICE_MAX][16];
+
+	static BOOL CALLBACK EnumDeviceCallback(const DIDEVICEINSTANCE* pdidi, VOID* pContext);
+	static BOOL CALLBACK EnumAxes(LPCDIDEVICEOBJECTINSTANCE lpddoi, LPVOID pvRef);
 
 public:
+	static void Initialize();
+	static void Release(){ SAFE_RELEASE(lpDI); }
+	static LPDIRECTINPUTDEVICE8 GetDevice(int no);
+	static LPSTR GetGroupID(int no){ return groupID[no]; }
 };
 
 enum KEYCODE
@@ -927,31 +954,16 @@ enum KEYCODE
 
 	KEY_START = 14,
 	KEY_SELECT = 15,
-	KEY_BACK = 15,
 
 	KEY_ENTER = 14,
 	KEY_SPACE = 15,
 
-	KEY_B1 = 4,
-	KEY_B2 = 5,
-	KEY_B3 = 6,
-	KEY_B4 = 7,
-	KEY_B5 = 8,
-	KEY_B6 = 9,
-	KEY_B7 = 10,
-	KEY_B8 = 11,
-	KEY_B9 = 12,
-	KEY_B10 = 13,
-	KEY_B11 = 14,
-	KEY_B12 = 15,
-	KEY_B13 = 16,
-	KEY_B14 = 17,
-	KEY_B15 = 18,
-
-	KEY_AXISX = 200,
-	KEY_AXISY = 201,
-	KEY_AXISX2 = 202,
-	KEY_AXISY2 = 203
+	AXIS_X = 0,
+	AXIS_Y = 1,
+	AXIS_Z = 2,
+	AXIS_RX = 3,
+	AXIS_RY = 4,
+	AXIS_RZ = 5
 };
 
 typedef struct tagKEYSET
@@ -963,22 +975,67 @@ typedef struct tagKEYSET
 	u8	START, SELECT;
 } KEYSET, *LPKEYSET;
 
-class tdnInput
+typedef struct tagPADSET
+{
+	u8	lx, ly, rx, ry;
+	u8	A, B, X, Y;
+	u8	L1, L2, L3;
+	u8	R1, R2, R3;
+	u8	START, SELECT;
+} PADSET, *LPPADSET;
+
+class tdnInputDevice
 {
 private:
 	LPDIRECTINPUTDEVICE8 lpDevice;
 	LPDIRECTINPUTEFFECT	 pEffect;
 
+	// デフォルトのキー配置
+	static const int default_key_map[20];
+	static const int default_joy_map[20];
+
+	// 入力に応じた値が格納される(==3とかの3の値が入ってる)
+	u8	key_info[20], joy_info[20];
+
+	int key_map[20];
+	int joy_map[20];
+	int	pad_axisX, pad_axisY;
+	int	pad_axisX2, pad_axisY2;
 public:
-	tdnInput();
-	~tdnInput();
+	tdnInputDevice(int n);
+	~tdnInputDevice();
+
+	void Update();
+	void PadAsign(const PADSET &padset);
+	int tdnInputDevice::Get(KEYCODE key){ return key_info[key]; }
+	int tdnInputDevice::GetAxisX(){ return (pad_axisX > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisX : 0; }
+	int tdnInputDevice::GetAxisY(){ return (pad_axisY > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisY : 0; }
+	int tdnInputDevice::GetAxisX2(){ return (pad_axisX2 > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisX2 : 0; }
+	int tdnInputDevice::GetAxisY2(){ return (pad_axisX2 > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisY2 : 0; }
 };
 
+class tdnInput
+{
+private:
+	static tdnInputDevice *device[tdnInputEnum::INPUT_DEVICE_MAX];
 
-//-----------------------------------------------------------------------------
-//		アクセス関数
-//-----------------------------------------------------------------------------
+public:
+	static void Initialize();
+	static void Release();
+	static void Update();
+	static void PadAsign(LPSTR config, int no = 0);
 
+	static int KeyGet(KEYCODE key, int no = 0){ return device[no]->Get(key); }
+	static int GetAxisX(int no=0) { return device[no]->GetAxisX(); }
+	static int GetAxisY(int no=0) { return device[no]->GetAxisY(); }
+	static int GetAxisX2(int no=0){ return device[no]->GetAxisX2(); }
+	static int GetAxisY2(int no=0){ return device[no]->GetAxisY2(); }
+	static void GetAxisXYf(float *outX, float *outY, int no = 0);
+	static void GetAxisXY2f(float *outX, float *outY, int no = 0);
+};
+
+#define KEY(x,n) ( tdnInput::KeyGet(x,n) )
+#define KEY_TRG(x,n) ( tdnInput::KeyGet(x,n)==3 )
 
 //-----------------------------------------------------------------------------
 //		OKB
@@ -1164,7 +1221,9 @@ class tdnSoundBuffer
 protected:
 	LPDIRECTSOUNDBUFFER8	lpBuf;
 	LPDIRECTSOUND3DBUFFER8	lpBuf3D;
+	LPBYTE LoadFile(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx);
 	LPBYTE LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx);
+	LPBYTE LoadOWD(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx);	// Owataso Wave Data
 
 	DWORD PlayCursor;
 	DWORD BufferSize;
@@ -1177,6 +1236,8 @@ protected:
 
 	char			wav_file_path[128];	/*	WAVEファイルへのパス*/
 	bool			loop_flag;
+
+	static const int READBYTE;
 
 public:
 	tdnSoundBuffer(LPDIRECTSOUND8 lpDS, char* filename, bool b3D);
@@ -1328,7 +1389,6 @@ public:
 //		サウンド管理(SE用)
 //
 //*****************************************************************************
-#include<vector>
 
 class tdnSoundSE : public tdnSoundBase
 {

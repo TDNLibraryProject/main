@@ -8,6 +8,7 @@ HRESULT result_sound;
 //		サウンドバッファ
 //
 //**************************************************************************************************************
+const int tdnSoundBuffer::READBYTE = 1024;	// ここの値が大きくなるにつれて読み込み速度は上がるが、相対的にメモリオーバーの可能性も上がる
 
 //**************************************************************************************************************
 //
@@ -220,6 +221,15 @@ tdnSoundBuffer::~tdnSoundBuffer()
 //**************************************************************************************************************
 //		ＷＡＶファイルの読み込み
 //**************************************************************************************************************
+LPBYTE tdnSoundBuffer::LoadFile(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
+{
+	//	ファイル読み込み
+	char*	ext = &fname[lstrlen(fname) - 4];
+	if (lstrcmpi(ext, ".wav") == 0) return LoadWAV(fname, size, wfx);
+	else if (lstrcmpi(ext, ".owd") == 0) return LoadOWD(fname, size, wfx);
+	else return nullptr;
+}
+
 LPBYTE tdnSoundBuffer::LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
 {
 	// バイナリ読み込み
@@ -294,11 +304,10 @@ LPBYTE tdnSoundBuffer::LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
 	buf = (LPBYTE)GlobalAlloc(LPTR, *size);
 
 	// 音データ吸い上げ
-	const int READBYTE = 1024;
 	DWORD remain = *size; // 書き込むべき残りのバイト数
 	BYTE work[READBYTE]; 
 
-	// 1024Bytesずつ読み込む(メモリパンクさせないように)
+	// xBytesずつ読み込む(メモリパンクさせないように)
 	for (int i = 0; remain > 0; i++)
 	{
 		int readSize = min(READBYTE, remain);
@@ -306,6 +315,50 @@ LPBYTE tdnSoundBuffer::LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
 		remain -= readSize;
 
 		memcpy(&buf[i*READBYTE], work, readSize);
+	}
+
+	return buf;
+}
+
+LPBYTE tdnSoundBuffer::LoadOWD(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
+{
+	// バイナリ読み込み
+	std::ifstream infs(fname, std::ios::binary);
+
+	BYTE *buf = nullptr;
+
+	/* バージョンチェック */
+	BYTE ver;
+	infs.read((char*)&ver, 1);
+
+	if (ver == 0)
+	{
+		/* フォーマット吸い上げ */
+		infs.read((char*)wfx, sizeof(WAVEFORMATEX));
+
+		/* WAVサイズ取得 */
+		infs.read((char*)size, 4);
+		buf = (LPBYTE)GlobalAlloc(LPTR, *size);
+
+		/* データ吸い上げ */
+		DWORD remain = *size; // 書き込むべき残りのバイト数
+		BYTE work[READBYTE];
+
+		// xBytesずつ読み込む(メモリパンクさせないように)
+		for (int i = 0; remain > 0; i++)
+		{
+			int readSize = min(READBYTE, remain);
+			infs.read((char*)work, readSize);
+			remain -= readSize;
+
+			memcpy(&buf[i*READBYTE], work, readSize);
+		}
+	}
+
+
+	else if (ver == 1)
+	{
+
 	}
 
 	return buf;

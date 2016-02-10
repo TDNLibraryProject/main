@@ -34,16 +34,16 @@ void PlayerCtrl()
 		se->Play("イエアア");
 	}
 
-	if (KeyBoard('Y'))tdnRenderState::Filter(true);
-	if (KeyBoard('U'))tdnRenderState::Filter(false);
+	if (KeyBoard(KB_Y))tdnRenderState::Filter(true);
+	if (KeyBoard(KB_U))tdnRenderState::Filter(false);
 
-	if (KeyBoard('Q'))	player.picture->SetScale(player.picture->GetScale() - 0.1f);
-	if (KeyBoard('E'))	player.picture->SetScale(player.picture->GetScale() + 0.1f);
+	if (KeyBoard(KB_Q))	player.picture->SetScale(player.picture->GetScale() - 0.1f);
+	if (KeyBoard(KB_E))	player.picture->SetScale(player.picture->GetScale() + 0.1f);
 	
-	if (KeyBoard('R'))player.picture->SetAngle(player.picture->GetAngle() - 0.1f);
-	if (KeyBoard('T'))player.picture->SetAngle(player.picture->GetAngle() + 0.1f);
+	if (KeyBoard(KB_R))player.picture->SetAngle(player.picture->GetAngle() - 0.1f);
+	if (KeyBoard(KB_T))player.picture->SetAngle(player.picture->GetAngle() + 0.1f);
 
-	if (KeyBoard('A'))
+	if (KEY(KEY_LEFT, 0) == 1)
 	{
 		player.x -= 6;
 		player.Anime = Player:: RunL;
@@ -55,7 +55,7 @@ void PlayerCtrl()
 			bgm->Cross_fade("EoE_A", "EoE_B", .01f);
 		}
 	}
-	if (KeyBoard('D'))
+	if (KEY(KEY_RIGHT, 0) == 1)
 	{
 		player.x += 6;
 		player.Anime = Player:: RunR;
@@ -68,7 +68,7 @@ void PlayerCtrl()
 		}
 	}
 
-	if (!KeyBoard('A') && !KeyBoard('D'))
+	if (tdnInput::KeyGet(KEY_LEFT) != 1 && tdnInput::KeyGet(KEY_RIGHT) != 1)
 	{
 		if (player.Anime == Player:: RunL)
 		{
@@ -118,7 +118,6 @@ bool sceneMain::Initialize()
 {
 	tdnView::Init();
 
-	OKB_Init();
 	SoundManager::Initialize();
 
 	//// アーカイブ
@@ -140,7 +139,8 @@ bool sceneMain::Initialize()
 
 
 	player.picture = new tdn2DObj("DATA/Player1.png");
-	player.x = player.motion = player.Anime=player.flame = 0.0f;
+	player.motion = player.Anime=player.flame = 0;
+	player.x = .0f;
 	player.y = 500;
 	player.invincible_action = false;
 	
@@ -168,18 +168,20 @@ bool sceneMain::Initialize()
 	shader3D->SetValue( "viewMatrix", viewMatrix );
 	Matrix projectionMatrix;
 	RECT screenSize = tdnSystem::GetScreenSize();
-	D3DXMatrixPerspectiveFovLH( &projectionMatrix, PI / 3, screenSize.right / screenSize.bottom, 0.1f, 3000.0f );
+	D3DXMatrixPerspectiveFovLH( &projectionMatrix, PI / 3, (float)screenSize.right / screenSize.bottom, 0.1f, 3000.0f );
 	shader3D->SetValue( "projectionMatrix", projectionMatrix );
 
 	// サウンド
 	bgm->Play("EoE_A");
+
+	//	必要な場合キーコンフィグ設定します
+	//tdnInput::PadAsign(1,0);
 
 	return true;
 }
 
 sceneMain::~sceneMain()
 {
-	OKB_Release();
 	SAFE_DELETE(player.picture);
 	SAFE_DELETE(BG);
 	SAFE_DELETE(Youmu);
@@ -197,11 +199,10 @@ bool sceneMain::Update()
 {
 	PlayerCtrl();
 	PlayerUpdate();
-	OKB_Update();
 	SoundManager::Update();
 
-	if (KeyBoard('F'))cameraPos.z += 1;
-	if (KeyBoard('G'))cameraPos.z -= 1;
+	if (KeyBoard(KB_F))cameraPos.z += 1;
+	if (KeyBoard(KB_G))cameraPos.z -= 1;
 	tdnView::Set(cameraPos, VECTOR_ZERO);
 
 	// メッシュテスト
@@ -267,4 +268,21 @@ void sceneMain::Render()
 	tdnText::Draw(10, 300, 0xffff00ff, "1,2,3,4,5,6,7,8,9　: サウンドエフェクト変更", n);
 	tdnText::Draw(10, 320, 0xffffff00, "エフェクト:%s", n);
 	//picture->Render(640, 0, shader2D, "red");
+
+	if (tdnInput::KeyGet(KEY_A) == 1) tdnText::Draw(10, 340, 0xffffff00, "Input : A");
+	if (tdnInput::KeyGet(KEY_B) == 1) tdnText::Draw(10, 360, 0xffffff00, "Input : B");
+	if (tdnInput::KeyGet(KEY_C) == 1) tdnText::Draw(10, 380, 0xffffff00, "Input : C");
+	if (tdnInput::KeyGet(KEY_D) == 1) tdnText::Draw(10, 400, 0xffffff00, "Input : D");
+	if (tdnInput::KeyGet(KEY_L1) == 1) tdnText::Draw(10, 420, 0xffffff00, "Input : L1");
+	if (tdnInput::KeyGet(KEY_L2) == 1) tdnText::Draw(10, 440, 0xffffff00, "Input : L2");
+	if (tdnInput::KeyGet(KEY_L3) == 1) tdnText::Draw(10, 460, 0xffffff00, "Input : L3");
+	if (tdnInput::KeyGet(KEY_R1) == 1) tdnText::Draw(10, 480, 0xffffff00, "Input : R1");
+	if (tdnInput::KeyGet(KEY_R2) == 1) tdnText::Draw(10, 500, 0xffffff00, "Input : R2");
+	if (tdnInput::KeyGet(KEY_R3) == 1) tdnText::Draw(10, 520, 0xffffff00, "Input : R3");
+	if (tdnInput::KeyGet(KEY_START) == 1) tdnText::Draw(10, 540, 0xffffff00, "Input : START");
+	if (tdnInput::KeyGet(KEY_SELECT) == 1) tdnText::Draw(10, 560, 0xffffff00, "Input : SELECT");
+	if (tdnInput::KeyGet(KEY_LEFT) == 1) tdnText::Draw(10, 580, 0xffffff00, "Input : LEFT");
+	if (tdnInput::KeyGet(KEY_RIGHT) == 1) tdnText::Draw(10, 580, 0xffffff00, "Input : RIGHT");
+	if (tdnInput::KeyGet(KEY_UP) == 1) tdnText::Draw(10, 600, 0xffffff00, "Input : UP");
+	if (tdnInput::KeyGet(KEY_DOWN) == 1) tdnText::Draw(10, 600, 0xffffff00, "Input : DOWN");
 }
