@@ -120,6 +120,11 @@ bool sceneMain::Initialize()
 
 	SoundManager::Initialize();
 
+	float3 f3;
+	f3.x = 0;;
+
+	Vector a;
+
 	//// アーカイブ
 	//arc = new tdnArchiver();
 	//arc->CreateArchiveFile("Data/Archive/HeaderArchive.bin", "Data/Archive/DataArchive.bin");
