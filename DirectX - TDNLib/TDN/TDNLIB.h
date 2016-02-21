@@ -899,16 +899,11 @@ namespace tdnInputEnum
 	static const int STICK_WIDTH = 1000;
 	static const int DEFAULT_KEY_CONFIG = -1;
 	static const float MIN_MOVE_STICK = .35f;
-	static const LPSTR ID_GOURPS[] =
+	static const int NUM_ID_GROUPS = 5;
+	static const LPSTR ID_GOURPS[NUM_ID_GROUPS] =
 	{
-		/* ¦ID’Ç‰Á‚µ‚½‚ç‚±‚Á‚¿‚à’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢I */
-		"DEFAULT", 
-		"XBOX", 
-		"PS3", 
-		"GAMEPAD",
-		"NORI_GAMEPAD"
+		"DEFAULT", "XBOX", "PS3", "GAMEPAD", "NORI_GAMEPAD"
 	};
-	static const int NUM_ID_GROUPS = _countof(ID_GOURPS);
 }
 
 
@@ -928,7 +923,14 @@ private:
 
 public:
 	static void Initialize();
-	static void Release(){ SAFE_RELEASE(lpDI); }
+	static void Release()
+	{
+		if (lpDI)
+		{
+			delete lpDI;
+			lpDI = nullptr;
+		}
+	}
 	static LPDIRECTINPUTDEVICE8 GetDevice(int no);
 	static LPSTR GetGroupID(int no){ return groupID[no]; }
 };
@@ -1013,10 +1015,10 @@ public:
 	void Update();
 	void PadAsign(const PADSET &padset);
 	int tdnInputDevice::Get(KEYCODE key){ return key_info[key]; }
-	int tdnInputDevice::GetAxisX(){ return (pad_axisX > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisX : 0; }
-	int tdnInputDevice::GetAxisY(){ return (pad_axisY > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisY : 0; }
-	int tdnInputDevice::GetAxisX2(){ return (pad_axisX2 > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisX2 : 0; }
-	int tdnInputDevice::GetAxisY2(){ return (pad_axisX2 > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisY2 : 0; }
+	int tdnInputDevice::GetAxisX(){ return (pad_axisX*pad_axisX > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisX : 0; }
+	int tdnInputDevice::GetAxisY(){ return (pad_axisY*pad_axisY > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisY : 0; }
+	int tdnInputDevice::GetAxisX2(){ return (pad_axisX2*pad_axisX2 > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisX2 : 0; }
+	int tdnInputDevice::GetAxisY2(){ return (pad_axisX2*pad_axisY2 > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisY2 : 0; }
 };
 
 class tdnInput
