@@ -221,7 +221,7 @@ LPDIRECTINPUTDEVICE8 tdnInputManager::GetDevice(int no)
 //*****************************************************************************************************************************
 //				入力デバイス
 //*****************************************************************************************************************************
-const int tdnInputDevice::default_key_map[20] = { 'W', 'S', 'A', 'D', 'Z', 'X', 'C', 'V', 'A', 'Q', '1', 'S', 'W', '2', VK_RETURN, VK_SPACE };
+const int tdnInputDevice::default_key_map[20] = { 'W', 'S', 'A', 'D', 'Z', 'X', 'C', 'V', 'F', 'R', '4', 'G', 'T', '5', VK_RETURN, VK_SPACE };
 const int tdnInputDevice::default_joy_map[20] = { AXIS_X, AXIS_Y, AXIS_Z, AXIS_RZ, 2, 3, 1, 4, 7, 5, 11, 8, 6, 12, 9, 10 };
 
 //------------------------------------------------------

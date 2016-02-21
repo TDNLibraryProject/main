@@ -899,11 +899,16 @@ namespace tdnInputEnum
 	static const int STICK_WIDTH = 1000;
 	static const int DEFAULT_KEY_CONFIG = -1;
 	static const float MIN_MOVE_STICK = .35f;
-	static const int NUM_ID_GROUPS = 4;
-	static const LPSTR ID_GOURPS[NUM_ID_GROUPS] =
+	static const LPSTR ID_GOURPS[] =
 	{
-		"DEFAULT", "XBOX", "PS3", "GAMEPAD"
+		/* Å¶IDí«â¡ÇµÇΩÇÁÇ±Ç¡ÇøÇ‡í«â¡ÇµÇƒÇ≠ÇæÇ≥Ç¢ÅI */
+		"DEFAULT", 
+		"XBOX", 
+		"PS3", 
+		"GAMEPAD",
+		"NORI_GAMEPAD"
 	};
+	static const int NUM_ID_GROUPS = _countof(ID_GOURPS);
 }
 
 
