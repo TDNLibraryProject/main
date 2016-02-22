@@ -1,42 +1,42 @@
-ï»¿#pragma once
-#define _CRT_SECURE_NO_WARNINGS// (?)è­¦å‘Šã‚’ç„¡åŠ¹ã«ã™ã‚‹
+#pragma once
+#define _CRT_SECURE_NO_WARNINGS// (?)Œx‚ğ–³Œø‚É‚·‚é
 #define	_CRT_SECURE_NO_DEPRECATE
 #define	DIRECTINPUT_VERSION	0x0800 
 
-// ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒªãƒ³ã‚¯
+// ƒXƒ^ƒeƒBƒbƒNƒŠƒ“ƒN
 #pragma comment (lib, "d3d9.lib")
 #pragma comment (lib, "d3dx9.lib")
-#pragma comment (lib, "winmm.lib" )	// çµŒéæ™‚é–“ã‚’æ‰±ã†ãƒ©ã‚¤ãƒ–ãƒ©ãƒª
+#pragma comment (lib, "winmm.lib" )	// Œo‰ßŠÔ‚ğˆµ‚¤ƒ‰ƒCƒuƒ‰ƒŠ
 #pragma comment (lib,"dinput8.lib")
 #pragma comment (lib, "dsound.lib" )
 #pragma comment (lib, "dxguid.lib")
 
 
-// ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ 
-#include	<windows.h>		// Windowsã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’ä½œæˆ
-#include	<d3dx9.h>		// DirectXã‚’æ‰±ã†ãŸã‚ã®ãƒ˜ãƒƒãƒ€ãƒ¼
-#include	<process.h>		// ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’æ‰±ã†ãŸã‚ã®ãƒ˜ãƒƒãƒ€ãƒ¼
-#include	<dinput.h>		// DirectInputã‚’æ‰±ã†ãŸã‚ã®ãƒ˜ãƒƒãƒ€ãƒ¼
-#include	<dsound.h>		// DirectSoundã‚’æ‰±ã†ãŸã‚ã®ãƒ˜ãƒƒãƒ€ãƒ¼
-#include	<mmsystem.h>	// å‡¦ç†æ™‚é–“ã‚’è¨ˆç®—ã™ã‚‹ãŸã‚ã«ä½¿ã†é–¢æ•°ãŒå…¥ã£ã¦ã„ã‚‹
-#include	<stdarg.h>		// å¯å¤‰é•·å¼•æ•°ã‚’å‡¦ç†ã™ã‚‹ãƒã‚¯ãƒ­ãŒå®šç¾©ã•ã‚Œã¦ã„ã¾ã™
-#include	<time.h>		// ä¸»ã«æ™‚é–“ã‚’æ‰±ã†ãŸã‚ã®é–¢æ•°ãŒå®šç¾©ã•ã‚Œã¦ã„ã¾ã™
-#include	<math.h>		// è¨ˆç®—ã«å½¹ã«ç«‹ã¤é–¢æ•°ã‚„ãƒã‚¯ãƒ­ãŒå®šç¾©ã•ã‚Œã¦ã„ã¾ã™
-#include	<vector>		// å‹•çš„é…åˆ—ã‚’æ‰±ã†ãƒ˜ãƒƒãƒ€ãƒ¼
+// ƒCƒ“ƒNƒ‹[ƒh 
+#include	<windows.h>		// WindowsƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğì¬
+#include	<d3dx9.h>		// DirectX‚ğˆµ‚¤‚½‚ß‚Ìƒwƒbƒ_[
+#include	<process.h>		// ƒXƒŒƒbƒh‚ğˆµ‚¤‚½‚ß‚Ìƒwƒbƒ_[
+#include	<dinput.h>		// DirectInput‚ğˆµ‚¤‚½‚ß‚Ìƒwƒbƒ_[
+#include	<dsound.h>		// DirectSound‚ğˆµ‚¤‚½‚ß‚Ìƒwƒbƒ_[
+#include	<mmsystem.h>	// ˆ—ŠÔ‚ğŒvZ‚·‚é‚½‚ß‚Ég‚¤ŠÖ”‚ª“ü‚Á‚Ä‚¢‚é
+#include	<stdarg.h>		// ‰Â•Ï’·ˆø”‚ğˆ—‚·‚éƒ}ƒNƒ‚ª’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+#include	<time.h>		// å‚ÉŠÔ‚ğˆµ‚¤‚½‚ß‚ÌŠÖ”‚ª’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+#include	<math.h>		// ŒvZ‚É–ğ‚É—§‚ÂŠÖ”‚âƒ}ƒNƒ‚ª’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+#include	<vector>		// “®“I”z—ñ‚ğˆµ‚¤ƒwƒbƒ_[
 #include	<stack>			// 
-#include	<map>			// é€£æƒ³é…åˆ—ã‚’æ‰±ã†ãƒ˜ãƒƒãƒ€ãƒ¼
+#include	<map>			// ˜A‘z”z—ñ‚ğˆµ‚¤ƒwƒbƒ_[
 #include	<queue>
-#include	<fstream>		// ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ‰±ã†é–¢æ•°ãªã©ãŒå®šç¾©ã•ã‚Œã¦ã„ã¾ã™
-#include	<assert.h>		// ã‚¢ã‚µãƒ¼ãƒˆã‚’æ‰±ã†ãƒ˜ãƒƒãƒ€ãƒ¼
+#include	<fstream>		// ƒtƒ@ƒCƒ‹‚ğˆµ‚¤ŠÖ”‚È‚Ç‚ª’è‹`‚³‚ê‚Ä‚¢‚Ü‚·
+#include	<assert.h>		// ƒAƒT[ƒg‚ğˆµ‚¤ƒwƒbƒ_[
 #include	<memory>
 /********************************************/
-//	å®šæ•°	
+//	’è”	
 /********************************************/
 #define VECTOR_ZERO Vector3(0.0f,0.0f,0.0f)
 #define	PI	((FLOAT)  3.141592654f)
 
 /********************************************/
-//	ãƒã‚¯ãƒ­	
+//	ƒ}ƒNƒ	
 /********************************************/
 #define SAFE_DELETE(p) if(p){ delete p;p=nullptr;}
 #define SAFE_RELEASE(p) { if(p){ (p)->Release(); (p)=nullptr; } }
@@ -45,7 +45,7 @@
 
 
 /********************************************/
-//	å¤‰æ•°å‹å®šç¾©
+//	•Ï”Œ^’è‹`
 /********************************************/
 typedef signed char		s8;			// 8bit
 typedef signed short	s16;
@@ -53,7 +53,7 @@ typedef signed long		s32;
 // unsigned 
 typedef unsigned char	u8;		
 typedef unsigned short	u16;
-typedef unsigned long	u32;		//32ãƒ“ãƒƒãƒˆã ã¨4GB
+typedef unsigned long	u32;		//32ƒrƒbƒg‚¾‚Æ4GB
 
 typedef float	f32;
 typedef double	f64;
@@ -64,19 +64,19 @@ typedef double	f64;
 
 typedef D3DXVECTOR4		Vector4;
 typedef D3DXMATRIX		Matrix;
-typedef IDirect3DTexture9 Texture2D;		// IDirect3DTexture9ã®ç•¥
-typedef IDirect3DSurface9 Surface;			// IDirect3DSurface9ã®ç•¥
-typedef IDirect3DDevice9 DEVICE, *LPDEVICE;	// IDirect3DDevice9ã®ç•¥
+typedef IDirect3DTexture9 Texture2D;		// IDirect3DTexture9‚Ì—ª
+typedef IDirect3DSurface9 Surface;			// IDirect3DSurface9‚Ì—ª
+typedef IDirect3DDevice9 DEVICE, *LPDEVICE;	// IDirect3DDevice9‚Ì—ª
 
 
 
 /********************************************/
-//	æ§‹é€ ä½“é–¢é€£
+//	\‘¢‘ÌŠÖ˜A
 /********************************************/
 
 /**
-*@brief		floatäºŒã¤ã®æ§‹é€ ä½“
-*@author	è¥¿ç”°ã€€ã²ã‚ã‚†ã
+*@brief		float“ñ‚Â‚Ì\‘¢‘Ì
+*@author	¼“c@‚Ğ‚ë‚ä‚«
 */
 typedef struct float2
 {
@@ -86,31 +86,31 @@ typedef struct float2
 
 
 /**
-*@brief	åŸºæœ¬ç”¨ãƒ™ã‚¯ãƒˆãƒ«.
+*@brief	Šî–{—pƒxƒNƒgƒ‹.
 *@author	Hiroyuki
 */
 typedef struct float3
 {
-	float x, y, z;//!<@brief	å¤‰æ•°.
+	float x, y, z;//!<@brief	•Ï”.
 	float3() :x(0), y(0), z(0){}
 } float3, Vector;
 
-// ãƒ™ã‚¯ãƒˆãƒ«
+// ƒxƒNƒgƒ‹
 typedef struct Vector3 : public Vector
 {
 public:
-	//	ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	//	ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 	Vector3() :Vector(){};
 
-	// Vector(x,y,x)ã¨ã§ãã‚‹ã‚ˆã†ã«
+	// Vector(x,y,x)‚Æ‚Å‚«‚é‚æ‚¤‚É
 	inline Vector3(float x, float y, float z){ this->x = x, this->y = y, this->z = z; }
 	inline Vector3(CONST Vector& v){ this->x = v.x, this->y = v.y, this->z = v.z; }
 
-	//	è·é›¢è¨ˆç®—
+	//	‹——£ŒvZ
 	inline float Length(){ return sqrtf(x*x + y*y + z*z); }
 	inline float LengthSq(){ return x*x + y*y + z*z; }
 
-	//	æ­£è¦åŒ–
+	//	³‹K‰»
 	void Normalize()
 	{
 		float l = Length();
@@ -118,7 +118,7 @@ public:
 	}
 
 	
-	//	ã‚ªãƒšãƒ¬ãƒ¼ã‚¿ãƒ¼
+	//	ƒIƒyƒŒ[ƒ^[
 	
 	// this+=vector
 	inline Vector3& operator = (CONST Vector& v){ x = v.x; y = v.y; z = v.z; return *this; }
@@ -145,7 +145,7 @@ public:
 	// Vector3 = Vector3 / float
 	inline Vector3 operator / (FLOAT v) const { Vector3 ret(x / v, y / v, z / v); return ret; }
 
-	//è¿½åŠ åˆ†
+	//’Ç‰Á•ª
 	//inline Vector operator *(const float& f){ Vector a = { x * f, y * f, z * f }; return a; }
 
 	// if( Vector3 == Vector3 )
@@ -159,45 +159,45 @@ public:
 } Vector3, *LPVECTOR3;
 
 /**
-*@brief		2äºŒæ¬¡å…ƒãƒ™ã‚¯ãƒˆãƒ«
-*@author	è¥¿ç”°ã€€ã²ã‚ã‚†ã
+*@brief		2“ñŸŒ³ƒxƒNƒgƒ‹
+*@author	¼“c@‚Ğ‚ë‚ä‚«
 */
 typedef struct Vector2 :public float2
 {
 	/**
-	*@brief		ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-	*@note		å€¤ã‚’0ã§åˆæœŸåŒ–ã™ã‚‹
+	*@brief		ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	*@note		’l‚ğ0‚Å‰Šú‰»‚·‚é
 	*/
 	Vector2() :float2(){};
 
 	/**
-	*@brief			ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-	*@param[in]	x	ç”Ÿæˆã™ã‚‹ãƒ™ã‚¯ãƒˆãƒ«ã®xæˆåˆ†
-	*@param[in]	y	ç”Ÿæˆã™ã‚‹ãƒ™ã‚¯ãƒˆãƒ«ã®yæˆåˆ†
+	*@brief			ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	*@param[in]	x	¶¬‚·‚éƒxƒNƒgƒ‹‚Ìx¬•ª
+	*@param[in]	y	¶¬‚·‚éƒxƒNƒgƒ‹‚Ìy¬•ª
 	*/
 	inline Vector2(float x, float y){ this->x = x, this->y = y; }
 
 	/**
-	*@brief			ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
-	*@param[in]	v	ç”Ÿæˆã™ã‚‹ãƒ™ã‚¯ãƒˆãƒ«ã®xyæˆåˆ†
+	*@brief			ƒRƒ“ƒXƒgƒ‰ƒNƒ^
+	*@param[in]	v	¶¬‚·‚éƒxƒNƒgƒ‹‚Ìxy¬•ª
 	*/
 	inline Vector2(CONST float2& v){ this->x = v.x, this->y = v.y; }
 
 	/**
-	*@brief		ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•ã‚’å–å¾—ã™ã‚‹
-	*@return	ãƒ™ã‚¯ãƒˆãƒ«ã®é•·ã•
+	*@brief		ƒxƒNƒgƒ‹‚Ì’·‚³‚ğæ“¾‚·‚é
+	*@return	ƒxƒNƒgƒ‹‚Ì’·‚³
 	*/
 	inline float Length(){ return sqrtf(x*x + y*y); }
 	
 	/**
-	*@brief		ãƒ™ã‚¯ãƒˆãƒ«ã®2ä¹—ã®é•·ã•ã‚’å–å¾—ã™ã‚‹
-	*@return	ãƒ™ã‚¯ãƒˆãƒ«ã®2ä¹—ã®é•·ã•
+	*@brief		ƒxƒNƒgƒ‹‚Ì2æ‚Ì’·‚³‚ğæ“¾‚·‚é
+	*@return	ƒxƒNƒgƒ‹‚Ì2æ‚Ì’·‚³
 	*/
 	inline float LengthSp(){ return (x*x + y*y); }
 
 	/**
-	*@brief æ­£è¦åŒ–
-	*@note ãƒ™ã‚¯ãƒˆãƒ«ã®æ­£è¦åŒ–ã—ãŸå€¤ã«å¤‰æ›´
+	*@brief ³‹K‰»
+	*@note ƒxƒNƒgƒ‹‚Ì³‹K‰»‚µ‚½’l‚É•ÏX
 	*/
 	void Normalize()
 	{
@@ -205,7 +205,7 @@ typedef struct Vector2 :public float2
 		if (length != 0.0f){ x /= length, y /= length; }
 	}
 
-	// ã‚ªãƒšãƒ¬ãƒ¼ã‚¿ãƒ¼
+	// ƒIƒyƒŒ[ƒ^[
 	inline Vector2& operator = (CONST Vector2& v){ x = v.x; y = v.y; return *this; }
 	inline Vector2& operator = (CONST float2& v){ x = v.x; y = v.y; return *this; }
 	inline Vector2& operator += (CONST Vector2& v){ x += v.x; y += v.y; return *this; }
@@ -228,13 +228,13 @@ typedef struct Vector2 :public float2
 } Vector2, *LPVECTOR2;
 
 
-// å†…ç©
+// “àÏ
 inline float Vector3Dot(Vector& v1, Vector& v2)
 {
 	return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 }
 
-// å¤–ç©
+// ŠOÏ
 inline void Vector3Cross(Vector& out, Vector& v1, Vector& v2)
 {
 	out.x = v1.y*v2.z - v1.z*v2.y;
@@ -250,12 +250,12 @@ inline Vector Vector3Cross(Vector& v1, Vector& v2)
 	return out;
 }
 
-// ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+// ƒNƒH[ƒ^ƒjƒIƒ“
 typedef struct  Quaternion : public D3DXQUATERNION
 {
 public:
 	//------------------------------------------------------
-	//	ã‚³ãƒ³ã‚¹ãƒˆãƒ©ã‚¯ã‚¿
+	//	ƒRƒ“ƒXƒgƒ‰ƒNƒ^
 	//------------------------------------------------------
 	Quaternion(){}
 	Quaternion(const D3DXQUATERNION& in) :D3DXQUATERNION(in)
@@ -263,12 +263,12 @@ public:
 	Quaternion( float sx, float sy, float sz, float sw ) : D3DXQUATERNION( sx, sy, sz, sw ){}
 
 	//------------------------------------------------------
-	//	ç”Ÿæˆ
+	//	¶¬
 	//------------------------------------------------------
-	//	å˜ä½ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³ç”Ÿæˆ
+	//	’PˆÊƒNƒH[ƒ^ƒjƒIƒ“¶¬
 	void Identity(){ x = y = z = 0; w = 1; }
 
-	//	æ­£è¦åŒ–
+	//	³‹K‰»
 	inline void normalize()
 	{
 		float legnth = getLength();
@@ -278,18 +278,18 @@ public:
 	}
 
 	//------------------------------------------------------
-	//	æƒ…å ±å–å¾—
+	//	î•ñæ“¾
 	//------------------------------------------------------
 	inline float getLength() const{ return sqrtf(x*x + y*y + z*z + w*w); }
 	void toMatrix(Matrix& m);
 
 	//------------------------------------------------------
-	//	ã‚ªãƒšãƒ¬ãƒ¼ã‚¿ãƒ¼
+	//	ƒIƒyƒŒ[ƒ^[
 	//------------------------------------------------------
 	inline Quaternion operator + () const { Quaternion ret(x, y, z, w); return ret; }
 	inline Quaternion operator - () const { Quaternion ret(-x, -y, -z, -w); return ret; }
 
-	//	VS ã‚¯ã‚©ãƒ¼ã‚¿ãƒ‹ã‚ªãƒ³
+	//	VS ƒNƒH[ƒ^ƒjƒIƒ“
 	inline Quaternion& operator +=(const Quaternion& v){ x += v.x; y += v.y; z += v.z; w += v.w; return *this; }
 	inline Quaternion& operator -=(const Quaternion& v){ x -= v.x; y -= v.y; z -= v.z; w -= v.w; return *this; }
 	inline Quaternion& operator *=(const Quaternion& v)
@@ -313,7 +313,7 @@ public:
 			);
 	}
 
-	//	VS å€¤
+	//	VS ’l
 	inline Quaternion& operator *=(float v){ x *= v; y *= v; z *= v; w *= v; return *this; }
 	inline Quaternion& operator /=(float v){ x /= v; y /= v; z /= v; w /= v; return *this; }
 
@@ -322,76 +322,76 @@ public:
 
 } Quaternion;
 
-//	çƒé¢ç·šå½¢è£œé–“
+//	‹…–ÊüŒ`•âŠÔ
 Quaternion QuaternionSlerp(Quaternion& q, Quaternion& r, float a);
 
 /*************************************************/
-//	è¡Œåˆ—ã‚„ãƒ™ã‚¯ãƒˆãƒ«ã«é–¢ã™ã‚‹è¨ˆç®—ã®ãƒ—ãƒ­ãƒˆã‚¿ã‚¤ãƒ—å®£è¨€
+//	s—ñ‚âƒxƒNƒgƒ‹‚ÉŠÖ‚·‚éŒvZ‚Ìƒvƒƒgƒ^ƒCƒvéŒ¾
 /*************************************************/
-// å¤‰æ›è¡Œåˆ—
+// •ÏŠ·s—ñ
 void	SetTransformMatrixZXY(Matrix *Mat, float posX, float posY, float posZ, float angleX, float angleY, float angleZ);
 void	SetTransformMatrixXYZ(Matrix *Mat, float posX, float posY, float posZ, float angleX, float angleY, float angleZ);
-// ãƒ“ãƒ¥ãƒ¼å¤‰æ›è¡¨åˆ—
+// ƒrƒ…[•ÏŠ·•\—ñ
 void	LookAtLH(Matrix& mat, Vector& Eye, Vector& At, Vector& Up);
-// æŠ•å½±å¤‰æ›è¡¨åˆ—
+// “Š‰e•ÏŠ·•\—ñ
 void	PerspectiveLH(Matrix& mat, float fovY, float aspect, float zn, float zf);
 void	OlthoLH(Matrix& mat, float w, float h, float zn, float zf);
-// è·é›¢è¨ˆç®—
+// ‹——£ŒvZ
 inline float Length(float x1, float y1, float x2, float y2);
 inline float Length(Vector3 PosA, Vector3 PosB);
 bool Collision_Sphere(Vector3 PosA, float RadiusA, Vector3 PosB, float RadiusB);
 
 
 /********************************************/
-//	å‰æ–¹å®£è¨€
+//	‘O•ûéŒ¾
 /********************************************/
 //class tdnRenderState;
-//typedef tdnRenderState RS;// (?) æ›¸ãæ–¹ã‚ã‹ã‚‰ã‚“
+//typedef tdnRenderState RS;// (?) ‘‚«•û‚í‚©‚ç‚ñ
 class tdnShader;
 class tdn2DObj;
 
 /********************************************/
 //	tdnSystem
 /********************************************/
-// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ãƒ¢ãƒ¼ãƒ‰
+// ƒXƒNƒŠ[ƒ“ƒ‚[ƒh
 #define	SCREEN800x450	0
 #define	SCREEN1280x720	1
 #define	SCREEN1920x1080	2
 #define	SCREEN800x600	3
 
-LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);			 // ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ—ãƒ­ã‚·ãƒ¼ã‚¸ãƒ£
-//BOOL InitApp(HINSTANCE hInst, int nCmdShow);												 // ã‚²ãƒ¼ãƒ èµ·å‹•æ™‚ã®æœ€åˆã®åˆæœŸåŒ–
-//BOOL EndApp();																			 // ã‚²ãƒ¼ãƒ ã®ä¸€ç•ªæœ€å¾Œã®å¾Œå‡¦ç†
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);			 // ƒEƒBƒ“ƒhƒEƒvƒƒV[ƒWƒƒ
+//BOOL InitApp(HINSTANCE hInst, int nCmdShow);												 // ƒQ[ƒ€‹N“®‚ÌÅ‰‚Ì‰Šú‰»
+//BOOL EndApp();																			 // ƒQ[ƒ€‚Ìˆê”ÔÅŒã‚ÌŒãˆ—
 
-extern	Matrix	matView;		//	ã‚«ãƒ¡ãƒ©è¡Œåˆ—
-extern	Matrix	matProjection;	//	æŠ•å½±å¤‰æ›è¡Œåˆ—
+extern	Matrix	matView;		//	ƒJƒƒ‰s—ñ
+extern	Matrix	matProjection;	//	“Š‰e•ÏŠ·s—ñ
 
 class tdnSystem
 {
 public:
-	// åˆæœŸåŒ–ãƒ»è§£æ”¾
+	// ‰Šú‰»E‰ğ•ú
 	static BOOL InitWindow(HINSTANCE hinst, int nCmdShow, char* AppTitle, DWORD ScreenMode, BOOL isFullScreen);
 
 	static void Release();
 private:	
-	// ãŠç´„æŸ
-	static HINSTANCE hinst;				// ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ãƒãƒ³ãƒ‰ãƒ«	
-	static HWND	Window;					// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒãƒ³ãƒ‰ãƒ«
-	static BOOL WindowActive;			// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®çŠ¶æ…‹
+	// ‚¨–ñ‘©
+	static HINSTANCE hinst;				// ƒCƒ“ƒXƒ^ƒ“ƒXƒnƒ“ƒhƒ‹	
+	static HWND	Window;					// ƒEƒBƒ“ƒhƒEƒnƒ“ƒhƒ‹
+	static BOOL WindowActive;			// ƒEƒBƒ“ƒhƒE‚Ìó‘Ô
 private:
-	static BOOL InitD3D();				// D3DåˆæœŸåŒ–ã€‚Privateã¸ç§»è¡Œ
-	static LPDIRECT3D9	lpD3D;			// DirectX9ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ãŸã‚ã®ãƒã‚¤ãƒ³ã‚¿			
-	static LPDEVICE	Device;				// ãƒ“ãƒ‡ã‚ªã‚«ãƒ¼ãƒ‰ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ãŸã‚ã®3Dãƒ‡ãƒã‚¤ã‚¹		
-	static D3DPRESENT_PARAMETERS d3dpp;	// ãƒ‡ã‚£ã‚¹ãƒ—ãƒ¬ã‚¤ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼
-	static ID3DXLine* pLine;			// ç·šæç”»
-	// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®ã‚µã‚¤ã‚º
-	static RECT	 ScreenSize;			// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®ã‚µã‚¤ã‚º
-	static D3DFORMAT ScreenFormat;		// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
-	static BOOL FullScreen;				// ãƒ•ãƒ«ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®ãƒ•ãƒ©ã‚°
+	static BOOL InitD3D();				// D3D‰Šú‰»BPrivate‚ÖˆÚs
+	static LPDIRECT3D9	lpD3D;			// DirectX9‚ÉƒAƒNƒZƒX‚·‚é‚½‚ß‚Ìƒ|ƒCƒ“ƒ^			
+	static LPDEVICE	Device;				// ƒrƒfƒIƒJ[ƒh‚ÉƒAƒNƒZƒX‚·‚é‚½‚ß‚Ì3DƒfƒoƒCƒX		
+	static D3DPRESENT_PARAMETERS d3dpp;	// ƒfƒBƒXƒvƒŒƒCƒpƒ‰ƒ[ƒ^[
+	static ID3DXLine* pLine;			// ü•`‰æ
+	// ƒXƒNƒŠ[ƒ“‚ÌƒTƒCƒY
+	static RECT	 ScreenSize;			// ƒXƒNƒŠ[ƒ“‚ÌƒTƒCƒY
+	static D3DFORMAT ScreenFormat;		// ƒXƒNƒŠ[ƒ“‚ÌƒtƒH[ƒ}ƒbƒg
+	static BOOL FullScreen;				// ƒtƒ‹ƒXƒNƒŠ[ƒ“‚Ìƒtƒ‰ƒO
 public:
-	// (?)ãªãœå€¤ãŒå¤‰ã‚ã£ãŸã‚‰ã¾ãšã„ãƒ‡ãƒ¼ã‚¿ãŒã‚°ãƒ­ãƒ¼ãƒãƒ«ã«ï¼Ÿ	
+	// (?)‚È‚º’l‚ª•Ï‚í‚Á‚½‚ç‚Ü‚¸‚¢ƒf[ƒ^‚ªƒOƒ[ƒoƒ‹‚ÉH	
 
-	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼å–å¾—é–¢æ•°
+	// ƒpƒ‰ƒ[ƒ^[æ“¾ŠÖ”
 	static inline HINSTANCE GetHinst(){ return hinst; }
 	static inline HWND GetWindow(){ return Window; }
 	static inline LPDIRECT3D9 GetD3D9(){ return lpD3D; };
@@ -401,22 +401,22 @@ public:
 	static inline D3DFORMAT GetScreenFormat(){ return ScreenFormat; }
 	static inline BOOL GetWindowActive(){ return WindowActive; };
 
-	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸å‡¦ç†é–¢æ•°
+	// ƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒWˆ—ŠÖ”
 	//static BOOL Message();
 
-	// ã‚¹ã‚¯ãƒªãƒ¼ãƒ³ã®ã‚µã‚¤ã‚ºã‚’å–å¾—
+	// ƒXƒNƒŠ[ƒ“‚ÌƒTƒCƒY‚ğæ“¾
 	static RECT GetScreenRect(DWORD mode);
-	//	ã‚·ãƒ¼ãƒ³é–‹å§‹ãƒ»çµ‚äº†
-	static void BeginScene(){ Device->BeginScene(); }		// æç”»é–‹å§‹!
-	static void EndScene()									// æç”»çµ‚äº†!
+	//	ƒV[ƒ“ŠJnEI—¹
+	static void BeginScene(){ Device->BeginScene(); }		// •`‰æŠJn!
+	static void EndScene()									// •`‰æI—¹!
 	{
 		Device->EndScene();
 		if (FAILED(Device->Present(NULL, NULL, NULL, NULL))) Device->Reset(&d3dpp);
 	}
-	// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãŒä»Šå‹•ã„ã¦ã„ã‚‹ã‹ã‚’ã‚»ãƒƒãƒˆã™ã‚‹é–¢æ•°
+	// ƒEƒBƒ“ƒhƒE‚ª¡“®‚¢‚Ä‚¢‚é‚©‚ğƒZƒbƒg‚·‚éŠÖ”
 	static void SetWindowActive(BOOL active){ WindowActive = active; }
 
-	//	ãƒ‡ãƒãƒƒã‚°ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+	//	ƒfƒoƒbƒOƒEƒBƒ“ƒhƒE
 	static void OpenDebugWindow();
 	static void CloseDebugWindow();
 	static void printf(const char* format, ...);
@@ -430,38 +430,38 @@ public:
 class tdnView
 {
 public:
-	// åˆæœŸåŒ–
+	// ‰Šú‰»
 	static void Init()
 	{
 		SetViewport();
 		SetProjection(D3DX_PI / 3.0f, 0.1f, 3000.0f);
 	}
 
-	//	è¦–ç•Œã‚¯ãƒªã‚¢
+	//	‹ŠEƒNƒŠƒA
 	static void Clear(DWORD color = 0, bool bClearZ = true);
 	static void ClearZ();
 
-	//	è¦–ç‚¹è¨­å®š
+	//	‹“_İ’è
 	static void Set(const Vector& pos, const Vector& target);
 	static void Set(float x, float y, float z, float ax, float ay, float az);
 
-	//	æŠ•å½±å¹³é¢è¨­å®š
+	//	“Š‰e•½–Êİ’è
 	static void SetViewport();
 	static void SetViewport(int x, int y, int w, int h);
 
-	//	æŠ•å½±è¨­å®š
+	//	“Š‰eİ’è
 	static void SetProjection(float FovY, float Near, float Far);
 	static void SetProjection(float FovY, float Near, float Far, float asp);
 
-	// è¡Œåˆ—ãƒ»ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆæ›´æ–°
+	// s—ñEƒrƒ…[ƒ|[ƒgXV
 	static void Activate();
 
 protected:
-	static Vector  Pos, Target;			// å§‹ç‚¹ã¨ç›®ç·š	
-	// ãƒ“ãƒ¥ãƒ¼ãƒãƒ¼ãƒˆ
-	static D3DVIEWPORT9	Viewport;		// Windowç”»é¢ã®ã©ã®é ˜åŸŸã¾ã§3Dã‚’æç”»ã™ã‚‹ã‹
-	static float FovY;					// è¦–é‡è§’
-	static float Near, Far;				// æŠ•å½±ã®æ‰‹å‰ã®ä½ç½®ã¨ä¸€ç•ªå¥¥ã®ä½ç½® 
+	static Vector  Pos, Target;			// n“_‚Æ–Úü	
+	// ƒrƒ…[ƒ|[ƒg
+	static D3DVIEWPORT9	Viewport;		// Window‰æ–Ê‚Ì‚Ç‚Ì—Ìˆæ‚Ü‚Å3D‚ğ•`‰æ‚·‚é‚©
+	static float FovY;					// ‹–ìŠp
+	static float Near, Far;				// “Š‰e‚Ìè‘O‚ÌˆÊ’u‚Æˆê”Ô‰œ‚ÌˆÊ’u 
 	static float Aspect;				// 
 
 
@@ -495,7 +495,7 @@ public:
 
 	static void Initialize();
 	static void Set(DWORD state, D3DMATERIAL9* lpMaterial, Texture2D* lpTexture);
-	static void	Filter(BOOL bFilter);												//	ã‚µãƒ³ãƒ—ãƒ©ãƒ¼ã‚¹ãƒ†ãƒ¼ãƒˆã€€TRUEï¼šLINER(è£œé–“)ã€€FLASE:POINT(å‡¦ç†ã¯æ—©ã„)ã€€
+	static void	Filter(BOOL bFilter);												//	ƒTƒ“ƒvƒ‰[ƒXƒe[ƒg@TRUEFLINER(•âŠÔ)@FLASE:POINT(ˆ—‚Í‘‚¢)@
 };
 
 /********************************************/
@@ -504,88 +504,88 @@ public:
 
 
 /**
-*	ã‚¢ãƒ¼ã‚«ã‚¤ãƒãƒ¼
-*	å„ç¨®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã™ã‚‹ã‚¯ãƒ©ã‚¹
+*	ƒA[ƒJƒCƒo[
+*	Šeíƒtƒ@ƒCƒ‹‚ğƒA[ƒJƒCƒu‚·‚éƒNƒ‰ƒX
 */
 class tdnArchiver
 {
 public:
 
-	// äºŒã¤ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œæˆã™ã‚‹
+	// “ñ‚ÂƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹‚ğì¬‚·‚é
 	bool CreateArchiveFile(const char* pHeaderFilename, const char* pDataFilename);
 
-	// ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ãƒ•ã‚¡ã‚¤ãƒ«ã«è¿½åŠ ã™ã‚‹
+	// ƒf[ƒ^ƒtƒ@ƒCƒ‹‚ğƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹‚É’Ç‰Á‚·‚é
 	bool AddData(const char* pDataFileName);
 
-	// ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–çµ‚äº†å‡¦ç†(ãƒ€ãƒŸãƒ¼ãƒ˜ãƒƒãƒ€ãƒ¼ã®è¿½åŠ )
+	// ƒA[ƒJƒCƒuI—¹ˆ—(ƒ_ƒ~[ƒwƒbƒ_[‚Ì’Ç‰Á)
 	bool CloseArchiveFile(const char* pArchiveFilename, const char* pHeaderFilename, const char* pDataFilename);
 
 private:
-	// äºŒã¤ã«åˆ†ã‘ã¦ã¿ãŸã€‚ã¿ã‚‹ã—ã‹ãªã‹ã£ãŸ.. (TODO)èª°ã‹åˆ†ã‘ãšã«ä½œã‚Œã‚‹ã‚ˆã†ã«ã—ã¦ãã ã•ã„
-	std::ofstream headerOfs;	// ãƒ˜ãƒƒãƒ€ãƒ¼éƒ¨
-	std::ofstream dataOfs;		// ãƒ‡ãƒ¼ã‚¿éƒ¨
-	std::ofstream archiverOfs;	// æœ€çµ‚å‡ºåŠ›
+	// “ñ‚Â‚É•ª‚¯‚Ä‚İ‚½B‚İ‚é‚µ‚©‚È‚©‚Á‚½.. (TODO)’N‚©•ª‚¯‚¸‚Éì‚ê‚é‚æ‚¤‚É‚µ‚Ä‚­‚¾‚³‚¢
+	std::ofstream headerOfs;	// ƒwƒbƒ_[•”
+	std::ofstream dataOfs;		// ƒf[ƒ^•”
+	std::ofstream archiverOfs;	// ÅIo—Í
 
 
-	// ç¾åœ¨è¿½åŠ ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã®æ•°(ãƒ˜ãƒƒãƒ€ãƒ¼éƒ¨ã®IDå€¤ã¨ã—ã¦ä½¿ç”¨)
+	// Œ»İ’Ç‰Á‚µ‚½ƒtƒ@ƒCƒ‹‚Ì”(ƒwƒbƒ_[•”‚ÌID’l‚Æ‚µ‚Äg—p)
 	char nameID[64];
 
-	// é ­ã®æœ€å¤§
+	// “ª‚ÌÅ‘å
 	uint32_t HEAD_MAX;
 
-	// ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ãƒ•ã‚¡ã‚¤ãƒ«ã®æœ€å¤§ã‚µã‚¤ã‚º
+	// ƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹‚ÌÅ‘åƒTƒCƒY
 	enum : uint32_t{ eMaxArchiveFileSize = 4000000000 };
-	// ç¾åœ¨æ›¸ãè¾¼ã‚“ã§ã„ã‚‹ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ãƒ•ã‚¡ã‚¤ãƒ«ã®ç·ã‚µã‚¤ã‚º
+	// Œ»İ‘‚«‚ñ‚Å‚¢‚éƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹‚Ì‘ƒTƒCƒY
 	uint32_t wroteArchiveFileSize;
 };
 
 /**
-*	è§£å‡å‡¦ç†ã‚¯ãƒ©ã‚¹ï¼ˆArchiverã¨ã‚»ãƒƒãƒˆ)
-*	ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ãƒ•ã‚¡ã‚¤ãƒ«ã®è§£å‡ã‚’è¡Œã†
+*	‰ğ“€ˆ—ƒNƒ‰ƒXiArchiver‚ÆƒZƒbƒg)
+*	ƒA[ƒJƒCƒuƒtƒ@ƒCƒ‹‚Ì‰ğ“€‚ğs‚¤
 */
-// ãƒ˜ãƒƒãƒ€ãƒ¼éƒ¨æ§‹é€ 
+// ƒwƒbƒ_[•”\‘¢
 class ArchiveHeaderBlock
 {
 public:
-	// ãƒ‡ãƒ¼ã‚¿ãƒãƒ¼ãƒ ID
+	// ƒf[ƒ^ƒl[ƒ€ID
 	char nameID[64];
-	// é–‹å§‹å ´æ‰€ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚º
+	// ŠJnêŠƒf[ƒ^‚ÌƒTƒCƒY
 	uint32_t wroteDataFileSize;
-	// ãƒ‡ãƒ¼ã‚¿ãƒ–ãƒ­ãƒƒã‚¯ã®ã‚µã‚¤ã‚º
+	// ƒf[ƒ^ƒuƒƒbƒN‚ÌƒTƒCƒY
 	uint32_t dataFileSize;
 
 };
 
-// ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚«ãƒ¼
+// ƒXƒ^ƒeƒBƒbƒJ[
 class tdnUnArchiver
 {
 public:	
-	// ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‚’é–‹ã
+	// ƒA[ƒJƒCƒu‚ğŠJ‚­
 	static char* OpenArchiveFile(const char* pArchiveFilename, const char* pName);
-	// ãƒ¡ãƒ¢ãƒªã®ã‚µã‚¤ã‚ºå–å¾—
+	// ƒƒ‚ƒŠ‚ÌƒTƒCƒYæ“¾
 	static int GetSize(const char* pArchiveFilename, const char* pName);
-	// ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‚’é–‹ãï¼‹ãƒ¡ãƒ¢ãƒªã‚µã‚¤ã‚ºã‚’å–å¾—
+	// ƒA[ƒJƒCƒu‚ğŠJ‚­{ƒƒ‚ƒŠƒTƒCƒY‚ğæ“¾
 	static char* OpenArchiveFile(const char* pArchiveFilename, const char* pName, int& outMemorySize);
 };
 
-// ã‚·ãƒ³ã‚°ãƒ«ãƒˆãƒ³ã«ã—ãŸ(ç†ç”±)è§£é™¤ã¯ä¸€ã¤ã§ååˆ†ã€‚
+// ƒVƒ“ƒOƒ‹ƒgƒ“‚É‚µ‚½(——R)‰ğœ‚Íˆê‚Â‚Å\•ªB
 //class tdnUnArchiver
 //{
 //private:
 //	static tdnUnArchiver* pInstance;
-//	// å°å°
+//	// ••ˆó
 //	tdnUnArchiver(){};
 //	~tdnUnArchiver(){};
 //public:
 //	static tdnUnArchiver& GetInstance();
 //	static void Release();
 //
-//public:	// æ©Ÿèƒ½
-//	// ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‚’é–‹ã
+//public:	// ‹@”\
+//	// ƒA[ƒJƒCƒu‚ğŠJ‚­
 //	char* OpenArchiveFile(const char* pArchiveFilename, const char* pName);
-//	// ãƒ¡ãƒ¢ãƒªã®ã‚µã‚¤ã‚ºå–å¾—
+//	// ƒƒ‚ƒŠ‚ÌƒTƒCƒYæ“¾
 //	int GetSize(const char* pArchiveFilename, const char* pName);
-//	// ã‚¢ãƒ¼ã‚«ã‚¤ãƒ–ã‚’é–‹ãï¼‹ãƒ¡ãƒ¢ãƒªã‚µã‚¤ã‚ºã‚’å–å¾—
+//	// ƒA[ƒJƒCƒu‚ğŠJ‚­{ƒƒ‚ƒŠƒTƒCƒY‚ğæ“¾
 //	char* OpenArchiveFile(const char* pArchiveFilename, const char* pName, int& outMemorySize);
 //
 //};
@@ -601,17 +601,17 @@ private:
 	static const int MAX_TEXTURE = 512;
 
 	struct TEXINFO {
-		char		filename[64];	//	ãƒ•ã‚¡ã‚¤ãƒ«ãƒ‘ã‚¹
-		int			UseCount;		//	ã“ã®ãƒ†ã‚¯ã‚¹ãƒãƒ£ä½¿ç”¨ã—ã¦ã„ã‚‹ã‚«ã‚¦ãƒ³ãƒˆ
-		Texture2D*	lpTexture;		//	ãƒ†ã‚¯ã‚¹ãƒãƒ£	
-		D3DXIMAGE_INFO info;		//  (è¿½åŠ )ã‚µã‚¤ã‚ºã®æƒ…å ±å–å¾—
+		char		filename[64];	//	ƒtƒ@ƒCƒ‹ƒpƒX
+		int			UseCount;		//	‚±‚ÌƒeƒNƒXƒ`ƒƒg—p‚µ‚Ä‚¢‚éƒJƒEƒ“ƒg
+		Texture2D*	lpTexture;		//	ƒeƒNƒXƒ`ƒƒ	
+		D3DXIMAGE_INFO info;		//  (’Ç‰Á)ƒTƒCƒY‚Ìî•ñæ“¾
 	};
 	static struct TEXINFO TexInfo[MAX_TEXTURE];
 
 public:
-	//	åˆæœŸåŒ–
+	//	‰Šú‰»
 	static void Initialize();
-	//	èª­ã¿è¾¼ã¿ãƒ»è§£æ”¾
+	//	“Ç‚İ‚İE‰ğ•ú
 	static Texture2D* Load(const char* filename);
 	static Texture2D* LoadMemory(const char* filename, const char* pArchiver);
 
@@ -637,27 +637,27 @@ class tdnShader
 {
 
 public:
-	// åˆæœŸåŒ–ãƒ»è§£æ”¾
+	// ‰Šú‰»E‰ğ•ú
 	tdnShader(char* filename);
 	~tdnShader();
 
-	// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼åˆ©ç”¨é–‹å§‹ãƒ»çµ‚äº†
-	inline UINT Begin(char* name)		// ã‚·ã‚§ãƒ¼ãƒ€é–‹å§‹
+	// ƒVƒF[ƒ_[—˜—pŠJnEI—¹
+	inline UINT Begin(char* name)		// ƒVƒF[ƒ_ŠJn
 	{
 		UINT pass;
-		// ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã®é©ç”¨
-		pShader->SetTechnique(name);	// ãƒ†ã‚¯ãƒ‹ãƒƒã‚¯åã‚’è¨­å®šã™ã‚‹
+		// ƒVƒF[ƒ_[‚Ì“K—p
+		pShader->SetTechnique(name);	// ƒeƒNƒjƒbƒN–¼‚ğİ’è‚·‚é
 		pShader->Begin(&pass, 0);	
 		return pass;
 	}
-	inline void End(){ pShader->End(); }// ã‚·ã‚§ãƒ¼ãƒ€çµ‚äº†
+	inline void End(){ pShader->End(); }// ƒVƒF[ƒ_I—¹
 
-	/*	ãƒ‘ã‚¹ã®é–‹å§‹ãƒ»çµ‚äº†  */	
-	inline void BeginPass(int pass){ pShader->BeginPass(pass); }	// ã‚¢ã‚¯ãƒ†ã‚£ãƒ–ãªãƒ†ã‚¯ãƒ‹ãƒƒã‚¯å†…ã§ãƒ‘ã‚¹ã‚’é–‹å§‹ã—ã¾ã™ã€‚
-	inline void EndPass(){ pShader->EndPass(); }					// ãƒ‘ã‚¹çµ‚ã‚Š
-	inline void CommitChanges(){ pShader->CommitChanges(); }		// BeginPassï½EndPasså†…ã§ã‚»ãƒƒã‚¿ãƒ¼ã‚’é€šã—ã¦å€¤ã‚’å¤‰æ›´ã—ãŸéš›ã«å‘¼ã³å‡ºã™å¿…è¦ãŒã‚ã‚‹é–¢æ•°ã§ã™
+	/*	ƒpƒX‚ÌŠJnEI—¹  */	
+	inline void BeginPass(int pass){ pShader->BeginPass(pass); }	// ƒAƒNƒeƒBƒu‚ÈƒeƒNƒjƒbƒN“à‚ÅƒpƒX‚ğŠJn‚µ‚Ü‚·B
+	inline void EndPass(){ pShader->EndPass(); }					// ƒpƒXI‚è
+	inline void CommitChanges(){ pShader->CommitChanges(); }		// BeginPass`EndPass“à‚ÅƒZƒbƒ^[‚ğ’Ê‚µ‚Ä’l‚ğ•ÏX‚µ‚½Û‚ÉŒÄ‚Ño‚·•K—v‚ª‚ ‚éŠÖ”‚Å‚·
 
-	// ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼è¨­å®š
+	// ƒpƒ‰ƒ[ƒ^[İ’è
 	void SetWVPMatrix(Matrix* wvpMat);
 	void SetWVPMatrix(Matrix& wvpMat);
 
@@ -681,17 +681,17 @@ public:
 	void SetValue(char* name, DWORD d);
 
 private:
-	LPD3DXEFFECT pShader;	// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ãƒã‚¤ãƒ³ã‚¿
+	LPD3DXEFFECT pShader;	// ƒGƒtƒFƒNƒgƒtƒ@ƒCƒ‹‚Ö‚ÌƒAƒNƒZƒXƒ|ƒCƒ“ƒ^
 
-	D3DXHANDLE	hmWVP;		// å°„å½±å¤‰æ›è¡Œåˆ—ã€€ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ãƒ¼ã‚’å‚ç…§ã™ã‚‹ãŸã‚ã®åŠ¹ç‡çš„ãªæ‰‹æ®µã‚’æä¾›ã—ã¾ã™ã€‚
-	D3DXHANDLE  htexDecale;	// ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	D3DXHANDLE	hmWVP;		// Ë‰e•ÏŠ·s—ñ@ƒpƒ‰ƒ[ƒ^[‚ğQÆ‚·‚é‚½‚ß‚ÌŒø—¦“I‚Èè’i‚ğ’ñ‹Ÿ‚µ‚Ü‚·B
+	D3DXHANDLE  htexDecale;	// ƒeƒNƒXƒ`ƒƒ
 
 };
 
 /********************************************/
 //				tdn2DObj				     
 /********************************************/
-//	ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ
+//	ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‚ÌƒtƒH[ƒ}ƒbƒg
 typedef enum FMT2D
 {
 	RENDERTARGET = 1,
@@ -706,30 +706,30 @@ typedef enum FMT2D
 class tdn2DObj
 {
 public:
-	tdn2DObj(const char* fileName);							// ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰ç”»åƒèª­ã¿è¾¼ã¿
-	tdn2DObj(const char* IDName, const char* pArchiveName);	// ãƒ¡ãƒ¢ãƒªãƒ¼ã‹ã‚‰ç”»åƒèª­ã¿è¾¼ã¿
-	tdn2DObj(UINT width, UINT height, FMT2D fmtFlag);		// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆä½œæˆ
+	tdn2DObj(const char* fileName);							// ƒtƒ@ƒCƒ‹‚©‚ç‰æ‘œ“Ç‚İ‚İ
+	tdn2DObj(const char* IDName, const char* pArchiveName);	// ƒƒ‚ƒŠ[‚©‚ç‰æ‘œ“Ç‚İ‚İ
+	tdn2DObj(UINT width, UINT height, FMT2D fmtFlag);		// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgì¬
 
-	~tdn2DObj();											// ç”»åƒorãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆè§£æ”¾
+	~tdn2DObj();											// ‰æ‘œorƒŒƒ“ƒ_[ƒ^[ƒQƒbƒg‰ğ•ú
 
-	// æƒ…å ±å–å¾—
-	void RenderTarget(int index = 0);						// ãƒ¬ãƒ³ãƒ€ãƒ¼ã‚¿ãƒ¼ã‚²ãƒƒãƒˆè¨­å®š
-	inline Surface*	GetSurface(){ return lpSurface; };		// æ¿
-	inline Texture2D*	GetTexture(){ return lpTexture; };	// ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	// î•ñæ“¾
+	void RenderTarget(int index = 0);						// ƒŒƒ“ƒ_[ƒ^[ƒQƒbƒgİ’è
+	inline Surface*	GetSurface(){ return lpSurface; };		// ”Â
+	inline Texture2D*	GetTexture(){ return lpTexture; };	// ƒeƒNƒXƒ`ƒƒ
 
-	// æç”»
+	// •`‰æ
 	void Render(int x, int y, u32 dwFlags = RS::COPY);
-	void Render(int x, int y, tdnShader* shader, char* name);// shaderé©ç”¨
+	void Render(int x, int y, tdnShader* shader, char* name);// shader“K—p
 	void Render(int x, int y, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags = RS::COPY);
 	void Render(int x, int y, int w, int h, int tx, int ty, int tw, int th, tdnShader* shader, char* name);
 
-	// 3Dæç”»
+	// 3D•`‰æ
 	void Render3D(float x, float y, float z, u32 dwFlags = RS::COPY);
 	void Render3D(Vector3 pos, u32 dwFlags = RS::COPY);
 	void Render3D(float x, float y, float z, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags = RS::COPY);
 	void Render3D(Vector3 pos, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags = RS::COPY);
 
-	///	æƒ…å ±æ›´æ–°
+	///	î•ñXV
 	void SetScale(float scale);
 	void SetAngle(float angle);
 	void SetARGB(BYTE A, BYTE R, BYTE G, BYTE B);
@@ -739,7 +739,7 @@ public:
 	void SetShiftCenter(bool ShiftFlag);
 	void SetCenter(float x, float y);
 
-	// æƒ…å ±å–å¾—
+	// î•ñæ“¾
 	inline float GetScale(){ return scale; }
 	inline float GetAngle(){ return angle; }
 	inline float GetCenterX(){ return centerX; }
@@ -748,20 +748,20 @@ public:
 	inline bool GetShiftCenter(){ return isShiftCenter; };
 private:
 
-	// unsigned intã®ç†ç”±ã¯GetLevelDescã‹ã‚‰å—ã‘å–ã‚‹æƒ…å ±ãªã©ãŒUINTã ã‹ã‚‰
-	UINT		m_width;				// å¹…
-	UINT		m_height;				// é«˜ã•
+	// unsigned int‚Ì——R‚ÍGetLevelDesc‚©‚çó‚¯æ‚éî•ñ‚È‚Ç‚ªUINT‚¾‚©‚ç
+	UINT		m_width;				// •
+	UINT		m_height;				// ‚‚³
 
-	// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã¨ç”»åƒæƒ…å ±
-	Surface*	lpSurface;			// æ¿
-	Texture2D*	lpTexture;			// ãƒ†ã‚¯ã‚¹ãƒãƒ£
+	// ƒeƒNƒXƒ`ƒƒ‚Æ‰æ‘œî•ñ
+	Surface*	lpSurface;			// ”Â
+	Texture2D*	lpTexture;			// ƒeƒNƒXƒ`ƒƒ
 
-	// ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+	// ƒXƒe[ƒ^ƒX
 	float scale, angle;
 	DWORD color;
 	float centerX, centerY;
 	bool isTurnOver;
-	bool isShiftCenter;				//xyã‚’ç”»åƒã®ä¸­å¿ƒã«
+	bool isShiftCenter;				//xy‚ğ‰æ‘œ‚Ì’†S‚É
 
 };
 
@@ -772,13 +772,13 @@ private:
 /********************************************/
 
 //************************************************************
-//	â– D3DFVFçµ„ã¿åˆã‚ã›é ‚ç‚¹
-//	ã‚ªãƒªã‚¸ãƒŠãƒ«FVFãƒã‚¯ãƒ­ã¨ãã®è¨­å®šã«ã‚ã£ãŸæ§‹é€ ä½“ã‚’é€ã‚‹ã“ã¨ã§
-//	è‡ªç”±ãªé ‚ç‚¹ãƒ‡ãƒ¼ã‚¿ã‚’é€ã‚Œã‚‹ã€‚
+//	¡D3DFVF‘g‚İ‡‚í‚¹’¸“_
+//	ƒIƒŠƒWƒiƒ‹FVFƒ}ƒNƒ‚Æ‚»‚Ìİ’è‚É‚ ‚Á‚½\‘¢‘Ì‚ğ‘—‚é‚±‚Æ‚Å
+//	©—R‚È’¸“_ƒf[ƒ^‚ğ‘—‚ê‚éB
 //***********************************************************
 
-//	ï¼’ï¼¤ç”¨é ‚ç‚¹ï¼ˆãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ï¼†ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ æ¸ˆã¿ï¼‰
-#define D3DFVF_TLVERTEX		( D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 )//ã€€â†D3DFVF_XYZRHW(sx, sy, sz, rhw)ã¨ D3DFVF_DIFFUSE(color)ã¨D3DFVF_TEX1(uv)ã®çµ„ã¿åˆã‚ã›
+//	‚Q‚c—p’¸“_iƒ‰ƒCƒeƒBƒ“ƒO•ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€Ï‚İj
+#define D3DFVF_TLVERTEX		( D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1 )//@©D3DFVF_XYZRHW(sx, sy, sz, rhw)‚Æ D3DFVF_DIFFUSE(color)‚ÆD3DFVF_TEX1(uv)‚Ì‘g‚İ‡‚í‚¹
 typedef struct tagTLVERTEX {
 	float	sx, sy, sz;
 	float	rhw;
@@ -786,7 +786,7 @@ typedef struct tagTLVERTEX {
 	float	tu, tv;
 } TLVERTEX, *LPTLVERTEX;
 
-//	ï¼’ï¼¤ç”¨é ‚ç‚¹ï¼ˆãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°ï¼†ãƒˆãƒ©ãƒ³ã‚¹ãƒ•ã‚©ãƒ¼ãƒ æ¸ˆã¿ã€è‰²ãªã—ï¼‰
+//	‚Q‚c—p’¸“_iƒ‰ƒCƒeƒBƒ“ƒO•ƒgƒ‰ƒ“ƒXƒtƒH[ƒ€Ï‚İAF‚È‚µj
 #define D3DFVF_TLVERTEX2	( D3DFVF_XYZRHW | D3DFVF_TEX1 )
 typedef struct tagTLVERTEX2 {
 	float	sx, sy, sz;
@@ -794,22 +794,22 @@ typedef struct tagTLVERTEX2 {
 	float	tu, tv;
 } TLVERTEX2, *LPTLVERTEX2;
 
-//	ï¼“ï¼¤ç”¨é ‚ç‚¹(æ³•ç·šãªã—ï¼‰
+//	‚R‚c—p’¸“_(–@ü‚È‚µj
 #define D3DFVF_VERTEX		( D3DFVF_XYZ | D3DFVF_TEX1 )
 typedef struct tagVERTEX {
 	float	x, y, z;
 	float	tu, tv;
 } VERTEX, *LPVERTEX;
 
-//	ï¼“ï¼¤ç”¨é ‚ç‚¹(ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°æ¸ˆã¿ï¼‰
-#define D3DFVF_LVERTEX		( D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1 ) // 3ã¤ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆå½¢å¼ãƒã‚¯ãƒ­ã‚’åˆã‚ã›ãŸ
+//	‚R‚c—p’¸“_(ƒ‰ƒCƒeƒBƒ“ƒOÏ‚İj
+#define D3DFVF_LVERTEX		( D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1 ) // 3‚Â‚ÌƒIƒuƒWƒFƒNƒgŒ`®ƒ}ƒNƒ‚ğ‡‚í‚¹‚½
 typedef struct tagLVERTEX {
-	float	x, y, z;	// é ‚ç‚¹åº§æ¨™
-	COLOR	color;		// é ‚ç‚¹ã®è‰²
-	float	tu, tv;		// ãƒ†ã‚¯ã‚¹ãƒãƒ£ã®åº§æ¨™
+	float	x, y, z;	// ’¸“_À•W
+	COLOR	color;		// ’¸“_‚ÌF
+	float	tu, tv;		// ƒeƒNƒXƒ`ƒƒ‚ÌÀ•W
 } LVERTEX, *LPLVERTEX;
 
-//	ï¼“ï¼¤ãƒ¡ãƒƒã‚·ãƒ¥ç”¨é ‚ç‚¹
+//	‚R‚cƒƒbƒVƒ…—p’¸“_
 #define D3DFVF_MESHVERTEX		( D3DFVF_XYZ|D3DFVF_NORMAL|D3DFVF_TEX1 )
 typedef struct tagMESHVERTEX {
 	float	x, y, z;
@@ -817,7 +817,7 @@ typedef struct tagMESHVERTEX {
 	float	tu, tv;
 } MESHVERTEX, *LPMESHVERTEX;
 
-//	ï¼“ï¼¤ç”¨é ‚ç‚¹(ãƒ©ã‚¤ãƒ†ã‚£ãƒ³ã‚°æ¸ˆã¿ï¼‰
+//	‚R‚c—p’¸“_(ƒ‰ƒCƒeƒBƒ“ƒOÏ‚İj
 #define D3DFVF_MESHVERTEX2		( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1 )
 typedef struct tagLNVERTEX {
 	float	x, y, z;
@@ -826,30 +826,30 @@ typedef struct tagLNVERTEX {
 	float	tu, tv;
 } MESHVERTEX2, *LPMESHVERTEX2;
 
-// ãƒ©ã‚¤ãƒ³ç”¨ã®é ‚ç‚¹
+// ƒ‰ƒCƒ“—p‚Ì’¸“_
 struct VECTOR_LINE
 {
-	float x, y, z; // é ‚ç‚¹ 
+	float x, y, z; // ’¸“_ 
 	DWORD color;
 };
 
-//	ï¼’ï¼¤ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+//	‚Q‚cƒIƒuƒWƒFƒNƒg
 //typedef tdn2DObj *LPtdn2DObj;
 
 class tdnPolygon
 {
 public:
 	// 3D
-	static void Render3D(LPLVERTEX lpVertex, int Num, tdn2DObj* lpObj, u32 dwFlags);										// 3Då›ºå®š
-	static void Render3D(LPLVERTEX lpVertex, int Num, tdn2DObj* lpObj, u32 dwFlags, D3DXMATRIX mat);// è¿½åŠ 
-	static void Render3D(LPLVERTEX lpVertex, int Num, tdn2DObj* lpObj, tdnShader* shader, char* name);					// 3Dã‚·ã‚§ãƒ¼ãƒ€
+	static void Render3D(LPLVERTEX lpVertex, int Num, tdn2DObj* lpObj, u32 dwFlags);										// 3DŒÅ’è
+	static void Render3D(LPLVERTEX lpVertex, int Num, tdn2DObj* lpObj, u32 dwFlags, D3DXMATRIX mat);// ’Ç‰Á
+	static void Render3D(LPLVERTEX lpVertex, int Num, tdn2DObj* lpObj, tdnShader* shader, char* name);					// 3DƒVƒF[ƒ_
 	// 2D
-	static void Render2D(LPTLVERTEX lpVertex, int Num, tdn2DObj* lpObj, u32 dwFlags);										// 2Då›ºå®š
-	static void Render2D(LPTLVERTEX lpVertex, int Num, tdn2DObj* lpObj, tdnShader* shader, char* name);					// 2Dã‚·ã‚§ãƒ¼ãƒ€	
-	// çŸ©å½¢
+	static void Render2D(LPTLVERTEX lpVertex, int Num, tdn2DObj* lpObj, u32 dwFlags);										// 2DŒÅ’è
+	static void Render2D(LPTLVERTEX lpVertex, int Num, tdn2DObj* lpObj, tdnShader* shader, char* name);					// 2DƒVƒF[ƒ_	
+	// ‹éŒ`
 	static void Rect(int DstX, int DstY, int DstW, int DstH, u32 dwFlags, COLOR color, float z = .0f);
 	static void Rect(int DstX, int DstY, int DstW, int DstH, tdnShader* shader, char* name, COLOR color, float z = .0f);
-	// ç·š
+	// ü
 	static void DrawLine(float x1, float y1, float x2, float y2, DWORD color = 0xFFFFFFFF, float size = 1.0f);
 	static void DrawLine3D(Vector3 pos1, Vector3 pos2, DWORD color = 0xFFFFFFFF, float size = 1.0f, u32 dwFlag = RS::COPY);
 
@@ -858,7 +858,7 @@ private:
 };
 
 
-// 3Dã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+// 3DƒIƒuƒWƒFƒNƒg
 class tdnMesh
 {
 public:
@@ -866,51 +866,51 @@ public:
 	~tdnMesh();
 
 	/********/
-	/* ä½œæˆ */
+	/* ì¬ */
 	/********/
 
 	struct CreateData
 	{
-		unsigned int      numVertexes;  // é ‚ç‚¹ã®æ•°
-		unsigned int      vertexSize;   // é ‚ç‚¹æ§‹é€ ä½“ã®ãƒã‚¤ãƒˆæ•°
-		void              *vertexArray; // é ‚ç‚¹æƒ…å ±ï¼ˆé ‚ç‚¹æ¯ï¼‰é…åˆ—
+		unsigned int      numVertexes;  // ’¸“_‚Ì”
+		unsigned int      vertexSize;   // ’¸“_\‘¢‘Ì‚ÌƒoƒCƒg”
+		void              *vertexArray; // ’¸“_î•ñi’¸“_–ˆj”z—ñ
 
-		unsigned int      numIndexes;   // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®æ•°
-		DWORD             *indexArray;  // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®é…åˆ—
+		unsigned int      numIndexes;   // ƒCƒ“ƒfƒbƒNƒX‚Ì”
+		DWORD             *indexArray;  // ƒCƒ“ƒfƒbƒNƒX‚Ì”z—ñ
 		
-		unsigned int      numStream;    // ã‚¹ãƒˆãƒªãƒ¼ãƒ æ§‹é€ ä½“ã®æ•°
-		unsigned int      streamSize;   // ã‚¹ãƒˆãƒªãƒ¼ãƒ æ§‹é€ ä½“ã®ãƒã‚¤ãƒˆæ•°
-		void              *streamArray; // é ‚ç‚¹æƒ…å ±ï¼ˆã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹æ¯ï¼‰ã®é…åˆ—
+		unsigned int      numStream;    // ƒXƒgƒŠ[ƒ€\‘¢‘Ì‚Ì”
+		unsigned int      streamSize;   // ƒXƒgƒŠ[ƒ€\‘¢‘Ì‚ÌƒoƒCƒg”
+		void              *streamArray; // ’¸“_î•ñiƒCƒ“ƒfƒbƒNƒX–ˆj‚Ì”z—ñ
 
-		D3DVERTEXELEMENT9 *decl;        // ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ã«é€ã‚‹é ‚ç‚¹æ§‹é€ ä½“ã®å®šç¾©
+		D3DVERTEXELEMENT9 *decl;        // ƒVƒF[ƒ_[‚É‘—‚é’¸“_\‘¢‘Ì‚Ì’è‹`
 	};
 	bool Create( const CreateData &data );
 	bool CreateVertex(
-		unsigned int numVertex,    // é ‚ç‚¹æ•°
-		unsigned int vertexSize,   // é ‚ç‚¹æ§‹é€ ä½“ã®ãƒã‚¤ãƒˆæ•°
-		void *vertexArray );       // é ‚ç‚¹é…åˆ—
+		unsigned int numVertex,    // ’¸“_”
+		unsigned int vertexSize,   // ’¸“_\‘¢‘Ì‚ÌƒoƒCƒg”
+		void *vertexArray );       // ’¸“_”z—ñ
 	bool CreateIndexes(
-		unsigned int numIndexes,   // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã®æ•°
-		const DWORD *indexArray ); // ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹é…åˆ—
+		unsigned int numIndexes,   // ƒCƒ“ƒfƒbƒNƒX‚Ì”
+		const DWORD *indexArray ); // ƒCƒ“ƒfƒbƒNƒX”z—ñ
 	bool CreateStream( unsigned int numData, unsigned int dataSize, void *dataArray );
 	bool CreateDeclaration(
-		unsigned int declArySize,  // é ‚ç‚¹æ§‹é€ ä½“ã®ãƒã‚¤ãƒˆæ•°
-		D3DVERTEXELEMENT9 *decl ); // ã‚·ã‚§ãƒ¼ãƒ€ãƒ¼ä¸Šã§ã®é ‚ç‚¹æ§‹é€ ä½“ã®å®£è¨€
+		unsigned int declArySize,  // ’¸“_\‘¢‘Ì‚ÌƒoƒCƒg”
+		D3DVERTEXELEMENT9 *decl ); // ƒVƒF[ƒ_[ã‚Å‚Ì’¸“_\‘¢‘Ì‚ÌéŒ¾
 
-	// xyå¹³é¢ã«æ­£ä¸‰è§’å½¢ä½œæˆ
+	// xy•½–Ê‚É³OŠpŒ`ì¬
 	bool CreateTriangle(
-		float radius,    // å¤–æ¥å††ã®åŠå¾„
+		float radius,    // ŠOÚ‰~‚Ì”¼Œa
 		DWORD color ); 
-	// xyå¹³é¢ã«é•·æ–¹å½¢ä½œæˆ
+	// xy•½–Ê‚É’·•ûŒ`ì¬
 	bool CreateRectangle(
 		float width,
 		float height,
 		DWORD color );
-	// æ­£å››é¢ä½“ä½œæˆ
+	// ³l–Ê‘Ìì¬
 	bool CreateTriangular(
-		float radius, // å¤–æ¥å††ã®åŠå¾„
+		float radius, // ŠOÚ‰~‚Ì”¼Œa
 		DWORD color );
-	// ç›´æ–¹ä½“ä½œæˆ
+	// ’¼•û‘Ìì¬
 	bool CreateCube(
 		float width,
 		float height,
@@ -920,26 +920,26 @@ public:
 		unsigned int numPos = 0 );
 
 	/************/
-	/* èª­ã¿è¾¼ã¿ */
+	/* “Ç‚İ‚İ */
 	/************/
 
 	bool LoadMqo( char *filename );
 
 	/********/
-	/* æ›´æ–° */
+	/* XV */
 	/********/
 
-	// pos, scale, rot ã‹ã‚‰worldMatrixä½œæˆ
+	// pos, scale, rot ‚©‚çworldMatrixì¬
 	void UpdateWorldMatrix();
 
 	/********/
-	/* æç”» */
+	/* •`‰æ */
 	/********/
 
 	void Render( tdnShader *shader, char *technique );
 
 	/*********************/
-	/* ã‚»ãƒƒã‚¿ãƒ¼ ã‚²ãƒƒã‚¿ãƒ¼ */
+	/* ƒZƒbƒ^[ ƒQƒbƒ^[ */
 	/*********************/
 
 	const Vector3& Pos();
@@ -952,8 +952,8 @@ public:
 	void WorldMatrix( const Matrix& in );
 
 private:
-	IDirect3DVertexDeclaration9* decl;         // é ‚ç‚¹ãƒ‡ã‚³ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³ï¼ˆFVFï¼‰
-	unsigned int                 declSize;     // é ‚ç‚¹æ§‹é€ ä½“ã®ãƒã‚¤ãƒˆæ•°
+	IDirect3DVertexDeclaration9* decl;         // ’¸“_ƒfƒRƒŒ[ƒVƒ‡ƒ“iFVFj
+	unsigned int                 declSize;     // ’¸“_\‘¢‘Ì‚ÌƒoƒCƒg”
 
 	IDirect3DVertexBuffer9*      vertexBuffer;
 	unsigned int                 numVertexes;
@@ -961,11 +961,11 @@ private:
 	IDirect3DIndexBuffer9*       indexBuffer;
 	unsigned int                 numIndexes;
 
-	IDirect3DVertexBuffer9*      streamBuffer; // ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæ¯ã®æƒ…å ±
-	unsigned int                 streamSize;   // streamBuffer ã®ä¸€ã¤ã®ãƒ‡ãƒ¼ã‚¿ã®ãƒã‚¤ãƒˆæ•°
-	unsigned int                 numStream;   // streamBuffer ã®å€‹æ•°
+	IDirect3DVertexBuffer9*      streamBuffer; // ƒIƒuƒWƒFƒNƒg–ˆ‚Ìî•ñ
+	unsigned int                 streamSize;   // streamBuffer ‚Ìˆê‚Â‚Ìƒf[ƒ^‚ÌƒoƒCƒg”
+	unsigned int                 numStream;   // streamBuffer ‚ÌŒÂ”
 
-	unsigned int                 numFaces;     // ä¸‰è§’ãƒãƒªã‚´ãƒ³æ•°
+	unsigned int                 numFaces;     // OŠpƒ|ƒŠƒSƒ“”
 
 	Vector3    pos;
 	Vector3    scale;
@@ -979,7 +979,7 @@ private:
 //		tdnInput
 //*****************************************************************************************************************************
 //-----------------------------------------------------------------------------
-//		å…¥åŠ›é–¢é€£ã®å®šæ•°
+//		“ü—ÍŠÖ˜A‚Ì’è”
 //-----------------------------------------------------------------------------
 namespace tdnInputEnum
 {
@@ -987,21 +987,16 @@ namespace tdnInputEnum
 	static const int STICK_WIDTH = 1000;
 	static const int DEFAULT_KEY_CONFIG = -1;
 	static const float MIN_MOVE_STICK = .35f;
-	static const LPSTR ID_GOURPS[] =
+	static const int NUM_ID_GROUPS = 5;
+	static const LPSTR ID_GOURPS[NUM_ID_GROUPS] =
 	{
-		/* â€»IDè¿½åŠ ã—ãŸã‚‰ã“ã£ã¡ã‚‚è¿½åŠ ã—ã¦ãã ã•ã„ï¼ */
-		"DEFAULT", 
-		"XBOX", 
-		"PS3", 
-		"GAMEPAD",
-		"NORI_GAMEPAD"
+		"DEFAULT", "XBOX", "PS3", "GAMEPAD", "NORI_GAMEPAD"
 	};
-	static const int NUM_ID_GROUPS = _countof(ID_GOURPS);
 }
 
 
 //-----------------------------------------------------------------------------
-//		å…¥åŠ›ãƒ‡ãƒã‚¤ã‚¹ç®¡ç†
+//		“ü—ÍƒfƒoƒCƒXŠÇ—
 //-----------------------------------------------------------------------------
 class tdnInputManager
 {
@@ -1016,7 +1011,14 @@ private:
 
 public:
 	static void Initialize();
-	static void Release(){ SAFE_RELEASE(lpDI); }
+	static void Release()
+	{
+		if (lpDI)
+		{
+			delete lpDI;
+			lpDI = nullptr;
+		}
+	}
 	static LPDIRECTINPUTDEVICE8 GetDevice(int no);
 	static LPSTR GetGroupID(int no){ return groupID[no]; }
 };
@@ -1083,11 +1085,11 @@ private:
 	LPDIRECTINPUTDEVICE8 lpDevice;
 	LPDIRECTINPUTEFFECT	 pEffect;
 
-	// ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚­ãƒ¼é…ç½®
+	// ƒfƒtƒHƒ‹ƒg‚ÌƒL[”z’u
 	static const int default_key_map[20];
 	static const int default_joy_map[20];
 
-	// å…¥åŠ›ã«å¿œã˜ãŸå€¤ãŒæ ¼ç´ã•ã‚Œã‚‹(==3ã¨ã‹ã®3ã®å€¤ãŒå…¥ã£ã¦ã‚‹)
+	// “ü—Í‚É‰‚¶‚½’l‚ªŠi”[‚³‚ê‚é(==3‚Æ‚©‚Ì3‚Ì’l‚ª“ü‚Á‚Ä‚é)
 	u8	key_info[20], joy_info[20];
 
 	int key_map[20];
@@ -1101,10 +1103,10 @@ public:
 	void Update();
 	void PadAsign(const PADSET &padset);
 	int tdnInputDevice::Get(KEYCODE key){ return key_info[key]; }
-	int tdnInputDevice::GetAxisX(){ return (pad_axisX > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisX : 0; }
-	int tdnInputDevice::GetAxisY(){ return (pad_axisY > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisY : 0; }
-	int tdnInputDevice::GetAxisX2(){ return (pad_axisX2 > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisX2 : 0; }
-	int tdnInputDevice::GetAxisY2(){ return (pad_axisX2 > tdnInputEnum::MIN_MOVE_STICK*tdnInputEnum::STICK_WIDTH) ? pad_axisY2 : 0; }
+	int tdnInputDevice::GetAxisX(){ return (pad_axisX*pad_axisX > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisX : 0; }
+	int tdnInputDevice::GetAxisY(){ return (pad_axisY*pad_axisY > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisY : 0; }
+	int tdnInputDevice::GetAxisX2(){ return (pad_axisX2*pad_axisX2 > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisX2 : 0; }
+	int tdnInputDevice::GetAxisY2(){ return (pad_axisX2*pad_axisY2 > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisY2 : 0; }
 };
 
 class tdnInput
@@ -1136,7 +1138,7 @@ public:
 enum VK_CODE
 {
 	//=============================
-	// åŸºæœ¬ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰
+	// Šî–{ƒL[ƒ{[ƒh
 	KB_A = 0x41,
 	KB_B = 0x42,
 	KB_C = 0x43,
@@ -1165,10 +1167,10 @@ enum VK_CODE
 	KB_Z = 0x5A,
 	KB_ENTER = 0x0D,
 	KB_SPACE = 0x20,
-	KB_LEFT = 0x25,	/* â† */
-	KB_UP = 0x26,	/* â†‘ */
-	KB_RIGHT = 0x27,	/* â†’ */
-	KB_DOWN = 0x28,	/* â†“ */
+	KB_LEFT = 0x25,	/* © */
+	KB_UP = 0x26,	/* ª */
+	KB_RIGHT = 0x27,	/* ¨ */
+	KB_DOWN = 0x28,	/* « */
 
 	KB_0 = 0x30,
 	KB_1 = 0x31,
@@ -1196,7 +1198,7 @@ enum VK_CODE
 
 
 	//=============================
-	// ãƒ†ãƒ³ã‚­ãƒ¼é–¢é€£
+	// ƒeƒ“ƒL[ŠÖ˜A
 	KB_NUMPAD0 = 0x60,	/* 0 */
 	KB_NUMPAD1 = 0x61,	/* 1 */
 	KB_NUMPAD2 = 0x62,	/* 2 */
@@ -1216,7 +1218,7 @@ enum VK_CODE
 
 
 	//=============================
-	// ã‚ã¾ã‚Šä½¿ã†ã“ã¨ã¯ãªã„ã‹ã‚‚â€¦
+	// ‚ ‚Ü‚èg‚¤‚±‚Æ‚Í‚È‚¢‚©‚àc
 	KB_BACK = 0x08,
 	KB_TAB = 0x09,
 	KB_CLEAR = 0x0c,
@@ -1227,7 +1229,7 @@ enum VK_CODE
 	KB_PAUSE = 0x13,
 	KB_CAPITAL = 0x14,	/* Shift + CapsLock */
 	KB_ESC = 0x1B,
-	KB_NON_CONV = 0x1D,	/* ç„¡å¤‰æ› */
+	KB_NON_CONV = 0x1D,	/* –³•ÏŠ· */
 
 	KB_PGUP = 0x21,
 	KB_PGDN = 0x22,
@@ -1238,10 +1240,10 @@ enum VK_CODE
 	KB_DELETE = 0x2E,
 
 	//=============================
-	// ãƒã‚¦ã‚¹(ã‚­ãƒ¼ã§ã¯ãªã„ãŒ)
+	// ƒ}ƒEƒX(ƒL[‚Å‚Í‚È‚¢‚ª)
 	MOUSE_LEFT = 0x01,
 	MOUSE_RIGHT = 0x02,
-	MOUSE_CENTAR = 0x04		/* ãƒ›ã‚¤ãƒ¼ãƒ«ã‚¯ãƒªãƒƒã‚¯(ãã‚‹ãã‚‹ã§ã¯ãªã„) */
+	MOUSE_CENTAR = 0x04		/* ƒzƒC[ƒ‹ƒNƒŠƒbƒN(‚®‚é‚®‚é‚Å‚Í‚È‚¢) */
 
 };
 
@@ -1250,10 +1252,10 @@ class OwatasoKeyBoard
 public:
 	OwatasoKeyBoard();
 
-	// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®çŠ¶æ…‹ã‚’æ ¼ç´
+	// ƒL[ƒ{[ƒh‚Ìó‘Ô‚ğŠi”[
 	BYTE info[256];
 
-	// ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã®æŠ¼ã—ã¦ã‚‹æ™‚é–“
+	// ƒL[ƒ{[ƒh‚Ì‰Ÿ‚µ‚Ä‚éŠÔ
 	UINT on_frame[256];
 
 	void Update();
@@ -1263,20 +1265,20 @@ public:
 
 
 //====================================
-//		åˆæœŸåŒ–ã¨è§£æ”¾
+//		‰Šú‰»‚Æ‰ğ•ú
 void OKB_Init();
 void OKB_Release();
 //====================================
-//		ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æƒ…å ±æ›´æ–°
+//		ƒL[ƒ{[ƒhî•ñXV
 void OKB_Update();
 
-// å¯¾å¿œã—ã¦ã„ã‚‹ã‚­ãƒ¼ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹ãƒ•ãƒ¬ãƒ¼ãƒ æ•°ã‚’è¿”ã™( æŠ¼ã—ã£ã±ãªã—åˆ¤å®šã«ã©ã†ã )
+// ‘Î‰‚µ‚Ä‚¢‚éƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚éƒtƒŒ[ƒ€”‚ğ•Ô‚·( ‰Ÿ‚µ‚Á‚Ï‚È‚µ”»’è‚É‚Ç‚¤‚¼ )
 UINT KeyBoard(BYTE KeyCode);
 
-// ã‚­ãƒ¼ã®ãƒ•ãƒ¬ãƒ¼ãƒ ãŒå¼•æ•°frameã¨åŒã˜ã«ãªã£ãŸã‚‰trueã€ãã‚Œä»¥å¤–ã ã¨false( æŠ¼ã—ãŸç¬é–“åˆ¤å®šã«ã©ã†ã )
+// ƒL[‚ÌƒtƒŒ[ƒ€‚ªˆø”frame‚Æ“¯‚¶‚É‚È‚Á‚½‚çtrueA‚»‚êˆÈŠO‚¾‚Æfalse( ‰Ÿ‚µ‚½uŠÔ”»’è‚É‚Ç‚¤‚¼ )
 bool KeyBoardTRG(BYTE KeyCode, UINT frame = 1);
 
-// ä½•ã‹ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã¨ãã€1ãƒ•ãƒ¬ãƒ¼ãƒ ã ã‘ãã®ã‚­ãƒ¼ã®ã‚­ãƒ¼ã‚³ãƒ¼ãƒ‰ãŒè¿”ã£ã¦ãã‚‹( ã‚¿ã‚¤ãƒ”ãƒ³ã‚°ã‚²ãƒ¼ãƒ ã¨ã‹ã§ä½¿ãˆãã† )
+// ‰½‚©ƒL[‚ª‰Ÿ‚³‚ê‚½‚Æ‚«A1ƒtƒŒ[ƒ€‚¾‚¯‚»‚ÌƒL[‚ÌƒL[ƒR[ƒh‚ª•Ô‚Á‚Ä‚­‚é( ƒ^ƒCƒsƒ“ƒOƒQ[ƒ€‚Æ‚©‚Åg‚¦‚»‚¤ )
 BYTE KeyBoardAnyTRG();
 
 
@@ -1296,16 +1298,16 @@ BYTE KeyBoardAnyTRG();
 
 enum class DXA_FX
 {
-	DXAFX_OFF = 0,		// ã‚¨ãƒ•ã‚§ã‚¯ãƒˆã‚ªãƒ•
-	DXAFX_CHORUS = 1 << 0,	// ã‚³ãƒ¼ãƒ©ã‚¹
-	DXAFX_COMPRESSOR = 1 << 1,	// ã‚³ãƒ³ãƒ—ãƒ¬ãƒƒã‚µ
-	DXAFX_DISTORTION = 1 << 2,	// ãƒ‡ã‚£ã‚¹ãƒˆâ€•ã‚·ãƒ§ãƒ³
-	DXAFX_ECHO = 1 << 3,	// ã‚¨ã‚³ãƒ¼
-	DXAFX_FLANGER = 1 << 4,	// ãƒ•ãƒ©ãƒ³ã‚¸
-	DXAFX_GARGLE = 1 << 5,	// ã‚¬ãƒ¼ã‚°ãƒ«
-	DXAFX_ENVREVERB = 1 << 6,	// ç’°å¢ƒãƒªãƒãƒ¼ãƒ–
-	DXAFX_PARAMEQ = 1 << 7,	// ãƒ‘ãƒ©ãƒ¡ãƒˆãƒªãƒƒã‚¯ã‚¤ã‚³ãƒ©ã‚¤ã‚¶
-	DXAFX_WAVESREVERB = 1 << 8,	// ãƒŸãƒ¥ãƒ¼ã‚¸ãƒƒã‚¯ãƒªãƒãƒ¼ãƒ–(16bitã®ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆã®ã¿)
+	DXAFX_OFF = 0,		// ƒGƒtƒFƒNƒgƒIƒt
+	DXAFX_CHORUS = 1 << 0,	// ƒR[ƒ‰ƒX
+	DXAFX_COMPRESSOR = 1 << 1,	// ƒRƒ“ƒvƒŒƒbƒT
+	DXAFX_DISTORTION = 1 << 2,	// ƒfƒBƒXƒg\ƒVƒ‡ƒ“
+	DXAFX_ECHO = 1 << 3,	// ƒGƒR[
+	DXAFX_FLANGER = 1 << 4,	// ƒtƒ‰ƒ“ƒW
+	DXAFX_GARGLE = 1 << 5,	// ƒK[ƒOƒ‹
+	DXAFX_ENVREVERB = 1 << 6,	// ŠÂ‹«ƒŠƒo[ƒu
+	DXAFX_PARAMEQ = 1 << 7,	// ƒpƒ‰ƒƒgƒŠƒbƒNƒCƒRƒ‰ƒCƒU
+	DXAFX_WAVESREVERB = 1 << 8,	// ƒ~ƒ…[ƒWƒbƒNƒŠƒo[ƒu(16bit‚ÌƒI[ƒfƒBƒIƒtƒH[ƒ}ƒbƒg‚Ì‚İ)
 	DXAFX_MAX = 1 << 9
 };
 
@@ -1322,12 +1324,12 @@ protected:
 	DWORD BufferSize;
 	WAVEFORMATEX format;
 
-	// Loadã™ã‚‹ã¨ãã«ä½¿ã†å¤‰æ•°(ãƒ­ãƒ¼ã‚«ãƒ«â‡’ãƒ¡ãƒ³ãƒå¤‰æ•°)
+	// Load‚·‚é‚Æ‚«‚Ég‚¤•Ï”(ƒ[ƒJƒ‹Ëƒƒ“ƒo•Ï”)
 	WAVEFORMATEX	wfx;
 	LPBYTE			lpWBuf;
 	DWORD			size;
 
-	char			wav_file_path[128];	/*	WAVEãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®ãƒ‘ã‚¹*/
+	char			wav_file_path[128];	/*	WAVEƒtƒ@ƒCƒ‹‚Ö‚ÌƒpƒX*/
 	bool			loop_flag;
 
 	static const int READBYTE;
@@ -1338,7 +1340,7 @@ public:
 	tdnSoundBuffer(){}
 	~tdnSoundBuffer();
 
-	// åŒã˜ã®ã‚’è¤‡æ•°èª­ã¿è¾¼ã¿ãŸã„ã¨ãã«ä½¿ã†
+	// “¯‚¶‚Ì‚ğ•¡”“Ç‚İ‚İ‚½‚¢‚Æ‚«‚Ég‚¤
 	static void Create_and_copy(LPDIRECTSOUND8 lpDS, char* filename, bool b3D, tdnSoundBuffer **buffers, int dst, int count);
 
 	LPDIRECTSOUNDBUFFER8 GetBuf(){ return lpBuf; }
@@ -1370,19 +1372,19 @@ public:
 
 
 	//------------------------------------------------------
-	//	ã‚µã‚¦ãƒ³ãƒ‰ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ
+	//	ƒTƒEƒ“ƒhƒGƒtƒFƒNƒg
 	//------------------------------------------------------
 	void SetFX(DXA_FX flag);
 
 	//------------------------------------------------------
-	//	3Dé–¢ä¿‚
+	//	3DŠÖŒW
 	//------------------------------------------------------
-	void SetDist(float max_dist = DS3D_DEFAULTMAXDISTANCE, float min_dist = DS3D_DEFAULTMINDISTANCE);	// æœ€å¤§è¶…ãˆã‚‹ã¨ã‚‚ã†èã“ãˆãªã„ã€æœ€å°‘ã¯æ™®é€šã«1ã¨ã‹ã§ã„ã„ã¨æ€ã†
-	void SetPos(const Vector3 &pos);																	// éŸ³ãŒç™ºç”Ÿã™ã‚‹åº§æ¨™
-	void SetFront(const Vector3 &front);																// éŸ³ã®å‘ã
-	void SetRange(int degreeIn = DS3D_DEFAULTCONEANGLE);												// éŸ³ã®ç¯„å›²å†…è§’åº¦ã®è¨­å®š(åº¦)
-	void SetOutRange_volume(int out_vol = DS3D_DEFAULTCONEOUTSIDEVOLUME);								// è§’åº¦ç¯„å›²å¤–ã®å ´åˆã®éŸ³(-10000(æœ€å°‘)ï½0(æœ€å¤§))
-	void SetMove(const Vector3 &move);																	// æ™®é€šã¯å‹•ã‹ãªã„ã‘ã©ãƒ‰ãƒƒãƒ—ãƒ©ãƒ¼åŠ¹æœã§ä½¿ã†
+	void SetDist(float max_dist = DS3D_DEFAULTMAXDISTANCE, float min_dist = DS3D_DEFAULTMINDISTANCE);	// Å‘å’´‚¦‚é‚Æ‚à‚¤•·‚±‚¦‚È‚¢AÅ­‚Í•’Ê‚É1‚Æ‚©‚Å‚¢‚¢‚Æv‚¤
+	void SetPos(const Vector3 &pos);																	// ‰¹‚ª”­¶‚·‚éÀ•W
+	void SetFront(const Vector3 &front);																// ‰¹‚ÌŒü‚«
+	void SetRange(int degreeIn = DS3D_DEFAULTCONEANGLE);												// ‰¹‚Ì”ÍˆÍ“àŠp“x‚Ìİ’è(“x)
+	void SetOutRange_volume(int out_vol = DS3D_DEFAULTCONEOUTSIDEVOLUME);								// Šp“x”ÍˆÍŠO‚Ìê‡‚Ì‰¹(-10000(Å­)`0(Å‘å))
+	void SetMove(const Vector3 &move);																	// •’Ê‚Í“®‚©‚È‚¢‚¯‚Çƒhƒbƒvƒ‰[Œø‰Ê‚Åg‚¤
 	void SetAll3D(float max_dist, float min_dist, const Vector3 &pos, const Vector3 &front, int degreeIn, int out_vol, const Vector3 &move);
 };
 
@@ -1391,7 +1393,7 @@ class tdnStreamSound
 private:
 	static const int STRSECOND = 1;
 	int		rate;
-	LPDIRECTSOUNDBUFFER	lpStream;		// ã‚¹ãƒˆãƒªãƒ¼ãƒ ç”¨äºŒæ¬¡ãƒãƒƒãƒ•ã‚¡
+	LPDIRECTSOUNDBUFFER	lpStream;		// ƒXƒgƒŠ[ƒ€—p“ñŸƒoƒbƒtƒ@
 	DSBPOSITIONNOTIFY	pn[3];
 
 	HANDLE	hStrThread;
@@ -1444,42 +1446,42 @@ typedef tdnStreamSound tdn_DSSTREAM, *tdn_LPDSSTREAM;
 
 //*****************************************************************************
 //
-//		ã‚µã‚¦ãƒ³ãƒ‰ç®¡ç†ã®åŸºåº•(ç¶™æ‰¿ã§ä½¿ã†ã ã‘ã§ã€ã‚²ãƒ¼ãƒ ä½œã‚‹äººã¯ä½¿ç”¨ã—ãªã„)
+//		ƒTƒEƒ“ƒhŠÇ—‚ÌŠî’ê(Œp³‚Åg‚¤‚¾‚¯‚ÅAƒQ[ƒ€ì‚él‚Íg—p‚µ‚È‚¢)
 //
 //*****************************************************************************
 class tdnSoundBase
 {
 protected:
-	static const int WavNum = 128;	// ãƒãƒƒãƒ•ã‚¡æœ€å¤§å€¤
+	static const int WavNum = 128;	// ƒoƒbƒtƒ@Å‘å’l
 
 	HWND	hWndWAV;
 
-	LPDIRECTSOUND8			lpDS;		// DirectSoundã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
-	LPDIRECTSOUNDBUFFER	lpPrimary;		// ä¸€æ¬¡ãƒãƒƒãƒ•ã‚¡
+	LPDIRECTSOUND8			lpDS;		// DirectSoundƒIƒuƒWƒFƒNƒg
+	LPDIRECTSOUNDBUFFER	lpPrimary;		// ˆêŸƒoƒbƒtƒ@
 
-	LPDIRECTSOUND3DLISTENER8 lp3DListener;	// 3Dã‚µã‚¦ãƒ³ãƒ‰ä¸Šã§ã€éŸ³æºã¨èã“ãˆã‚‹äººã¨ã®é–¢ä¿‚ã§ã„ã†ã¨èã“ãˆã‚‹äººã®æƒ…å ±
+	LPDIRECTSOUND3DLISTENER8 lp3DListener;	// 3DƒTƒEƒ“ƒhã‚ÅA‰¹Œ¹‚Æ•·‚±‚¦‚él‚Æ‚ÌŠÖŒW‚Å‚¢‚¤‚Æ•·‚±‚¦‚él‚Ìî•ñ
 
 public:
 	//------------------------------------------------------
-	//	åˆæœŸåŒ–ãƒ»è§£æ”¾
+	//	‰Šú‰»E‰ğ•ú
 	//------------------------------------------------------
 	tdnSoundBase();
 	virtual ~tdnSoundBase();
 
 	//------------------------------------------------------
-	// â€»3Dã‚µã‚¦ãƒ³ãƒ‰é™å®š ãƒªã‚¹ãƒŠãƒ¼æƒ…å ±è¨­å®š
+	// ¦3DƒTƒEƒ“ƒhŒÀ’è ƒŠƒXƒi[î•ñİ’è
 	//------------------------------------------------------
 	void SetListenerPos(const Vector3 &pos);
 	void SetListenerOrientation(const Vector3 &fornt, const Vector3 &up);
 	void SetListenerMove(const Vector3 &move);
 	void SetListenerAll(const Vector3 &pos, const Vector3 &fornt, const Vector3 &up, const Vector3 &velocity);
-	void UpdateListener();	// 3Dã‚µã‚¦ãƒ³ãƒ‰ã‚’ä½¿ç”¨ã™ã‚‹å ´åˆã€æ¯å›ã“ã‚Œã‚’å‘¼ã³å‡ºã—ã¦ãã ã•ã„
+	void UpdateListener();	// 3DƒTƒEƒ“ƒh‚ğg—p‚·‚éê‡A–ˆ‰ñ‚±‚ê‚ğŒÄ‚Ño‚µ‚Ä‚­‚¾‚³‚¢
 };
 
 
 //*****************************************************************************
 //
-//		ã‚µã‚¦ãƒ³ãƒ‰ç®¡ç†(SEç”¨)
+//		ƒTƒEƒ“ƒhŠÇ—(SE—p)
 //
 //*****************************************************************************
 
@@ -1488,8 +1490,8 @@ class tdnSoundSE : public tdnSoundBase
 private:
 	struct SEData
 	{
-		bool b3D;					// 3Dãƒ•ãƒ©ã‚°
-		tdnSoundBuffer* buffer;	// ã‚µã‚¦ãƒ³ãƒ‰ãƒãƒƒãƒ•ã‚¡
+		bool b3D;					// 3Dƒtƒ‰ƒO
+		tdnSoundBuffer* buffer;	// ƒTƒEƒ“ƒhƒoƒbƒtƒ@
 	};
 	std::vector<SEData*> data[WavNum];
 
@@ -1498,20 +1500,20 @@ public:
 	~tdnSoundSE();
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
-	//	å¼•æ•°â€¦ID:ç•ªå·ã€ num_of_play_simultaneously:åŒæ™‚å†ç”Ÿå¯èƒ½æ•°(ã‚ã‚“ã¾ã‚Šå¤šã„ã¨ãƒ¡ãƒ¢ãƒªé£Ÿã†ã®ã§ã»ã©ã»ã©ã«ã€‚5ï½10å‰å¾Œ)ã€ã€€ãƒ•ã‚¡ã‚¤ãƒ«åã€ã€€3Dã‚µã‚¦ãƒ³ãƒ‰ãƒ•ãƒ©ã‚°
+	//	ˆø”cID:”Ô†A num_of_play_simultaneously:“¯Ä¶‰Â”\”(‚ ‚ñ‚Ü‚è‘½‚¢‚Æƒƒ‚ƒŠH‚¤‚Ì‚Å‚Ù‚Ç‚Ù‚Ç‚ÉB5`10‘OŒã)A@ƒtƒ@ƒCƒ‹–¼A@3DƒTƒEƒ“ƒhƒtƒ‰ƒO
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 	void Set(int ID, int num_of_play_simultaneously, char* filename, bool b3D = false);
 
-	/* å†ç”Ÿ */
+	/* Ä¶ */
 	int Play(int ID, bool loop = false);
 
-	/* åœæ­¢:noã«ã¯Playã§è¿”ã£ã¦ããŸå€¤ã‚’è‡ªåˆ†ã§å…¥ã‚Œã‚‹ */
+	/* ’â~:no‚É‚ÍPlay‚Å•Ô‚Á‚Ä‚«‚½’l‚ğ©•ª‚Å“ü‚ê‚é */
 	void Stop(int ID, int no);
 	void AllStop();
 
-	/* å„ã‚µã‚¦ãƒ³ãƒ‰ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®šãƒ»å–å¾—é–¢æ•° */
+	/* ŠeƒTƒEƒ“ƒhƒpƒ‰ƒ[ƒ^İ’èEæ“¾ŠÖ” */
 	void	SetVolume(int ID, int volume);
-	void	SetVolume(int ID, float volume);	// 0ï½1
+	void	SetVolume(int ID, float volume);	// 0`1
 	int		GetVolume(int ID);
 	void	SetPan(int ID, int pan);
 	int		GetPan(int ID);
@@ -1526,15 +1528,15 @@ public:
 
 
 	//---------------------------------------------------------------
-	// â€»ä»¥ä¸‹ã®é–¢æ•°ã‚’å‘¼ã¶ã«ã¯Setã®å¼•æ•°ã®b3Dã‚’trueã«ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™
+	// ¦ˆÈ‰º‚ÌŠÖ”‚ğŒÄ‚Ô‚É‚ÍSet‚Ìˆø”‚Ìb3D‚ğtrue‚É‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 	//---------------------------------------------------------------
-	int Play(int ID, const Vector3 &pos, const Vector3 &front = Vector3(0, 0, -1), const Vector3 &move = Vector3(0, 0, 0), bool loop = false);// éŸ³æºæƒ…å ±è¨­å®šã—ã¤ã¤å†ç”Ÿ
-	void SetDist(int ID, int no, float max_dist = DS3D_DEFAULTMAXDISTANCE, float min_dist = DS3D_DEFAULTMINDISTANCE);				// æœ€å¤§è¶…ãˆã‚‹ã¨ã‚‚ã†èã“ãˆãªã„ã€æœ€å°‘ã¯æ™®é€šã«0ã¨ã‹ã§ã„ã„ã¨æ€ã†
-	void SetPos(int ID, int no, const Vector3 &pos);																				// éŸ³ãŒç™ºç”Ÿã™ã‚‹åº§æ¨™
-	void SetFront(int ID, int no, const Vector3 &front);																			// éŸ³ã®å‘ã
-	void SetRange(int ID, int no, int degreeIn = DS3D_DEFAULTCONEANGLE);															// éŸ³ã®ç¯„å›²å†…è§’åº¦ã®è¨­å®š(åº¦)
-	void SetOutRange_volume(int ID, int no, int out_vol = DS3D_DEFAULTCONEOUTSIDEVOLUME);											// è§’åº¦ç¯„å›²å¤–ã®å ´åˆã®éŸ³(-10000(æœ€å°‘)ï½0(æœ€å¤§))
-	void SetMove(int ID, int no, const Vector3 &move);																				// æ™®é€šã¯å‹•ã‹ãªã„ã‘ã©ãƒ‰ãƒƒãƒ—ãƒ©ãƒ¼åŠ¹æœã§ä½¿ã†
+	int Play(int ID, const Vector3 &pos, const Vector3 &front = Vector3(0, 0, -1), const Vector3 &move = Vector3(0, 0, 0), bool loop = false);// ‰¹Œ¹î•ñİ’è‚µ‚Â‚ÂÄ¶
+	void SetDist(int ID, int no, float max_dist = DS3D_DEFAULTMAXDISTANCE, float min_dist = DS3D_DEFAULTMINDISTANCE);				// Å‘å’´‚¦‚é‚Æ‚à‚¤•·‚±‚¦‚È‚¢AÅ­‚Í•’Ê‚É0‚Æ‚©‚Å‚¢‚¢‚Æv‚¤
+	void SetPos(int ID, int no, const Vector3 &pos);																				// ‰¹‚ª”­¶‚·‚éÀ•W
+	void SetFront(int ID, int no, const Vector3 &front);																			// ‰¹‚ÌŒü‚«
+	void SetRange(int ID, int no, int degreeIn = DS3D_DEFAULTCONEANGLE);															// ‰¹‚Ì”ÍˆÍ“àŠp“x‚Ìİ’è(“x)
+	void SetOutRange_volume(int ID, int no, int out_vol = DS3D_DEFAULTCONEOUTSIDEVOLUME);											// Šp“x”ÍˆÍŠO‚Ìê‡‚Ì‰¹(-10000(Å­)`0(Å‘å))
+	void SetMove(int ID, int no, const Vector3 &move);																				// •’Ê‚Í“®‚©‚È‚¢‚¯‚Çƒhƒbƒvƒ‰[Œø‰Ê‚Åg‚¤
 	void SetAll3D(int ID, int no, float max_dist, float min_dist, const Vector3 &pos, const Vector3 &front, int degreeIn, int out_vol, const Vector3 &move);
 };
 
@@ -1542,14 +1544,14 @@ public:
 
 //*****************************************************************************
 //
-//		ã‚µã‚¦ãƒ³ãƒ‰ç®¡ç†(BGMç”¨)	â€»ã“ã®ã‚¯ãƒ©ã‚¹ã®ã¿ã€æ¯ãƒ•ãƒ¬ãƒ¼ãƒ Updateã‚’å‘¼ã³å‡ºã—ã¦ãã ã•ã„
+//		ƒTƒEƒ“ƒhŠÇ—(BGM—p)	¦‚±‚ÌƒNƒ‰ƒX‚Ì‚İA–ˆƒtƒŒ[ƒ€Update‚ğŒÄ‚Ño‚µ‚Ä‚­‚¾‚³‚¢
 //
 //*****************************************************************************
 
 class tdnSoundBGM : public tdnSoundBase
 {
 private:
-	static const int MinVolume = -2500;	// éŸ³é‡æœ€å°‘å€¤
+	static const int MinVolume = -2500;	// ‰¹—ÊÅ­’l
 
 	enum class MODE
 	{
@@ -1562,10 +1564,10 @@ private:
 
 	struct tagBGMData
 	{
-		bool b3D;			// 3Dã‚µã‚¦ãƒ³ãƒ‰ãƒ•ãƒ©ã‚°
-		MODE fade_mode;		// ãƒ•ã‚§ãƒ¼ãƒ‰ã‚¤ãƒ³ã‹ã‚¢ã‚¦ãƒˆã‹ä½•ã‚‚ã—ãªã„ã‹
-		float volume;		// éŸ³é‡(0ï½1)
-		float fade_speed;		// ãƒ•ã‚§ãƒ¼ãƒ‰é€Ÿåº¦
+		bool b3D;			// 3DƒTƒEƒ“ƒhƒtƒ‰ƒO
+		MODE fade_mode;		// ƒtƒF[ƒhƒCƒ“‚©ƒAƒEƒg‚©‰½‚à‚µ‚È‚¢‚©
+		float volume;		// ‰¹—Ê(0`1)
+		float fade_speed;		// ƒtƒF[ƒh‘¬“x
 		tdnSoundBuffer* buffer;
 	};
 	std::vector<tagBGMData*> data;
@@ -1575,39 +1577,39 @@ public:
 	~tdnSoundBGM();
 
 	//////////////////////////////////////////////
-	/* â€»æ¯ãƒ•ãƒ¬ãƒ¼ãƒ Updateã‚’å‘¼ã³å‡ºã—ã¦ãã ã•ã„ï¼ */
+	/* ¦–ˆƒtƒŒ[ƒ€Update‚ğŒÄ‚Ño‚µ‚Ä‚­‚¾‚³‚¢I */
 	void Update();
 	//////////////////////////////////////////////
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
-	//	å¼•æ•°â€¦ID:ç•ªå·ã€ãƒ•ã‚¡ã‚¤ãƒ«åã€3Dã‚µã‚¦ãƒ³ãƒ‰ãƒ•ãƒ©ã‚°(BGMã®å ´åˆã€ä½¿ã†æ©Ÿä¼šã¯ã»ã¼ãªã„)
+	//	ˆø”cID:”Ô†Aƒtƒ@ƒCƒ‹–¼A3DƒTƒEƒ“ƒhƒtƒ‰ƒO(BGM‚Ìê‡Ag‚¤‹@‰ï‚Í‚Ù‚Ú‚È‚¢)
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 	void Set(int ID, char* filename, bool b3D = false);
 	void Set(int ID, unsigned char *data, unsigned long size, LPWAVEFORMATEX wfx, bool b3D = false);
 
-	/* å†ç”Ÿ */
+	/* Ä¶ */
 	void Play(int ID, bool loop = true, DWORD cursor = 0);
 
-	/* åœæ­¢ */
+	/* ’â~ */
 	void Stop(int ID);
 	void AllStop();
 	void Pause(int ID);
 
-	/* ãƒ•ã‚§ãƒ¼ãƒ‰é–¢ä¿‚(BGMã¨SEã§åˆ†ã‘ãŸè¦å› ã®1ã¤) */
-	void FadeOut(int ID, float fade_speed);	// fade_speedã¯0ï½1ã®ç¯„å›²ã€‚0.01ã¨ã‹ã®å€¤ã«ãªã‚‹
+	/* ƒtƒF[ƒhŠÖŒW(BGM‚ÆSE‚Å•ª‚¯‚½—vˆö‚Ì1‚Â) */
+	void FadeOut(int ID, float fade_speed);	// fade_speed‚Í0`1‚Ì”ÍˆÍB0.01‚Æ‚©‚Ì’l‚É‚È‚é
 	void FadeIn(int ID, float fade_speed, bool loop = true, DWORD cursor = 0);
 
 	enum class CROSS_FADE_TYPE
 	{
-		NORMAL,			// æ™®é€šã«æœ€åˆã‹ã‚‰å†ç”Ÿ
-		END_OF_ETERNITY	// EoEå½¢å¼(ã‚¤ãƒ³ã•ã›ã‚‹BGMã‚’ã‚¢ã‚¦ãƒˆã•ã›ã‚‹BGMã¨åŒã˜ã‚«ãƒ¼ã‚½ãƒ«ã‹ã‚‰å†ç”Ÿã•ã›ã‚‹)
+		NORMAL,			// •’Ê‚ÉÅ‰‚©‚çÄ¶
+		END_OF_ETERNITY	// EoEŒ`®(ƒCƒ“‚³‚¹‚éBGM‚ğƒAƒEƒg‚³‚¹‚éBGM‚Æ“¯‚¶ƒJ[ƒ\ƒ‹‚©‚çÄ¶‚³‚¹‚é)
 	};
 	void CrossFade(int inID, int outID, float fade_speed, CROSS_FADE_TYPE type = CROSS_FADE_TYPE::NORMAL, bool loop = true);
 	void CrossFade(int inID, int outID, float in_speed, float out_speed, CROSS_FADE_TYPE type, bool loop);
 
-	/* å„ã‚µã‚¦ãƒ³ãƒ‰ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿è¨­å®šãƒ»å–å¾—é–¢æ•° */
+	/* ŠeƒTƒEƒ“ƒhƒpƒ‰ƒ[ƒ^İ’èEæ“¾ŠÖ” */
 	void	SetVolume(int ID, int volume);
-	void	SetVolume(int ID, float volume);	// 0ï½1
+	void	SetVolume(int ID, float volume);	// 0`1
 	int		GetVolume(int ID);
 	void	SetPan(int ID, int pan);
 	int		GetPan(int ID);
@@ -1631,20 +1633,20 @@ public:
 
 
 	//---------------------------------------------------------------
-	// â€»ä»¥ä¸‹ã®é–¢æ•°ã‚’å‘¼ã¶ã«ã¯Setã®å¼•æ•°ã®b3Dã‚’trueã«ã™ã‚‹å¿…è¦ãŒã‚ã‚Šã¾ã™
+	// ¦ˆÈ‰º‚ÌŠÖ”‚ğŒÄ‚Ô‚É‚ÍSet‚Ìˆø”‚Ìb3D‚ğtrue‚É‚·‚é•K—v‚ª‚ ‚è‚Ü‚·
 	//---------------------------------------------------------------
-	void Play(int ID, const Vector3 &pos, const Vector3 &front = Vector3(0, 0, -1), const Vector3 &move = Vector3(0, 0, 0), bool loop = true);// éŸ³æºæƒ…å ±è¨­å®šã—ã¤ã¤å†ç”Ÿ
-	void SetDist(int ID, int no, float max_dist = DS3D_DEFAULTMAXDISTANCE, float min_dist = DS3D_DEFAULTMINDISTANCE);				// æœ€å¤§è¶…ãˆã‚‹ã¨ã‚‚ã†èã“ãˆãªã„ã€æœ€å°‘ã¯æ™®é€šã«0ã¨ã‹ã§ã„ã„ã¨æ€ã†
-	void SetPos(int ID, int no, const Vector3 &pos);																				// éŸ³ãŒç™ºç”Ÿã™ã‚‹åº§æ¨™
-	void SetFront(int ID, int no, const Vector3 &front);																			// éŸ³ã®å‘ã
-	void SetRange(int ID, int no, int degreeIn = DS3D_DEFAULTCONEANGLE);															// éŸ³ã®ç¯„å›²å†…è§’åº¦ã®è¨­å®š(åº¦)
-	void SetOutRange_volume(int ID, int no, int out_vol = DS3D_DEFAULTCONEOUTSIDEVOLUME);											// è§’åº¦ç¯„å›²å¤–ã®å ´åˆã®éŸ³(-10000(æœ€å°‘)ï½0(æœ€å¤§))
-	void SetMove(int ID, int no, const Vector3 &move);																				// æ™®é€šã¯å‹•ã‹ãªã„ã‘ã©ãƒ‰ãƒƒãƒ—ãƒ©ãƒ¼åŠ¹æœã§ä½¿ã†
+	void Play(int ID, const Vector3 &pos, const Vector3 &front = Vector3(0, 0, -1), const Vector3 &move = Vector3(0, 0, 0), bool loop = true);// ‰¹Œ¹î•ñİ’è‚µ‚Â‚ÂÄ¶
+	void SetDist(int ID, int no, float max_dist = DS3D_DEFAULTMAXDISTANCE, float min_dist = DS3D_DEFAULTMINDISTANCE);				// Å‘å’´‚¦‚é‚Æ‚à‚¤•·‚±‚¦‚È‚¢AÅ­‚Í•’Ê‚É0‚Æ‚©‚Å‚¢‚¢‚Æv‚¤
+	void SetPos(int ID, int no, const Vector3 &pos);																				// ‰¹‚ª”­¶‚·‚éÀ•W
+	void SetFront(int ID, int no, const Vector3 &front);																			// ‰¹‚ÌŒü‚«
+	void SetRange(int ID, int no, int degreeIn = DS3D_DEFAULTCONEANGLE);															// ‰¹‚Ì”ÍˆÍ“àŠp“x‚Ìİ’è(“x)
+	void SetOutRange_volume(int ID, int no, int out_vol = DS3D_DEFAULTCONEOUTSIDEVOLUME);											// Šp“x”ÍˆÍŠO‚Ìê‡‚Ì‰¹(-10000(Å­)`0(Å‘å))
+	void SetMove(int ID, int no, const Vector3 &move);																				// •’Ê‚Í“®‚©‚È‚¢‚¯‚Çƒhƒbƒvƒ‰[Œø‰Ê‚Åg‚¤
 	void SetAll3D(int ID, int no, float max_dist, float min_dist, const Vector3 &pos, const Vector3 &front, int degreeIn, int out_vol, const Vector3 &move);
 };
 
 
-// ã‚ã¶ã‚ˆã¿ã“ã¿
+// ‚í‚Ô‚æ‚İ‚±‚İ
 LPBYTE LoadWavData(LPSTR filename, LPDWORD size, LPWAVEFORMATEX wfx);
 
 
@@ -1664,7 +1666,7 @@ public:
 
 
 /*****************************************/
-//	ã“ã“ã‹ã‚‰ã¯ã‚¨ãƒ©ãƒ¼ãƒã‚§ãƒƒã‚¯ã®ãŸã‚ã«è¿½åŠ 
+//	‚±‚±‚©‚ç‚ÍƒGƒ‰[ƒ`ƒFƒbƒN‚Ì‚½‚ß‚É’Ç‰Á
 /*****************************************/
 
 #ifndef __IT_DEBUG_H__
@@ -1675,7 +1677,7 @@ public:
 #ifdef _IT_DEBUG
 
 //*****************************************************************
-//newã‚ªãƒ¼ãƒãƒ¼ãƒ­ãƒ¼ãƒ‰
+//newƒI[ƒo[ƒ[ƒh
 //*****************************************************************
 
 #define _CRTDBG_MAP_ALLOC
@@ -1687,12 +1689,12 @@ public:
 #include <memory>
 
 //*****************************************************************
-//ãƒ¡ãƒ¢ãƒªãƒ¼ãƒªãƒ¼ã‚¯è‡ªå‹•ãƒã‚§ãƒƒã‚¯
+//ƒƒ‚ƒŠ[ƒŠ[ƒN©“®ƒ`ƒFƒbƒN
 //*****************************************************************
 #define MyMemoryLeakCheck _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF)
 
 //*****************************************************************
-//		ä¾‹å¤–ã«ã‚ˆã£ã¦é€å‡ºã•ã‚Œã‚‹ã‚¯ãƒ©ã‚¹
+//		—áŠO‚É‚æ‚Á‚Ä‘—o‚³‚ê‚éƒNƒ‰ƒX
 //*****************************************************************
 
 template<class _error_type>
@@ -1704,8 +1706,8 @@ private:
 	ERROR_TYPE_VALUE	data;
 public:
 	ErrorHandlerBase(
-		const char* errstr,				//ã‚¨ãƒ©ãƒ¼ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸
-		const ERROR_TYPE_VALUE& data):	//errorå€¤
+		const char* errstr,				//ƒGƒ‰[ƒƒbƒZ[ƒW
+		const ERROR_TYPE_VALUE& data):	//error’l
 		data(data)
 	{
 		str[0] = '\0';
@@ -1733,12 +1735,12 @@ public:
 	}
 };
 
-//ã‚²ãƒ¼ãƒ å¼·åˆ¶çµ‚äº†error
+//ƒQ[ƒ€‹­§I—¹error
 typedef ErrorHandlerBase<int> Error_GameExit;
 
 
 //*****************************************************************
-//printfã¨åŒã˜å½¢å¼ã§å‡ºåŠ›ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã«è¡¨ç¤º
+//printf‚Æ“¯‚¶Œ`®‚Åo—ÍƒEƒBƒ“ƒhƒE‚É•\¦
 //*****************************************************************
 #define MyDebugString(str,...)\
 {\
@@ -1748,7 +1750,7 @@ typedef ErrorHandlerBase<int> Error_GameExit;
 }
 
 //*****************************************************************
-//	ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒƒã‚¯ã‚¹ã‚’printfã¿ãŸã„ã«è¡¨ç¤ºã™ã‚‹
+//	ƒƒbƒZ[ƒWƒ{ƒbƒNƒX‚ğprintf‚İ‚½‚¢‚É•\¦‚·‚é
 //*****************************************************************
 #define MessageBoxPlus(str,...)\
 {\
@@ -1758,7 +1760,7 @@ typedef ErrorHandlerBase<int> Error_GameExit;
 }
 
 //*****************************************************************
-//printfã¨åŒã˜å½¢å¼ã§ã‚¢ã‚µãƒ¼ãƒˆã«æ–‡å­—åˆ—ã‚’è¡¨ç¤ºã•ã›ã‚‹
+//printf‚Æ“¯‚¶Œ`®‚ÅƒAƒT[ƒg‚É•¶š—ñ‚ğ•\¦‚³‚¹‚é
 //*****************************************************************
 #define MyAssert(expr,str,...)\
 {\
@@ -1767,7 +1769,7 @@ if (!(expr)){\
 	\
 	char t[256], ti[600]; \
 	sprintf_s<256>(t, str, __VA_ARGS__); \
-	sprintf_s<600>(ti, "ã€€%sã€€ã®è¡Œç•ªå·ã€€%dã€€ã§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸ \n %s \nå¼(%s) \nå®Ÿè¡Œã‚’ç¶šã‘ã¾ã™ã‹ï¼Ÿ", __FILE__, __LINE__, t, #expr); \
+	sprintf_s<600>(ti, "@%s@‚Ìs”Ô†@%d@‚ÅƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½ \n %s \n®(%s) \nÀs‚ğ‘±‚¯‚Ü‚·‚©H", __FILE__, __LINE__, t, #expr); \
 	MessageBeep(MB_OK); \
 if (MessageBox(0, ti, "MyAssertError!!!", MB_YESNO) == IDNO){\
 	Error_GameExit err("GameExitError", 0);\
