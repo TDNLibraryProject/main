@@ -133,13 +133,13 @@ void tdnView::Activate()
 	p = Pos;
 	t = Target;
 	
-	LookAtLH(matV, p, t, Vector3(.0f, 1.0f, .0f));
+	Math::LookAtLH(matV, p, t, Vector3(.0f, 1.0f, .0f));
 
 	//	ビューポート設定
 	if (Viewport.Width != 0) tdnSystem::GetDevice()->SetViewport(&Viewport);
 
 	//	投影行列設定
-	PerspectiveLH(matP, FovY, Aspect, Near, Far);
+	Math::PerspectiveLH(matP, FovY, Aspect, Near, Far);
 
 	//	グローバルへの適用
 	::matProjection = matP;

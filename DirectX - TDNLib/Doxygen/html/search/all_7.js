@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['render',['Render',['../classtdn2_d_obj.html#a6d76656f0d938e03ed24bd5bdbf69631',1,'tdn2DObj::Render(int x, int y, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags=RS::COPY)'],['../classtdn2_d_obj.html#aeebede9271855cd5512046ebaf7bb237',1,'tdn2DObj::Render(int x, int y, int w, int h, int tx, int ty, int tw, int th, tdnShader *shader, char *name)']]],
-  ['render3d',['Render3D',['../classtdn2_d_obj.html#ab798e77aefa467c0c75b48aeb3c2abc6',1,'tdn2DObj::Render3D(float x, float y, float z, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags=RS::COPY)'],['../classtdn2_d_obj.html#a7dd4c127867274b24d246f67d042acfd',1,'tdn2DObj::Render3D(Vector3 pos, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags=RS::COPY)']]]
+  ['oltholh',['OlthoLH',['../namespace_math.html#ad2974e2d841fd996c93b7f9deb10c6cf',1,'Math']]],
+  ['openarchivefile',['OpenArchiveFile',['../classtdn_un_archiver.html#a0182858536e834e480db92052061753d',1,'tdnUnArchiver']]],
+  ['owatasokeyboard',['OwatasoKeyBoard',['../class_owataso_key_board.html',1,'']]]
 ];

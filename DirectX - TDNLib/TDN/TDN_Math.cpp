@@ -1,5 +1,7 @@
 #include	"TDNLIB.h"
 
+//using namespace Math;
+
 //*****************************************************
 //		s—ñŠÖ˜A
 //*****************************************************
@@ -12,7 +14,7 @@
 *@brief				ˆø”‚ÌMat‚ÉŒü‚«‚Æ•½sˆÚ“®‚Ìî•ñ‚ð“ü‚ê‚é(XYZ‰ñ“])
 *@param[in]	Mat		Š|‚¯‡‚í‚¹‚½Œ‹‰Ê‚Ìs—ñ	
 */
-void	SetTransformMatrixXYZ(Matrix *Mat, float posX, float posY, float posZ, float angleX, float angleY, float angleZ)
+void	Math::SetTransformMatrixXYZ(Matrix *Mat, float posX, float posY, float posZ, float angleX, float angleY, float angleZ)
 {
 	float	sx, sy, sz, cx, cy, cz;
 
@@ -44,7 +46,7 @@ void	SetTransformMatrixXYZ(Matrix *Mat, float posX, float posY, float posZ, floa
 *@brief				ˆø”‚ÌMat‚ÉŒü‚«‚Æ•½sˆÚ“®‚Ìî•ñ‚ð“ü‚ê‚é(ZXY‰ñ“])
 *@param[in]	Mat		Š|‚¯‡‚í‚¹‚½Œ‹‰Ê‚Ìs—ñ
 */
-void	SetTransformMatrixZXY(Matrix *Mat, float posX, float posY, float posZ, float angleX, float angleY, float angleZ)
+void	Math::SetTransformMatrixZXY(Matrix *Mat, float posX, float posY, float posZ, float angleX, float angleY, float angleZ)
 {
 	float	sx, sy, sz, cx, cy, cz;
 
@@ -54,22 +56,22 @@ void	SetTransformMatrixZXY(Matrix *Mat, float posX, float posY, float posZ, floa
 	Mat->_11 = cz*cy + sz*sx*sy;
 	Mat->_12 = sz*cx;
 	Mat->_13 = -cz*sy + sz*sx*cy;
-	Mat->_14 = 0;
+	Mat->_14 = 0.0f;
 
 	Mat->_21 = -sz*cy + cz*sx*sy;
 	Mat->_22 = cz*cx;
 	Mat->_23 = sz*sy + cz*sx*cy;
-	Mat->_24 = 0;
+	Mat->_24 = 0.0f;
 
 	Mat->_31 = cx*sy;
 	Mat->_32 = -sx;
 	Mat->_33 = cx*cy;
-	Mat->_34 = 0;
+	Mat->_34 = 0.0f;
 
 	Mat->_41 = posX;
 	Mat->_42 = posY;
 	Mat->_43 = posZ;
-	Mat->_44 = 1;
+	Mat->_44 = 1.0f;
 }
 
 //*****************************************************************************
@@ -78,7 +80,7 @@ void	SetTransformMatrixZXY(Matrix *Mat, float posX, float posY, float posZ, floa
 //------------------------------------------------------
 //	¶ŽèÀ•WŒnƒrƒ…[•ÏŠ·
 //------------------------------------------------------
-void LookAtLH(Matrix& mat, Vector& Eye, Vector& At, Vector& Up)
+void Math::LookAtLH(Matrix& mat, Vector& Eye, Vector& At, Vector& Up)
 {
 	Vector3 zaxis;
 	zaxis.x = At.x - Eye.x;
@@ -119,7 +121,7 @@ void LookAtLH(Matrix& mat, Vector& Eye, Vector& At, Vector& Up)
 //------------------------------------------------------
 //	ƒp[ƒX“Š‰e•ÏŠ·
 //------------------------------------------------------
-void PerspectiveLH(Matrix& mat, float fovY, float aspect, float zn, float zf)
+void Math::PerspectiveLH(Matrix& mat, float fovY, float aspect, float zn, float zf)
 {
 	float yScale = 1 / tanf(fovY / 2);
 	float xScale = yScale / aspect;
@@ -148,27 +150,27 @@ void PerspectiveLH(Matrix& mat, float fovY, float aspect, float zn, float zf)
 //------------------------------------------------------
 //	•½s“Š‰e•ÏŠ·
 //------------------------------------------------------
-void OlthoLH(Matrix& mat, float w, float h, float zn, float zf)
+void Math::OlthoLH(Matrix& mat, float w, float h, float zn, float zf)
 {
-	mat._11 = 2 / w;
+	mat._11 = 2.0f / w;
 	mat._12 = 0;
 	mat._13 = 0;
 	mat._14 = 0;
 
 	mat._21 = 0;
-	mat._22 = 2 / h;
+	mat._22 = 2.0f / h;
 	mat._23 = 0;
 	mat._24 = 0;
 
 	mat._31 = 0;
 	mat._32 = 0;
-	mat._33 = 1 / (zf - zn);
+	mat._33 = 1.0f / (zf - zn);
 	mat._34 = 0;
 
 	mat._41 = 0;
 	mat._42 = 0;
 	mat._43 = zn / (zn - zf);
-	mat._44 = 1;
+	mat._44 = 1.0f;
 }
 
 
@@ -253,7 +255,7 @@ Quaternion QuaternionSlerp(Quaternion& q, Quaternion& r, float t)
 //*****************************************************
 //		‹——£‚ÌŒvŽZ
 //*****************************************************
-inline float Length(float x1, float y1, float x2, float y2)
+inline float Math::Length(float x1, float y1, float x2, float y2)
 {
 	float x = x1 - x2;
 	float y = y1 - y2;
@@ -262,7 +264,7 @@ inline float Length(float x1, float y1, float x2, float y2)
 	return sqrtf(x*x + y*y);
 }
 
-inline float Length(Vector3 PosA, Vector3 PosB)
+inline float Math::Length(Vector3 PosA, Vector3 PosB)
 {
 	//  PosA‚ÆPosB‚Æ‚ÌƒxƒNƒgƒ‹‚ðŒvŽZ
 	//i¡‰ñ‚Í‹——£‚ð‹‚ß‚é‚¾‚¯‚È‚Ì‚Å•ûŒü‚ÍŠÖŒW‚È‚¢j
@@ -272,13 +274,19 @@ inline float Length(Vector3 PosA, Vector3 PosB)
 	return sqrtf(Vec.x*Vec.x + Vec.y*Vec.y + Vec.z*Vec.z);
 }
 
+
+
+//********************************************************************
+//						Collision
+//********************************************************************
+
 //************************************************************************************
 //		‹…‚Æ‹…‚Æ‚Ì“–‚½‚è”»’è(“–‚½‚Á‚Ä‚¢‚éFtrue‚ð•Ô‚·@“–‚½‚Á‚Ä‚¢‚È‚¢Ffalse‚ð•Ô‚·)
 //************************************************************************************
-bool Collision_Sphere(Vector3 PosA, float RadiusA, Vector3 PosB, float RadiusB)
+bool Collision::SphereAndSphere(Vector3 PosA, float RadiusA, Vector3 PosB, float RadiusB)
 {
 	//  PosA‚ÆPosB‚Ì‹——£‚ð‹‚ß‚é
-	float Dist = Length(PosA, PosB);
+	float Dist = Math::Length(PosA, PosB);
 
 	//  ‚à‚µ‚àA‹——£‚Ì•û‚ª“–‚½‚è”»’è‚Ì”¼Œa{“–‚½‚è”»’è‚Ì”¼Œa‚æ‚è¬‚³‚­‚È‚Á‚½‚ç
 	if ((RadiusA + RadiusB) > Dist){

@@ -110,6 +110,7 @@
     <ClCompile Include="TDN\TDN_Archiver.cpp" />
     <ClCompile Include="TDN\TDN_Audio.cpp" />
     <ClCompile Include="TDN\TDN_2DObj.cpp" />
+    <ClCompile Include="TDN\TDN_Collision.cpp" />
     <ClCompile Include="TDN\TDN_Input.cpp" />
     <ClCompile Include="TDN\TDN_Math.cpp" />
     <ClCompile Include="TDN\TDN_Polygon.cpp" />
