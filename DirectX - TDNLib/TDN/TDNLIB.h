@@ -29,6 +29,8 @@
 #include	<fstream>		// ファイルを扱う関数などが定義されています
 #include	<assert.h>		// アサートを扱うヘッダー
 #include	<memory>
+#include	<random>		// メルセンヌ・ツイスターなどを扱うためのヘッダー
+
 /********************************************/
 //	定数	
 /********************************************/
@@ -68,7 +70,7 @@ typedef IDirect3DTexture9 Texture2D;		// IDirect3DTexture9の略
 typedef IDirect3DSurface9 Surface;			// IDirect3DSurface9の略
 typedef IDirect3DDevice9 DEVICE, *LPDEVICE;	// IDirect3DDevice9の略
 
-/// ハンガリアン記法
+// ハンガリアン記法
 //
 //	p または lp ->	ポインタ型
 //	m_			->	メンバ変数
@@ -78,7 +80,7 @@ typedef IDirect3DDevice9 DEVICE, *LPDEVICE;	// IDirect3DDevice9の略
 //	by			->	バイナリ
 //
 
-/// Doxygenの記法
+// Doxygenの記法
 //
 //   *@brief		説明文
 //	 *@author		作者名
@@ -96,7 +98,7 @@ typedef IDirect3DDevice9 DEVICE, *LPDEVICE;	// IDirect3DDevice9の略
 
 /**
 *@brief		float二つの構造体
-*@author	Hiroyuki
+*@author	Nishida
 */
 typedef struct float2
 {
@@ -107,7 +109,7 @@ typedef struct float2
 
 /**
 *@brief		float三つの構造体（基本ベクトル）
-*@author	Hiroyuki
+*@author	Nishida
 */
 typedef struct float3
 {
@@ -115,9 +117,80 @@ typedef struct float3
 	float3() :x(0), y(0), z(0){}
 } float3, Vector;
 
+
+/**
+*@brief		2二次元ベクトル
+*@author	Nishida
+*/
+typedef struct Vector2 :public float2
+{
+	/**
+	*@brief		コンストラクタ
+	*@note		値を0で初期化する
+	*/
+	Vector2() :float2(){};
+
+	/**
+	*@brief			コンストラクタ
+	*@param[in]	x	生成するベクトルのx成分
+	*@param[in]	y	生成するベクトルのy成分
+	*/
+	inline Vector2(float x, float y){ this->x = x, this->y = y; }
+
+	/**
+	*@brief			コンストラクタ
+	*@param[in]	v	生成するベクトルのxy成分
+	*/
+	inline Vector2(CONST float2& v){ this->x = v.x, this->y = v.y; }
+
+	/**
+	*@brief		ベクトルの長さを取得する
+	*@return	ベクトルの長さ
+	*/
+	inline float Length(){ return sqrtf(x*x + y*y); }
+
+	/**
+	*@brief		ベクトルの2乗の長さを取得する
+	*@return	ベクトルの2乗の長さ
+	*/
+	inline float LengthSp(){ return (x*x + y*y); }
+
+	/**
+	*@brief 正規化
+	*@note ベクトルの正規化した値に変更
+	*/
+	void Normalize()
+	{
+		float length = Length();
+		if (length != 0.0f){ x /= length, y /= length; }
+	}
+
+	// オペレーター
+	inline Vector2& operator = (CONST Vector2& v){ x = v.x; y = v.y; return *this; }
+	inline Vector2& operator = (CONST float2& v){ x = v.x; y = v.y; return *this; }
+	inline Vector2& operator += (CONST Vector2& v){ x += v.x; y += v.y; return *this; }
+	inline Vector2& operator -= (CONST Vector2& v){ x -= v.x; y -= v.y; return *this; }
+	inline Vector2& operator *= (f32 v){ x *= v; y *= v; return *this; }
+	inline Vector2& operator /= (f32 v){ x /= v; y /= v; return *this; }
+
+	inline Vector2 operator + () const { Vector2 ret(x, y); return ret; }
+	inline Vector2 operator - () const { Vector2 ret(-x, -y); return ret; }
+
+	inline Vector2 operator + (CONST Vector2& v) const { return Vector2(x + v.x, y + v.y); }
+	inline Vector2 operator - (CONST Vector2& v) const { return Vector2(x - v.x, y - v.y); }
+	inline Vector2 operator * (f32 v) const { Vector2 ret(x * v, y * v); return ret; }
+	inline Vector2 operator / (f32 v) const { Vector2 ret(x / v, y / v); return ret; }
+
+	BOOL operator == (CONST Vector2& v) const { return (x == v.x) && (y == v.y); }
+	BOOL operator != (CONST Vector2& v) const { return (x != v.x) || (y != v.y); }
+
+
+} Vector2, *LPVECTOR2;
+
+
 /**
 *@brief		3次元ベクトル構造体
-*@author		Hiroyuki
+*@author		Nishida
 */
 typedef struct Vector3 : public Vector
 {
@@ -204,76 +277,6 @@ public:
 	inline void Set(float x, float y, float z){ this->x = x, this->y = y, this->z = z; }
 
 } Vector3, *LPVECTOR3;
-
-/**
-*@brief		2二次元ベクトル
-*@author	Hiroyuki
-*/
-typedef struct Vector2 :public float2
-{
-	/**
-	*@brief		コンストラクタ
-	*@note		値を0で初期化する
-	*/
-	Vector2() :float2(){};
-
-	/**
-	*@brief			コンストラクタ
-	*@param[in]	x	生成するベクトルのx成分
-	*@param[in]	y	生成するベクトルのy成分
-	*/
-	inline Vector2(float x, float y){ this->x = x, this->y = y; }
-
-	/**
-	*@brief			コンストラクタ
-	*@param[in]	v	生成するベクトルのxy成分
-	*/
-	inline Vector2(CONST float2& v){ this->x = v.x, this->y = v.y; }
-
-	/**
-	*@brief		ベクトルの長さを取得する
-	*@return	ベクトルの長さ
-	*/
-	inline float Length(){ return sqrtf(x*x + y*y); }
-	
-	/**
-	*@brief		ベクトルの2乗の長さを取得する
-	*@return	ベクトルの2乗の長さ
-	*/
-	inline float LengthSp(){ return (x*x + y*y); }
-
-	/**
-	*@brief 正規化
-	*@note ベクトルの正規化した値に変更
-	*/
-	void Normalize()
-	{
-		float length = Length();
-		if (length != 0.0f){ x /= length, y /= length; }
-	}
-
-	// オペレーター
-	inline Vector2& operator = (CONST Vector2& v){ x = v.x; y = v.y; return *this; }
-	inline Vector2& operator = (CONST float2& v){ x = v.x; y = v.y; return *this; }
-	inline Vector2& operator += (CONST Vector2& v){ x += v.x; y += v.y; return *this; }
-	inline Vector2& operator -= (CONST Vector2& v){ x -= v.x; y -= v.y; return *this; }
-	inline Vector2& operator *= (f32 v){ x *= v; y *= v; return *this; }
-	inline Vector2& operator /= (f32 v){ x /= v; y /= v; return *this; }
-
-	inline Vector2 operator + () const { Vector2 ret(x, y); return ret; }
-	inline Vector2 operator - () const { Vector2 ret(-x, -y); return ret; }
-
-	inline Vector2 operator + (CONST Vector2& v) const { return Vector2(x + v.x, y + v.y); }
-	inline Vector2 operator - (CONST Vector2& v) const { return Vector2(x - v.x, y - v.y); }
-	inline Vector2 operator * (f32 v) const { Vector2 ret(x * v, y * v); return ret; }
-	inline Vector2 operator / (f32 v) const { Vector2 ret(x / v, y / v); return ret; }
-
-	BOOL operator == (CONST Vector2& v) const { return (x == v.x) && (y == v.y); }
-	BOOL operator != (CONST Vector2& v) const { return (x != v.x) || (y != v.y); }
-
-
-} Vector2, *LPVECTOR2;
-
 
 /**
 *@brief		ベクトルとベクトルの内積
@@ -384,7 +387,13 @@ public:
 
 } Quaternion;
 
-//	球面線形補間
+/**
+*@brief					回転・移動変換行列の生成
+*@param[in]	q			Quaternion
+*@param[in]	r			Quaternion
+*@param[in]	a			float
+*@return	Quaternion	頑張った
+*/
 Quaternion QuaternionSlerp(Quaternion& q, Quaternion& r, float a);
 
 /*************************************************/
@@ -472,7 +481,7 @@ namespace Math
 	*@brief					距離計算
 	*@param[in]		PosA	点Aの位置
 	*@param[in]		PosB	点Bの位置
-	*@return	AとBの距離を返す
+	*@return		AとBの距離を返す
 	*/
 	inline float Length(Vector2 PosA, Vector2 PosB);
 	
@@ -480,9 +489,10 @@ namespace Math
 	*@brief					距離計算
 	*@param[in]		PosA	点Aの位置
 	*@param[in]		PosB	点Bの位置
-	*@return	AとBの距離を返す
+	*@return		AとBの距離を返す
 	*/
 	inline float Length(Vector3 PosA, Vector3 PosB);
+
 
 
 
@@ -531,6 +541,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 extern	Matrix	matView;		//	カメラ行列
 extern	Matrix	matProjection;	//	投影変換行列
 
+/**
+*@brief		DirectXやディスプレイの基本制御を行うクラス
+*@author		Nishida
+*/
 class tdnSystem
 {
 public:
@@ -557,14 +571,14 @@ public:
 	// (?)なぜ値が変わったらまずいデータがグローバルに？	
 
 	// パラメーター取得関数
-	static inline HINSTANCE GetHinst(){ return hinst; }
-	static inline HWND GetWindow(){ return Window; }
-	static inline LPDIRECT3D9 GetD3D9(){ return lpD3D; };
-	static inline LPDEVICE GetDevice(){ return Device; };
-	static inline ID3DXLine* GetLine(){ return pLine; };
-	static inline RECT GetScreenSize(){ return ScreenSize; }
-	static inline D3DFORMAT GetScreenFormat(){ return ScreenFormat; }
-	static inline BOOL GetWindowActive(){ return WindowActive; };
+	static inline HINSTANCE GetHinst(){ return hinst; }					// インスタンスハンドルのポインタ
+	static inline HWND GetWindow(){ return Window; }					// ウィンドウハンドルのポインタ
+	static inline LPDIRECT3D9 GetD3D9(){ return lpD3D; };				// DirectX9にアクセスするポインタ
+	static inline LPDEVICE GetDevice(){ return Device; };				// ビデオカードにアクセスするデバイスのポインタ
+	static inline ID3DXLine* GetLine(){ return pLine; };				// 線描画用のポインタ
+	static inline RECT GetScreenSize(){ return ScreenSize; }			// 画面のサイズ
+	static inline D3DFORMAT GetScreenFormat(){ return ScreenFormat; }	// 画面のフォーマット
+	static inline BOOL GetWindowActive(){ return WindowActive; };		// ウィンドウが今動いているか
 
 	// ウィンドウメッセージ処理関数
 	//static BOOL Message();
@@ -592,6 +606,11 @@ public:
 /********************************************/
 //				tdnView				     
 /********************************************/
+
+/**
+*@brief		カメラの空間を制御するクラス
+*@author		Nishida
+*/
 class tdnView
 {
 public:
@@ -647,6 +666,10 @@ typedef enum RS
 	INVERT = 7
 }RM;
 
+/**
+*@brief		レンダーステートを指定するクラス
+*@author		Nishida
+*/
 class tdnRenderState
 {
 public:
@@ -667,10 +690,9 @@ public:
 //				tdnArchive				     
 /********************************************/
 
-
 /**
-*	アーカイバー
-*	各種ファイルをアーカイブするクラス
+*@brief		各種ファイルをアーカイブするクラス
+*@author		Nishida
 */
 class tdnArchiver
 {
@@ -704,10 +726,7 @@ private:
 	uint32_t wroteArchiveFileSize;
 };
 
-/**
-*	解凍処理クラス（Archiverとセット)
-*	アーカイブファイルの解凍を行う
-*/
+
 // ヘッダー部構造
 class ArchiveHeaderBlock
 {
@@ -721,7 +740,10 @@ public:
 
 };
 
-// スタティッカー
+/**
+*@brief		アーカイブされたデータを解凍するクラス
+*@author		Nishida
+*/
 class tdnUnArchiver
 {
 public:	
@@ -760,6 +782,10 @@ public:
 /********************************************/
 //				tdnTexture				     
 /********************************************/
+/**
+*@brief		テクスチャーを管理するクラス
+*@author		Nishida
+*/
 class tdnTexture
 {
 private:
@@ -797,7 +823,10 @@ private:
 /********************************************/
 //				tdnShader				     
 /********************************************/
-
+/**
+*@brief		シェーダーを管理するクラス
+*@author		Nishida
+*/
 class tdnShader
 {
 
@@ -847,7 +876,6 @@ public:
 
 private:
 	LPD3DXEFFECT pShader;	// エフェクトファイルへのアクセスポインタ
-
 	D3DXHANDLE	hmWVP;		// 射影変換行列　パラメーターを参照するための効率的な手段を提供します。
 	D3DXHANDLE  htexDecale;	// テクスチャ
 
@@ -856,7 +884,10 @@ private:
 /********************************************/
 //				tdn2DObj				     
 /********************************************/
-//	レンダーターゲットのフォーマット
+/**
+*@brief		レンダーターゲットのフォーマット
+*@author		Nishida
+*/
 typedef enum FMT2D
 {
 	RENDERTARGET = 1,
@@ -868,6 +899,10 @@ typedef enum FMT2D
 	SYSTEMMEM_HDR = 7
 }tdn2D;
 
+/**
+*@brief		2Dオブジェクトを制御するクラス
+*@author		Nishida
+*/
 class tdn2DObj
 {
 public:
@@ -894,7 +929,7 @@ public:
 	void Render3D(float x, float y, float z, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags = RS::COPY);
 	void Render3D(Vector3 pos, int w, int h, int tx, int ty, int tw, int th, u32 dwFlags = RS::COPY);
 
-	///	情報更新
+	//	情報更新
 	void SetScale(float scale);
 	void SetAngle(float angle);
 	void SetARGB(BYTE A, BYTE R, BYTE G, BYTE B);
@@ -1001,6 +1036,10 @@ struct VECTOR_LINE
 //	２Ｄオブジェクト
 //typedef tdn2DObj *LPtdn2DObj;
 
+/**
+*@brief		ポリゴンを生成するクラス
+*@author		Nishida
+*/
 class tdnPolygon
 {
 public:
@@ -1818,6 +1857,10 @@ LPBYTE LoadWavData(LPSTR filename, LPDWORD size, LPWAVEFORMATEX wfx);
 /********************************************/
 //				tdnText				     
 /********************************************/
+/**
+*@brief		デバッグテキスト描画
+*@author		Nishida
+*/
 class tdnText{
 private:
 	static LPD3DXFONT font;
@@ -1827,6 +1870,28 @@ public:
 	static void Draw(int x, int y, DWORD color, const char * _Format, ...);
 };
 
+/********************************************/
+//				tdnRandom			     
+/********************************************/
+/**
+*@brief		メルセンヌ・ツイスタ法での乱数生成クラス
+*@author		Hidaka
+*/
+class tdnRandom{
+public:
+	static std::mt19937 engine;
+
+	static void Initialize();
+
+	static std::uniform_int_distribution<int> Make_distribution(int min_num, int max_num);
+	static std::uniform_real_distribution<float> Make_distribution(float min_num, float max_num);
+
+	static int Get(int min_num, int max_num);
+	static float Get(float min_num, float max_num);
+
+	typedef std::uniform_int_distribution < int > INT;
+	typedef std::uniform_int_distribution < float > FLOAT;
+};
 
 
 
