@@ -1,5 +1,5 @@
 #include	"TDNLIB.h"
-
+//#include	"../source/FileLoader/DragAndDrop.h"
 
 /********************************************/
 //	tdnSystem
@@ -16,6 +16,7 @@ ID3DXLine* tdnSystem::pLine;			// ID3DXLine インターフェイスはテクスチャー化され
 RECT	tdnSystem::ScreenSize;			// スクリーンのサイズ
 D3DFORMAT tdnSystem::ScreenFormat;		// スクリーンのフォーマット
 BOOL tdnSystem::FullScreen;				// フルスクリーンなのか？
+ENDIAN tdnSystem::endian;				// エンディアン(ビッグorリトル)
 
 /* グローバル変数 */
 //	変換行列
@@ -28,6 +29,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 	// 常に通ってる
 	// ウインドウから送られてくるメッセージをキャッチして処理する関数の事．コールバック関数である。
 	switch (message){
+	case WM_CREATE:/*ウィンドウが呼び出されたときに1度だけ入る*/
+		break;
 	case WM_ACTIVATEAPP:
 		if (wParam){
 			tdnSystem::SetWindowActive(TRUE);
@@ -45,6 +48,27 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 		case VK_F1:		tdnSystem::OpenDebugWindow(); return 0;		// コンソール画面を出す
 		}
 		break;
+	case WM_MOUSEWHEEL:	// マウスホイールイベント
+	{
+						  static short mouse_wheel_delta = 0;
+						  mouse_wheel_delta += GET_WHEEL_DELTA_WPARAM(wParam);
+						  if (mouse_wheel_delta >= 120){
+							  mouse_wheel_delta = 0;
+							  tdnMouse::SetWheel(WHEEL_FLAG::UP);
+						  }
+						  else if (mouse_wheel_delta <= 120){
+							  mouse_wheel_delta = 0;
+							  tdnMouse::SetWheel(WHEEL_FLAG::DOWN);
+						  }
+	}
+		break;
+
+	case WM_DROPFILES:	// ドラッグ&ドロップイベント
+	{
+							//char filename[256] = {};
+							//DRAG_AND_DROP::Get_file_path(filename, 256, wParam);
+							break;
+	}
 	}
 	return DefWindowProc(hWnd, message, wParam, lParam);// 自分で処理しないメッセージをWindowsの方で処理してもらう
 
@@ -150,6 +174,10 @@ BOOL tdnSystem::InitWindow(HINSTANCE hInstance, int nCmdShow, char* AppTitle, DW
 	{
 		MessageBox(0, "D3D初期化失敗。", "System", MB_OK);
 	}
+
+	// エンディアンチェック
+	auto EndianCheck = [](){ int bit = 1; return (*(char*)&bit) ? LITTLE_ENDIAN : BIG_ENDIAN; };
+	endian = EndianCheck();
 
 	return TRUE;
 }
@@ -312,6 +340,7 @@ void tdnSystem::OpenDebugWindow()
 #ifdef _DEBUG
 	AllocConsole();
 	freopen_s(&DebugFP, "CON", "w", stdout);
+	freopen_s(&DebugFP, "CON", "r", stdin);		// この文がないとユーザーからの入力が受け付けられない
 #endif
 }
 

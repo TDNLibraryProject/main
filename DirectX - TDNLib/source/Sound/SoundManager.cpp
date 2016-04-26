@@ -81,35 +81,35 @@ void SE_Manager::Update()
 
 	if (KeyBoardTRG(KB_1))
 	{
-		play_manager->SetFX(DXA_FX::DXAFX_CHORUS);
+		play_manager->SetFX(DXA_FX::CHORUS);
 	}
 	else if (KeyBoardTRG(KB_2))
 	{
-		play_manager->SetFX(DXA_FX::DXAFX_COMPRESSOR);
+		play_manager->SetFX(DXA_FX::COMPRESSOR);
 	}
 	else if (KeyBoardTRG(KB_3))
 	{
-		play_manager->SetFX(DXA_FX::DXAFX_DISTORTION);
+		play_manager->SetFX(DXA_FX::DISTORTION);
 	}
 	else if (KeyBoardTRG(KB_4))
 	{
-		play_manager->SetFX(DXA_FX::DXAFX_ECHO);
+		play_manager->SetFX(DXA_FX::ECHO);
 	}
 	else if (KeyBoardTRG(KB_5))
 	{
-		play_manager->SetFX(DXA_FX::DXAFX_ENVREVERB);
+		play_manager->SetFX(DXA_FX::ENVREVERB);
 	}
 	else if (KeyBoardTRG(KB_6))
 	{
-		play_manager->SetFX(DXA_FX::DXAFX_FLANGER);
+		play_manager->SetFX(DXA_FX::FLANGER);
 	}
 	else if (KeyBoardTRG(KB_7))
 	{
-		play_manager->SetFX(DXA_FX::DXAFX_GARGLE);
+		play_manager->SetFX(DXA_FX::GARGLE);
 	}
 	else if (KeyBoardTRG(KB_8))
 	{
-		play_manager->SetFX(DXA_FX::DXAFX_PARAMEQ);
+		play_manager->SetFX(DXA_FX::PARAMEQ);
 	}
 	else if (KeyBoardTRG(KB_9))
 	{
@@ -117,7 +117,7 @@ void SE_Manager::Update()
 	}
 	else if (KeyBoardTRG(KB_0))
 	{
-		play_manager->SetFX(DXA_FX::DXAFX_OFF);
+		play_manager->SetFX(DXA_FX::OFF);
 	}
 }
 //
@@ -272,53 +272,53 @@ void BGM_Manager::Update()
 
 	if (KeyBoardTRG(KB_1))
 	{
-		effect_no = (int)DXA_FX::DXAFX_CHORUS;
+		effect_no = (int)DXA_FX::CHORUS;
 		play_manager->SetFX((DXA_FX)effect_no);
 	}
 	else if (KeyBoardTRG(KB_2))
 	{
-		effect_no = (int)DXA_FX::DXAFX_COMPRESSOR;
+		effect_no = (int)DXA_FX::COMPRESSOR;
 		play_manager->SetFX((DXA_FX)effect_no);
 	}
 	else if (KeyBoardTRG(KB_3))
 	{
-		effect_no = (int)DXA_FX::DXAFX_DISTORTION;
+		effect_no = (int)DXA_FX::DISTORTION;
 		play_manager->SetFX((DXA_FX)effect_no);
 	}
 	else if (KeyBoardTRG(KB_4))
 	{
-		effect_no = (int)DXA_FX::DXAFX_ECHO;
+		effect_no = (int)DXA_FX::ECHO;
 		play_manager->SetFX((DXA_FX)effect_no);
 	}
 	else if (KeyBoardTRG(KB_5))
 	{
-		effect_no = (int)DXA_FX::DXAFX_ENVREVERB;
+		effect_no = (int)DXA_FX::ENVREVERB;
 		play_manager->SetFX((DXA_FX)effect_no);
 	}
 	else if (KeyBoardTRG(KB_6))
 	{
-		effect_no = (int)DXA_FX::DXAFX_FLANGER;
+		effect_no = (int)DXA_FX::FLANGER;
 		play_manager->SetFX((DXA_FX)effect_no);
 	}
 	else if (KeyBoardTRG(KB_7))
 	{
-		effect_no = (int)DXA_FX::DXAFX_GARGLE;
+		effect_no = (int)DXA_FX::GARGLE;
 		play_manager->SetFX((DXA_FX)effect_no);
 	}
 	else if (KeyBoardTRG(KB_8))
 	{
-		effect_no = (int)DXA_FX::DXAFX_PARAMEQ;
+		effect_no = (int)DXA_FX::PARAMEQ;
 		play_manager->SetFX((DXA_FX)effect_no);
 	}
 	else if (KeyBoardTRG(KB_9))
 	{
-		effect_no = (int)DXA_FX::DXAFX_WAVESREVERB;
+		effect_no = (int)DXA_FX::WAVESREVERB;
 		play_manager->SetFX((DXA_FX)effect_no);
 	}
 	else if (KeyBoardTRG(KB_0))
 	{
 		effect_no = 0;
-		play_manager->SetFX(DXA_FX::DXAFX_OFF);
+		play_manager->SetFX(DXA_FX::OFF);
 	}
 }
 //

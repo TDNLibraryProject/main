@@ -248,25 +248,25 @@ void sceneMain::Render()
 
 	switch ((DXA_FX)bgm->effect_no)
 	{
-	case DXA_FX::DXAFX_CHORUS:n = "コーラス";
+	case DXA_FX::CHORUS:n = "コーラス";
 		break;
-	case DXA_FX::DXAFX_COMPRESSOR:n = "コンプレッサ";
+	case DXA_FX::COMPRESSOR:n = "コンプレッサ";
 		break;
-	case DXA_FX::DXAFX_DISTORTION:n = "ディスト―ション";
+	case DXA_FX::DISTORTION:n = "ディスト―ション";
 		break;
-	case DXA_FX::DXAFX_ECHO:n = "エコー";
+	case DXA_FX::ECHO:n = "エコー";
 		break;
-	case DXA_FX::DXAFX_FLANGER:n = "フランジ";
+	case DXA_FX::FLANGER:n = "フランジ";
 		break;
-	case DXA_FX::DXAFX_GARGLE:n = "ガーグル";
+	case DXA_FX::GARGLE:n = "ガーグル";
 		break;
-	case DXA_FX::DXAFX_ENVREVERB:n = "環境リバーブ";
+	case DXA_FX::ENVREVERB:n = "環境リバーブ";
 		break;
-	case DXA_FX::DXAFX_PARAMEQ:n = "パラメトリックイコライザ";
+	case DXA_FX::PARAMEQ:n = "パラメトリックイコライザ";
 		break;
-	case DXA_FX::DXAFX_WAVESREVERB:n = "ミュージックリバーブ";
+	case DXA_FX::WAVESREVERB:n = "ミュージックリバーブ";
 		break;
-	case DXA_FX::DXAFX_OFF:n = "なし";
+	case DXA_FX::OFF:n = "なし";
 		break;
 	}
 

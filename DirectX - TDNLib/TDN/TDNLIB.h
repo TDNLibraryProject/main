@@ -10,7 +10,7 @@
 #pragma comment (lib,"dinput8.lib")
 #pragma comment (lib, "dsound.lib" )
 #pragma comment (lib, "dxguid.lib")
-
+#pragma comment (lib, "msacm32.lib")	// データの変換を行う(ここではMP3→WAVの変換に用いる)
 
 // インクルード 
 #include	<windows.h>		// Windowsアプリケーションを作成
@@ -30,6 +30,8 @@
 #include	<assert.h>		// アサートを扱うヘッダー
 #include	<memory>
 #include	<random>		// メルセンヌ・ツイスターなどを扱うためのヘッダー
+#include	<list>			// 双方向リストを扱うへっだー
+//#include	<string>		// std::string型を扱うために必要なヘッダー
 
 /********************************************/
 //	定数	
@@ -493,9 +495,39 @@ namespace Math
 	*/
 	inline float Length(Vector3 PosA, Vector3 PosB);
 
+	/**
+	*@brief						座標変換
+	*@param[in]		WorldPos	ワールド座標
+	*@return		ワールド座標から変換されたスクリーン座標を返す
+	*/
+	Vector2 WorldToScreen(const Vector3 &WorldPos);
 
+	/**
+	*@brief								座標変換
+	*@param[in]		ScreenPos			スクリーン座標
+	*@param[in]		ProjectiveSpaceZ	カメラのプロジェクションのNearとFarのパーセンテージ(0.0～1.0)
+	*@return		スクリーン座標から変換されたワールド座標を返す
+	*/
+	Vector3 ScreenToWorld(const Vector2 &ScreenPos, float ProjectiveSpaceZ);
 
+	/**
+	*@brief								座標変換
+	*@param[in]		ScreenPos			スクリーン座標
+	*@param[in]		PlateNormal			平面の法線(基本的に上方向)	
+	*@param[in]		Shift				原点からのPlateNormal方向の移動量
+	*@return		スクリーン座標からのNearとFarのベクトルによるRayを飛ばし、平面による交点の座標を返す
+	*/
+	Vector3 ScreenToWorldPlate(const Vector2 &ScreenPos, Vector3 &PlateNormal = Vector3(0, 1, 0), float Shift = .0f);
 
+	/**
+	*@brief									ベジエ計算
+	*@param[in]		out						計算結果吐き出し
+	*@param[in]		pos_array				座標の配列(複数の点)
+	*@param[in]		num_elements_array		配列の個数
+	*@param[in]		percentage				どれぐらいの割合の位置か(0.0～1.0)
+	*@return		ベジエ計算を行い、outに吐き出す関数
+	*/
+	void Bezier(Vector3 *out, Vector3 pos_array[], int num_elements_array, float percentage);
 }
 
 
@@ -534,6 +566,13 @@ class tdn2DObj;
 #define	SCREEN1920x1080	2
 #define	SCREEN800x600	3
 
+// エンディアン
+enum ENDIAN
+{
+	BIG_ENDIAN,			// ビッグエンディアン
+	LITTLE_ENDIAN		// リトルエンディアン
+};
+
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);			 // ウィンドウプロシージャ
 //BOOL InitApp(HINSTANCE hInst, int nCmdShow);												 // ゲーム起動時の最初の初期化
 //BOOL EndApp();																			 // ゲームの一番最後の後処理
@@ -567,6 +606,10 @@ private:
 	static RECT	 ScreenSize;			// スクリーンのサイズ
 	static D3DFORMAT ScreenFormat;		// スクリーンのフォーマット
 	static BOOL FullScreen;				// フルスクリーンのフラグ
+
+	// エンディアン(システム初期化時にどちらかを判定します)
+	static ENDIAN endian;
+
 public:
 	// (?)なぜ値が変わったらまずいデータがグローバルに？	
 
@@ -600,6 +643,23 @@ public:
 	static void CloseDebugWindow();
 	static void printf(const char* format, ...);
 
+	/**
+	*@brief					リトルエンディアンかビッグエンディアンかのゲッター
+	*@return				エンディアンの定数を返す
+	*/
+	static ENDIAN GetEndian(){ return endian; }
+
+	/**
+	*@brief					エンディアンの変換を行う
+	*@param[in]		*input	変換したい値(型は何でもいい)参照で書き換える
+	*@param[in]		size	第一引数inputのsizeof
+	*/
+	static void ConvertEndian(void *input, size_t size){
+		char *temp = new char[size];
+		for (size_t i = 0; i < size; i++) temp[i] = ((char *)input)[i];
+		for (size_t i = 1; i <= size; i++) ((char *)input)[i - 1] = temp[size - i];
+		delete temp;
+	};
 };
 
 
@@ -803,7 +863,7 @@ public:
 	//	初期化
 	static void Initialize();
 	//	読み込み・解放
-	static Texture2D* Load(const char* filename);
+	static Texture2D* Load(const char* filename, int flag = 0);
 	static Texture2D* LoadMemory(const char* filename, const char* pArchiver);
 
 	static void	Release(Texture2D* lpTexture);
@@ -946,6 +1006,8 @@ public:
 	inline float GetCenterY(){ return centerY; }
 	inline bool GetTurnOver(){ return isTurnOver; };
 	inline bool GetShiftCenter(){ return isShiftCenter; };
+	inline UINT GetWidth(){ return m_width; }
+	inline UINT GetHeight(){ return m_height; }
 private:
 
 	// unsigned intの理由はGetLevelDescから受け取る情報などがUINTだから
@@ -1056,7 +1118,9 @@ public:
 	// 線
 	static void DrawLine(float x1, float y1, float x2, float y2, DWORD color = 0xFFFFFFFF, float size = 1.0f);
 	static void DrawLine3D(Vector3 pos1, Vector3 pos2, DWORD color = 0xFFFFFFFF, float size = 1.0f, u32 dwFlag = RS::COPY);
-
+	// 円(2D)
+	static void Circle2D(int cx, int cy, float r, u32 dwFlags, COLOR color, float z = .0f);
+	static void Circle2D(int cx, int cy, float r, tdnShader* shader, char* name, COLOR color, float z = .0f);
 private:
 
 };
@@ -1191,24 +1255,23 @@ namespace tdnInputEnum
 	static const int STICK_WIDTH = 1000;
 	static const int DEFAULT_KEY_CONFIG = -1;
 	static const float MIN_MOVE_STICK = .35f;
-	static const int NUM_ID_GROUPS = 5;
-	static const LPSTR ID_GOURPS[NUM_ID_GROUPS] =
-	{
-		"DEFAULT", "XBOX", "PS3", "GAMEPAD", "NORI_GAMEPAD"
-	};
 }
 
 
 //-----------------------------------------------------------------------------
 //		入力デバイス管理
 //-----------------------------------------------------------------------------
+/**
+*@brief		入力デバイスを管理するクラス
+*@author		Yamagoe
+*/
 class tdnInputManager
 {
 private:
-	static LPDIRECTINPUT8 lpDI;
-	static int num_device;
-	static DIDEVICEINSTANCE	device_instances[tdnInputEnum::INPUT_DEVICE_MAX];
-	static char groupID[tdnInputEnum::INPUT_DEVICE_MAX][16];
+	static LPDIRECTINPUT8 m_lpDI;
+	static int m_NumDevice;
+	static DIDEVICEINSTANCE	m_DeviceInstances[tdnInputEnum::INPUT_DEVICE_MAX];
+	static char m_GroupID[tdnInputEnum::INPUT_DEVICE_MAX][32];
 
 	static BOOL CALLBACK EnumDeviceCallback(const DIDEVICEINSTANCE* pdidi, VOID* pContext);
 	static BOOL CALLBACK EnumAxes(LPCDIDEVICEOBJECTINSTANCE lpddoi, LPVOID pvRef);
@@ -1217,14 +1280,15 @@ public:
 	static void Initialize();
 	static void Release()
 	{
-		if (lpDI)
+		if (m_lpDI)
 		{
-			delete lpDI;
-			lpDI = nullptr;
+			delete m_lpDI;
+			m_lpDI = nullptr;
 		}
 	}
 	static LPDIRECTINPUTDEVICE8 GetDevice(int no);
-	static LPSTR GetGroupID(int no){ return groupID[no]; }
+	static LPSTR GetGroupID(int no){ return m_GroupID[no]; }
+	static LPSTR GetDeviceInstanceName(int no){ return m_DeviceInstances[no].tszInstanceName; }
 };
 
 enum KEYCODE
@@ -1283,6 +1347,10 @@ typedef struct tagPADSET
 	u8	START, SELECT;
 } PADSET, *LPPADSET;
 
+/**
+*@brief		ユーザーからの入力情報を管理するクラス
+*@author		Yamagoe
+*/
 class tdnInputDevice
 {
 private:
@@ -1310,9 +1378,13 @@ public:
 	int tdnInputDevice::GetAxisX(){ return (pad_axisX*pad_axisX > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisX : 0; }
 	int tdnInputDevice::GetAxisY(){ return (pad_axisY*pad_axisY > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisY : 0; }
 	int tdnInputDevice::GetAxisX2(){ return (pad_axisX2*pad_axisX2 > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisX2 : 0; }
-	int tdnInputDevice::GetAxisY2(){ return (pad_axisX2*pad_axisY2 > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisY2 : 0; }
+	int tdnInputDevice::GetAxisY2(){ return (pad_axisY2*pad_axisY2 > tdnInputEnum::MIN_MOVE_STICK*(tdnInputEnum::STICK_WIDTH*tdnInputEnum::STICK_WIDTH)) ? pad_axisY2 : 0; }
 };
 
+/**
+*@brief		ゲームを作る人が実際に入力情報の取得で使用するスタティッカークラス
+*@author		Yamagoe
+*/
 class tdnInput
 {
 private:
@@ -1325,10 +1397,10 @@ public:
 	static void PadAsign(LPSTR config, int no = 0);
 
 	static int KeyGet(KEYCODE key, int no = 0){ return device[no]->Get(key); }
-	static int GetAxisX(int no=0) { return device[no]->GetAxisX(); }
-	static int GetAxisY(int no=0) { return device[no]->GetAxisY(); }
-	static int GetAxisX2(int no=0){ return device[no]->GetAxisX2(); }
-	static int GetAxisY2(int no=0){ return device[no]->GetAxisY2(); }
+	static int GetAxisX(int no = 0) { return device[no]->GetAxisX(); }
+	static int GetAxisY(int no = 0) { return device[no]->GetAxisY(); }
+	static int GetAxisX2(int no = 0){ return device[no]->GetAxisX2(); }
+	static int GetAxisY2(int no = 0){ return device[no]->GetAxisY2(); }
 	static void GetAxisXYf(float *outX, float *outY, int no = 0);
 	static void GetAxisXY2f(float *outX, float *outY, int no = 0);
 };
@@ -1451,6 +1523,10 @@ enum VK_CODE
 
 };
 
+/**
+*@brief		キーボードの入力情報を管理するクラス
+*@author		Yamagoe
+*/
 class OwatasoKeyBoard
 {
 public:
@@ -1486,6 +1562,53 @@ bool KeyBoardTRG(BYTE KeyCode, UINT frame = 1);
 BYTE KeyBoardAnyTRG();
 
 
+//-----------------------------------------------------------------------------
+//		マウス入力
+//-----------------------------------------------------------------------------
+
+enum class WHEEL_FLAG
+{
+	NONE, UP, DOWN
+};
+
+class tdnMouse
+{
+private:
+	static POINT m_CurrentPoint;
+	static POINT m_PrevPoint;
+	static RECT m_Rc;
+
+	// ホイール
+	static int m_PrevWheel;
+	static int m_CurrentWheel;
+	static WHEEL_FLAG m_FlagW;
+
+	static Vector2 m_Axis;
+	static Vector2 m_Pos;
+	static int m_FlagRight, m_FlagLeft;
+
+public:
+
+	static void SetWheel(WHEEL_FLAG f)
+	{
+		m_CurrentWheel = (f == WHEEL_FLAG::DOWN) ? m_CurrentWheel - 1 : m_CurrentWheel + 1;
+	}
+
+	static void Initialize(BOOL show);
+	static void Update();
+	static Vector2 &GetPos(){ return m_Pos; }
+	static int GetLeft(){ return m_FlagLeft; }									// 左クリックしたかどうか(iexみたいにおしっぱ1、押した瞬間3が返る)
+	static int GetRight(){ return m_FlagRight; }								// 右クリックしたかどうか(iexみたいにおしっぱ1、押した瞬間3が返る)
+	static WHEEL_FLAG GetWheelFlag(){ return m_FlagW; }							// ホイールの状態取得
+	static bool isPushCenter(){ return ((GetKeyState(0x04) & 0x80) != 0); }		// 真ん中ボタンをクリックしたか
+	static float GetMoveDist()
+	{
+		float vx = (float)(m_CurrentPoint.x - m_PrevPoint.x), vy = (float)(m_CurrentPoint.y - m_PrevPoint.y);
+		return sqrtf(vx*vx + vy*vy);
+	}
+};
+
+
 
 //*****************************************************************************
 //		tdnAudio
@@ -1500,21 +1623,36 @@ BYTE KeyBoardAnyTRG();
 #define	TYPE_WAV	0
 #define	TYPE_OGG	1
 
+#define TDNSOUND_PLAY_NONE -1		// 再生が失敗したときの戻り値となる、または再生した番号を受け取る変数の初期値として与える
+
+// OWD用の構造体
+typedef struct tagOWDInfo
+{
+	WAVEFORMATEX	wfx;	// WAVフォーマット
+	DWORD			size;	// 音源データのサイズ
+	LPBYTE			data;	// 音源データ
+}OWDInfo;
+
+// サウンドエフェクト定数
 enum class DXA_FX
 {
-	DXAFX_OFF = 0,		// エフェクトオフ
-	DXAFX_CHORUS = 1 << 0,	// コーラス
-	DXAFX_COMPRESSOR = 1 << 1,	// コンプレッサ
-	DXAFX_DISTORTION = 1 << 2,	// ディスト―ション
-	DXAFX_ECHO = 1 << 3,	// エコー
-	DXAFX_FLANGER = 1 << 4,	// フランジ
-	DXAFX_GARGLE = 1 << 5,	// ガーグル
-	DXAFX_ENVREVERB = 1 << 6,	// 環境リバーブ
-	DXAFX_PARAMEQ = 1 << 7,	// パラメトリックイコライザ
-	DXAFX_WAVESREVERB = 1 << 8,	// ミュージックリバーブ(16bitのオーディオフォーマットのみ)
-	DXAFX_MAX = 1 << 9
+	OFF = 0,		// エフェクトオフ
+	CHORUS = 1 << 0,	// コーラス
+	COMPRESSOR = 1 << 1,	// コンプレッサ
+	DISTORTION = 1 << 2,	// ディスト―ション
+	ECHO = 1 << 3,	// エコー
+	FLANGER = 1 << 4,	// フランジ
+	GARGLE = 1 << 5,	// ガーグル
+	ENVREVERB = 1 << 6,	// 環境リバーブ
+	PARAMEQ = 1 << 7,	// パラメトリックイコライザ
+	WAVESREVERB = 1 << 8,	// ミュージックリバーブ(16bitのオーディオフォーマットのみ)
+	MAX = 1 << 9
 };
 
+/**
+*@brief		音源情報を設定し、再生・停止等の制御を行うクラス(複数の音をだすため、このクラスを複数管理するクラスを用意する)
+*@author		Yamagoe
+*/
 class tdnSoundBuffer
 {
 protected:
@@ -1523,6 +1661,7 @@ protected:
 	LPBYTE LoadFile(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx);
 	LPBYTE LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx);
 	LPBYTE LoadOWD(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx);	// Owataso Wave Data
+	LPBYTE LoadMP3(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx);
 
 	DWORD PlayCursor;
 	DWORD BufferSize;
@@ -1648,11 +1787,10 @@ typedef tdnStreamSound tdn_DSSTREAM, *tdn_LPDSSTREAM;
 
 
 
-//*****************************************************************************
-//
-//		サウンド管理の基底(継承で使うだけで、ゲーム作る人は使用しない)
-//
-//*****************************************************************************
+/**
+*@brief		サウンド管理の基底(継承で使うだけで、ゲーム作る人は使用しない)
+*@author		Yamagoe
+*/
 class tdnSoundBase
 {
 protected:
@@ -1683,12 +1821,10 @@ public:
 };
 
 
-//*****************************************************************************
-//
-//		サウンド管理(SE用)
-//
-//*****************************************************************************
-
+/**
+*@brief		SE特化のサウンドバッファ管理クラス(同じ音の多重再生を可能にしている)
+*@author		Yamagoe
+*/
 class tdnSoundSE : public tdnSoundBase
 {
 private:
@@ -1706,7 +1842,14 @@ public:
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 	//	引数…ID:番号、 num_of_play_simultaneously:同時再生可能数(あんまり多いとメモリ食うのでほどほどに。5～10前後)、　ファイル名、　3Dサウンドフラグ
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
-	void Set(int ID, int num_of_play_simultaneously, char* filename, bool b3D = false);
+	/*
+	*@brief					音源情報の設定
+	*@param[in]		ID							その音のID
+	*@param[in]		NumOfPlaySimultaneously		同時再生可能数(あんまり多いとメモリ食うのでほどほどに。5～10前後。)
+	*@param[in]		filename					音源ファイルへのファイルパス
+	*@param[in]		b3D							3Dサウンドフラグ
+	*/
+	void Set(int ID, int NumOfPlaySimultaneously, char* filename, bool b3D = false);
 
 	/* 再生 */
 	int Play(int ID, bool loop = false);
@@ -1735,6 +1878,7 @@ public:
 	// ※以下の関数を呼ぶにはSetの引数のb3Dをtrueにする必要があります
 	//---------------------------------------------------------------
 	int Play(int ID, const Vector3 &pos, const Vector3 &front = Vector3(0, 0, -1), const Vector3 &move = Vector3(0, 0, 0), bool loop = false);// 音源情報設定しつつ再生
+	int Play(int ID, const Vector3 &pos, const Vector3 &move, bool loop);															// ちょっと簡易版
 	void SetDist(int ID, int no, float max_dist = DS3D_DEFAULTMAXDISTANCE, float min_dist = DS3D_DEFAULTMINDISTANCE);				// 最大超えるともう聞こえない、最少は普通に0とかでいいと思う
 	void SetPos(int ID, int no, const Vector3 &pos);																				// 音が発生する座標
 	void SetFront(int ID, int no, const Vector3 &front);																			// 音の向き
@@ -1746,12 +1890,10 @@ public:
 
 
 
-//*****************************************************************************
-//
-//		サウンド管理(BGM用)	※このクラスのみ、毎フレームUpdateを呼び出してください
-//
-//*****************************************************************************
-
+/**
+*@brief		BGM特化用のサウンド管理クラス(主にフェード関係が実装されている)
+*@author		Yamagoe
+*/
 class tdnSoundBGM : public tdnSoundBase
 {
 private:
@@ -1853,6 +1995,8 @@ public:
 // わぶよみこみ
 LPBYTE LoadWavData(LPSTR filename, LPDWORD size, LPWAVEFORMATEX wfx);
 
+// おわたそウェーブデータ
+void WriteOWD(char* filename, OWDInfo *info);
 
 /********************************************/
 //				tdnText				     
@@ -1894,128 +2038,305 @@ public:
 };
 
 
+/********************************************/
+//				tdnFile			     
+/********************************************/
+/**
+*@brief		ファイル関係の便利な関数をまとめたクラス
+*@author		Yamagoe
+*/
 
-/*****************************************/
-//	ここからはエラーチェックのために追加
-/*****************************************/
-
-#ifndef __IT_DEBUG_H__
-#define __IT_DEBUG_H__
-
-#define _IT_DEBUG
-
-#ifdef _IT_DEBUG
-
-//*****************************************************************
-//newオーバーロード
-//*****************************************************************
-
-#define _CRTDBG_MAP_ALLOC
-
-#include <cstdlib>
-#include <cassert>
-#include <crtdbg.h>
-#include <new>
-#include <memory>
-
-//*****************************************************************
-//メモリーリーク自動チェック
-//*****************************************************************
-#define MyMemoryLeakCheck _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF)
-
-//*****************************************************************
-//		例外によって送出されるクラス
-//*****************************************************************
-
-template<class _error_type>
-class ErrorHandlerBase
+// ファイルディレクトリ列挙に使用される構造体
+typedef struct tagDirectoryInfo
 {
-	typedef _error_type ERROR_TYPE_VALUE;
-private:
-	char				str[512];
-	ERROR_TYPE_VALUE	data;
-public:
-	ErrorHandlerBase(
-		const char* errstr,				//エラーメッセージ
-		const ERROR_TYPE_VALUE& data):	//error値
-		data(data)
-	{
-		str[0] = '\0';
-		if (errstr)
-		{
-			strcpy_s(str, 512, errstr);
-		}
-	}
-	~ErrorHandlerBase()
-	{
+	// newとかめんどくさくなりそうなのでvector使う
+	//int NumFile;				// ファイルの個数
+	//std::string *FileNames;		// ファイルの名前(可変長)
+	//int NumFolder;				// フォルダの個数
+	//std::string *FolderNames;	// フォルダの名前(可変長)
 
-	}
-	ErrorHandlerBase(const ErrorHandlerBase& errh)
-	{
-		strcpy_s(str, 512, errh.GetStr());
-	}
+	// string型での動的配列で、ファイル名とフォルダー名を格納
+	std::vector<std::string> FileNames;		// 列挙されたファイル名
+	std::vector<std::string> FolderNames;	// 列挙されたフォルダ名
+
+	tagDirectoryInfo(){ FileNames.clear(), FolderNames.clear(); }
+	~tagDirectoryInfo(){ FileNames.clear(), FolderNames.clear(); }
+}DirectoryInfo;
+
+class tdnFile
+{
 public:
-	const char*	GetStr()const
-	{
-		return str;
-	}
-	const ERROR_TYPE_VALUE&	GetErrData()const
-	{
-		return data;
-	}
+
+	/**
+	*@brief			フォルダ(ディレクトリ)作成
+	*@param[in]		*path	example…"DATA/CHR/Airou"ならCHRフォルダにAirouというフォルダが作られる
+	*@return		成功したら「0」フォルダが既に作られていたりして失敗したら「-1」が返る
+	*/
+	static int CreateFolder(char *path);
+
+	/**
+	*@brief					ディレクトリの列挙
+	*@param[in]		*path	ディレクトリパス("DATA/CHR"ならCHRフォルダの中が列挙される)
+	*@param[in]		*out	列挙したファイル名をフォルダー名を格納する構造体へのアドレス
+	*@param[in]		bExt	ファイル名の場合、拡張子をつけるかつけないか
+	*/
+	static void EnumDirectory(char *path, DirectoryInfo *out, bool bExt = true);
+
+	/**
+	*@brief					ファイルの拡張子を返す("tdn.txt"なら.txtが返る)
+	*@param[in]		*path	ファイルパス
+	*/
+	static std::string GetFileExtention(char *path);
+
+	/**
+	*@brief					ファイルパスからファイル名を返す("DATA/Text/tdn.txt"ならtdn.txtが返る)
+	*@param[in]		*path	ファイルパス
+	*@param[in]		bExt	拡張子をくっつけるか　[true: return tdn.txt]　[false: return tdn]
+	*/
+	static std::string GetFileName(char *path, bool bExt = true);
+
+	/**
+	*@brief					ファイルを開くダイアログを作成
+	*@param[in]		*filter	拡張子フィルター example:"TEXT DATA(*.txt)\0 *.txt\0\0"
+	*@return				成功したらダイアログで選択された絶対パスを返す、失敗したら""(空の文字列)
+	*/
+	static std::string OpenFileDialog(char *filter = "すべてのファイル(*.*)\0 * .*\0\0");
+
+	/**
+	*@brief					ファイルを保存するダイアログを作成
+	*@param[in]		*filter	拡張子フィルター example:"TEXT DATA(*.txt)\0 *.txt\0\0"
+	*@return				成功したらダイアログで選択された絶対パスを返す、失敗したら""(空の文字列)
+	*/
+	static std::string SaveFileDialog(char *filter = "すべてのファイル(*.*)\0 * .*\0\0");
+private:
+	static char strFile[256];			// ダイアログを開くときに、前のパスを残したいときとかに
 };
 
-//ゲーム強制終了error
-typedef ErrorHandlerBase<int> Error_GameExit;
 
 
-//*****************************************************************
-//printfと同じ形式で出力ウィンドウに表示
-//*****************************************************************
-#define MyDebugString(str,...)\
-{\
-	TCHAR temp[512]; \
-	sprintf_s<512>(temp, str, __VA_ARGS__); \
-	OutputDebugString(temp); \
-}
 
-//*****************************************************************
-//	メッセージボックスをprintfみたいに表示する
-//*****************************************************************
-#define MessageBoxPlus(str,...)\
-{\
-	char t[512]; \
-	sprintf_s<512>(t, str, __VA_ARGS__);\
-	MessageBox(0, t, "MessageBoxPlus", MB_OK);\
-}
 
-//*****************************************************************
-//printfと同じ形式でアサートに文字列を表示させる
-//*****************************************************************
-#define MyAssert(expr,str,...)\
-{\
-if (!(expr)){\
-\
-	\
-	char t[256], ti[600]; \
-	sprintf_s<256>(t, str, __VA_ARGS__); \
-	sprintf_s<600>(ti, "　%s　の行番号　%d　でエラーが発生しました \n %s \n式(%s) \n実行を続けますか？", __FILE__, __LINE__, t, #expr); \
-	MessageBeep(MB_OK); \
-if (MessageBox(0, ti, "MyAssertError!!!", MB_YESNO) == IDNO){\
-	Error_GameExit err("GameExitError", 0);\
-	throw err; \
-}\
-}\
-}
 
-#define new new(_NORMAL_BLOCK,__FILE__,__LINE__)
 
-#else
 
-#define MyDebugString(str,...)
-#define MyAssert(expr,str,...) expr
-#define MyMemoryLeakCheck
 
-#endif	//_IT_DEBUG
+/********************************************/
+//		IEXゾーン			     
+/********************************************/
 
-#endif	//eof
+//*****************************************************************************************************************************
+//
+//		メッシュ関連
+//
+//*****************************************************************************************************************************
+class iexMesh {
+private:
+protected:
+	u32				dwFlags;		//	フラグ
+	u8				bChanged;		//	変更フラグ
+
+	Vector3			Pos;			//	メッシュ座標
+	Vector3			Angle;			//	メッシュ回転量
+	Vector3			Scale;			//	メッシュスケール
+
+	D3DMATERIAL9	*lpMaterial;	//	材質
+	Texture2D*		*lpTexture;		//	テクスチャ
+	Texture2D*		*lpNormal;		//	法線テクスチャ
+	Texture2D*		*lpSpecular;	//	スペキュラテクスチャ
+	Texture2D*		*lpHeight;		//	高さテクスチャ
+	u32				MaterialCount;	//	材質数
+
+	LPD3DXMESH		lpMesh;			//	メッシュ
+
+public:
+	BOOL			bLoad;
+	Matrix			TransMatrix;	//	転送行列
+
+	//------------------------------------------------------
+	//	初期化
+	//------------------------------------------------------
+	iexMesh( char* filename );
+	iexMesh(){ bLoad = FALSE; }
+	iexMesh*	Clone();
+	iexMesh*	Clone(int num_tex);
+	~iexMesh();
+	void Release();
+
+	//------------------------------------------------------
+	//	読み込み
+	//------------------------------------------------------
+	BOOL LoadIMO( char* filename );
+	BOOL LoadX( char* filename );
+
+	//------------------------------------------------------
+	//	更新
+	//------------------------------------------------------
+	void Update();
+
+	//------------------------------------------------------
+	//	描画
+	//------------------------------------------------------
+	void Render();
+	void Render( u32 dwFlags, float param=-1 );
+	void Render( tdnShader* shader, char* name );
+
+	//------------------------------------------------------
+	//	レイ判定
+	//------------------------------------------------------
+	int	RayPick( Vector3* out, Vector3* pos, Vector3* vec, float *Dist );
+	int	RayPickUD( Vector3* out, Vector3* pos, Vector3* vec, float *Dist );
+
+	struct NearestPointOut
+	{
+		float length;
+		Vector3 Pos;
+		Vector3 Normal;
+	};
+	void NearestPoint( NearestPointOut *out, const Vector3 &pos );
+
+	//------------------------------------------------------
+	//	情報設定・取得
+	//------------------------------------------------------
+	//	位置
+	void SetPos( Vector3& pos );
+	void SetPos( float x, float y, float z );
+	inline Vector3	GetPos(){ return Pos; }
+	//	角度
+	void SetAngle( Vector3& angle );
+	void SetAngle( float angle );
+	void SetAngle( float x, float y, float z );
+	inline Vector3	GetAngle(){ return Angle; }
+	//	スケール
+	void SetScale( Vector3& scale );
+	void SetScale( float scale );
+	void SetScale( float x, float y, float z );
+	inline Vector3	GetScale(){ return Scale; }
+
+	//	情報
+	LPD3DXMESH	GetMesh(){ return lpMesh; }
+
+	Texture2D*	GetTexture( int n ){ return lpTexture[n]; }
+	void SetTexture(Texture2D *t, int n){ lpTexture[n] = t; }
+	Texture2D*	ChangeTexture(Texture2D *t, int n){ Texture2D *ret = lpTexture[n]; lpTexture[n] = t; return ret; }
+
+	float iexMesh::Length_of_furthest_point();
+};
+
+typedef iexMesh IEXMESH, *LPIEXMESH;
+
+//*****************************************************************************************************************************
+//
+//		３Ｄオブジェクト
+//
+//*****************************************************************************************************************************
+
+typedef struct tagIEMFILE IEMFILE, *LPIEMFILE;
+
+//------------------------------------------------------
+//	アニメーション構造体
+//------------------------------------------------------
+typedef struct tagIEXANIME2 {
+	u32			rotNum;
+	u16*		rotFrame;
+	Quaternion*	rot;
+
+	u32			posNum;
+	u16*		posFrame;
+	Vector3*	pos;
+} IEXANIME2, *LPIEXANIME2;
+
+//------------------------------------------------------
+//	３Ｄオブジェクト
+//------------------------------------------------------
+class iex3DObj : public iexMesh
+{
+protected:
+	u8				version;
+	u8				Param[16];
+
+	u8				Motion;			//	現在のモーション番号
+	u16				M_Offset[256];	//	モーション先頭フレーム
+
+	u32				dwFrame;		//	現在のフレーム
+	u32				NumFrame;		//	総フレーム数
+	u16*			dwFrameFlag;	//	フレーム情報
+
+	u32				RenderFrame;	//	レンダリングフレーム
+
+	LPIEXANIME2		lpAnime;		//	ボーンアニメーション
+
+	//	頂点情報
+	DWORD			NumVertex;
+	void*			lpVertex;
+
+	// スキンメッシュ関係
+	LPD3DXSKININFO		lpSkinInfo;	// スキン情報
+
+	u32				NumBone;
+	LPWORD			BoneParent;
+	Matrix*			lpBoneMatrix;
+	Matrix*			lpOffsetMatrix;
+	Matrix*			lpMatrix;
+
+	Quaternion*		orgPose;
+	Vector3*		orgPos;
+
+	Quaternion*		CurPose;
+	Vector3*		CurPos;
+
+public:
+	void	SetLoadFlag( BOOL bLoad ){ this->bLoad = bLoad; }
+	iex3DObj(){
+		bLoad = FALSE;
+		for( int i=0 ; i<16 ; i++ ) Param[i] = 0;
+	}
+	iex3DObj( char* filename );
+	~iex3DObj();
+
+	iex3DObj*	Clone();
+	iex3DObj*	Clone(int num_tex);
+
+	BOOL LoadObject( char* filename );
+	int LoadiEM( LPIEMFILE lpIem, LPSTR filename );
+	BOOL CreateFromIEM( char* path, LPIEMFILE lpIem );
+
+	LPD3DXSKININFO	CreateSkinInfo( LPIEMFILE lpIem );
+	LPD3DXMESH	CreateMesh( LPIEMFILE lpIem );
+
+
+
+	static BOOL SaveObject( LPIEMFILE lpIem, LPSTR filename );
+
+	void Update();
+	void SetMotion( int motion );
+	inline int GetMotion(){ return Motion; }
+	inline WORD GetMotionOffset( int m ){ return M_Offset[m]; }
+
+	inline void SetFrame( int frame ){ dwFrame = frame; }
+	inline int GetFrame(){ return dwFrame; }
+
+	void Animation();
+
+	void Render();
+	void Render( DWORD flag, float alpha=-1 );
+	void Render( tdnShader* shader, char* name );
+
+	inline int GetParam( int n ){ return Param[n]; }
+	inline void SetParam( int n, int p ){ Param[n] = p; }
+
+	inline WORD GetFrameFlag( int frame ){ return dwFrameFlag[frame]; }
+	inline void SetFrameFlag( int frame, WORD p ){ dwFrameFlag[frame] = p; }
+
+	inline int GetNumFrame(){ return NumFrame; }
+
+	inline Quaternion*	GetPose( int n ){ return &CurPose[n]; }
+	inline Vector3*		GetBonePos( int n ){ return &CurPos[n]; }
+	inline int	GetNumBone(){ return NumBone; }
+	inline Matrix*	GetBone( int n ){ return &lpBoneMatrix[n]; }
+
+	void UpdateSkinMeshFrame( float frame );
+	void UpdateBoneMatrix();
+	void UpdateSkinMesh();
+};
+
+typedef iex3DObj IEX3DOBJ, *LPIEX3DOBJ;

@@ -275,6 +275,129 @@ inline float Math::Length(Vector3 PosA, Vector3 PosB)
 }
 
 
+//********************************************************************
+//						座標変換
+//********************************************************************
+Vector2 Math::WorldToScreen(const Vector3 &WorldPos)
+{
+	// 3Dを2D座標にする
+	//ラムダ式Min~Maxの範囲に抑える　
+	auto Clamp = [](float val, float Min, float Max){
+		return min(Max, max(val, Min));
+	};
+	Matrix m = matView * matProjection;
+
+	Vector2 ret;
+	ret.x = WorldPos.x * m._11 + WorldPos.y * m._21 + WorldPos.z * m._31 + 1 * m._41;
+	ret.y = WorldPos.x * m._12 + WorldPos.y * m._22 + WorldPos.z * m._32 + 1 * m._42;
+	float w = WorldPos.x * m._14 + WorldPos.y * m._24 + WorldPos.z * m._34 + 1 * m._44;
+
+	if (w == 0) ret.x = ret.y = 0;
+	else{
+		ret.x /= w;
+		ret.y /= w;
+	}
+	ret.x = Clamp(ret.x, -1.0f, 1.0f);
+	ret.y = Clamp(ret.y, -1.0f, 1.0f);
+
+	ret.x = (ret.x + 1) * (tdnSystem::GetScreenSize().right / 2);
+	ret.y = (((ret.y * -1) + 1) * (tdnSystem::GetScreenSize().bottom / 2));
+
+	return ret;
+}
+
+Vector3 Math::ScreenToWorld(const Vector2 &ScreenPos, float ProjectiveSpaceZ)
+{
+	D3DXMATRIX Viewport = {
+		tdnSystem::GetScreenSize().right * 0.5f, 0.0f, 0.0f, 0.0f,
+		0.0f, -tdnSystem::GetScreenSize().bottom * 0.5f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		tdnSystem::GetScreenSize().right * 0.5f, tdnSystem::GetScreenSize().bottom * 0.5f, 0.0f, 1.0f
+	};
+	D3DXMATRIX InverseView, InverseProjection, InverseViewport;
+	D3DXMatrixInverse(&InverseView, NULL, &matView);
+	D3DXMatrixInverse(&InverseProjection, NULL, &matProjection);
+	D3DXMatrixInverse(&InverseViewport, NULL, &Viewport);
+
+	D3DXVECTOR3 Position;
+	D3DXVec3TransformCoord(&Position, &D3DXVECTOR3(static_cast<FLOAT>(ScreenPos.x), static_cast<FLOAT>(ScreenPos.y), ProjectiveSpaceZ),
+		&(InverseViewport * InverseProjection * InverseView));
+
+	return Vector3(Position.x, Position.y, Position.z);
+}
+
+Vector3 Math::ScreenToWorldPlate(const Vector2 &ScreenPos, Vector3 &PlateNormal, float Shift)
+{
+	// スクリーン上からのプロジェクションのNearとFarを求める
+	Vector3 NearPosition = Math::ScreenToWorld(ScreenPos, 0.0f);
+	Vector3 FarPosition = Math::ScreenToWorld(ScreenPos, 1.0f);
+
+	// Nearの座標とFarの座標を使って単位ベクトルを作る
+	Vector3 Direction = FarPosition - NearPosition;
+	Direction.Normalize();
+
+
+	/*	線と平面による交点判定
+	AXの長さ: XBの長さ = PAとNの内積 : PBとNの内積
+	※内積はマイナス値になる場合があるので、絶対値を使ってください。
+
+	交点X = A + ベクトルAB * (PAとNの内積 / (PAとNの内積 + PBとNの内積))
+	*/
+
+	static const float dist = 65535;	// とりあえずでかい値(交点をとるため、あまり小さいと平面に届かない)
+
+	Vector3 PA = NearPosition;
+	Vector3 PB = (NearPosition + Direction * dist);
+	float XB = abs(Vector3Dot(PA, PlateNormal));
+
+	float pa_n = abs(Vector3Dot(PA, PlateNormal));
+	float pb_n = abs(Vector3Dot(PB, PlateNormal));
+
+	return (NearPosition + ((NearPosition + Direction * dist) - NearPosition) * (pa_n / (pa_n + pb_n)));
+}
+
+//********************************************************************
+//						ベジエ曲線
+//********************************************************************
+void Math::Bezier(Vector3 *out, Vector3 pos_array[], int num_elements_array, float percentage)
+{
+	assert(num_elements_array > 0);
+
+	float b = percentage;
+	float a = 1 - b;
+
+	/*				//		参考資料		//
+	//ベジェ曲線↓　まず　　最初と中間　　　　次に　　　　中間と最後
+	pos->x = a*a*a* p1.x + 3 * a*a*b*p2.x + 3 * a*b*b*p2.x + b*b*b*p3.x;
+	pos->y = a*a*a* p1.y + 3 * a*a*b*p2.y + 3 * a*b*b*p2.y + b*b*b*p3.y;
+	pos->z = a*a*a* p1.z + 3 * a*a*b*p2.z + 3 * a*b*b*p2.z + b*b*b*p3.z;
+	*/
+
+	// 2点間の直線の場合、ベジエ計算をするとおかしくなるので、割合による直線の計算にする
+	if (num_elements_array == 2)
+	{
+		*out = pos_array[0] * a + pos_array[1] * b;
+		return;
+	}
+
+	// 始点
+	*out = pos_array[0] * (float)pow(a, num_elements_array);
+
+	// 中間
+	for (int i = 1; i < num_elements_array - 1; i++)	// -1なのは終点を省くから
+	{
+		float mult = b;
+		for (int j = 1; j < num_elements_array - 1; j++)
+		{
+			mult *= (j >= i) ? a : b;
+		}
+		*out += pos_array[i] * (num_elements_array * mult);
+	}
+
+	// 終点
+	*out += pos_array[num_elements_array - 1] * (float)pow(b, num_elements_array);
+}
+
 
 //********************************************************************
 //						Collision

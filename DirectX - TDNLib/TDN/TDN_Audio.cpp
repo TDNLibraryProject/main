@@ -1,5 +1,11 @@
 //*****************************************************************************************************************************
 #include	"TDNLIB.h"
+#include	"../source/system/ItDebug.h"
+
+// acm関数(MP3等の圧縮音声データの解凍を行う)用のインクルード
+#include<mmreg.h>
+#include<msacm.h>
+
 
 HRESULT result_sound;
 
@@ -16,7 +22,7 @@ const int tdnSoundBuffer::READBYTE = 1024;	// ここの値が大きくなるにつれて読み込
 tdnSoundBuffer::tdnSoundBuffer(LPDIRECTSOUND8 lpDS, char* filename, bool b3D)
 {
 	/*	WAVファイルのロード	*/
-	lpWBuf = LoadWAV(filename, &size, &wfx);
+	lpWBuf = LoadFile(filename, &size, &wfx);
 	/*	ロード失敗	*/
 	if (lpWBuf == nullptr){
 		return;
@@ -234,6 +240,7 @@ LPBYTE tdnSoundBuffer::LoadWAV(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
 {
 	// バイナリ読み込み
 	std::ifstream infs(fname, std::ios::binary);
+	MyAssert(infs, "エラーファイル名[%s]\n原因:wavファイルが入っていないか、wavファイル名が間違っているよ", fname);
 
 	char chunkID[4];
 	int ChunkSize;
@@ -360,6 +367,253 @@ LPBYTE tdnSoundBuffer::LoadOWD(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
 	{
 
 	}
+
+	return buf;
+}
+
+//-------------------------------------------------------------
+//	MP3
+//-------------------------------------------------------------
+LPBYTE tdnSoundBuffer::LoadMP3(LPSTR fname, LPDWORD size, LPWAVEFORMATEX wfx)
+{
+	// バイナリ読み込み
+	std::ifstream infs(fname, std::ios::binary);
+	MyAssert(infs, "エラーファイル名[%s]\n原因:MP3ファイル名が間違っているか、ファイルが存在しないよ", fname);
+
+	BYTE *buf = nullptr;
+
+	// フレームヘッダは４バイト(３２ビット）で出来ている。ので、DWORDでいっぺんに読んで分けていく
+	DWORD receive;
+	infs.read((char*)&receive, 32);
+
+	WORD frame_synchronism = (receive >> 21) & 0x000007ff;	// フレーム同期。オール1ビット(11ビット)
+	MyAssert(frame_synchronism == 0x000007ff, "エラーファイル名[%s]\n原因:形式はMP3ですが、中身がMP3でない可能性があります", fname);
+
+	BYTE ver = (receive >> 19) & 0x00000003;	// MPEG Audio のバージョンID(2ビット)
+
+	enum class MPEG_VERSION
+	{
+		MPEG_V2_5,	// バージョン2.5
+		RESERVE,	// 予約らしい
+		MPEG_V2,	// バージョン2
+		MPEG_V1		// バージョン1
+	}mpeg_ver;
+	switch (ver & 0x03)
+	{
+	case 0x00:mpeg_ver = MPEG_VERSION::MPEG_V2_5; break;
+	case 0x01:mpeg_ver = MPEG_VERSION::RESERVE; break;
+	case 0x02:mpeg_ver = MPEG_VERSION::MPEG_V2; break;
+	case 0x03:mpeg_ver = MPEG_VERSION::MPEG_V1; break;
+	}
+
+
+	BYTE layer			= (receive >> 17)	& 0x00000003;	// レイヤーの種類(2ビット)
+	BOOL CRCerror		= (receive >> 16)	& 0x00000001;	// CRCエラー検査による保護(1ビット)
+	BYTE bit_rate		= (receive >> 12)	& 0x0000000f;	// ビットレート(4ビット)
+	BYTE sampling_rate	= (receive >> 10)	& 0x0000003;	// サンプリングレート(2ビット)
+	BOOL padding		= (receive >> 9)	& 0x00000001;	// パディング(1ビット)	0:なし 1:あり
+	BOOL private_bit	= (receive >> 8)	& 0x00000001;	// プライベートビットの使用不使用(1ビット) 0:不使用 1:使用
+	BYTE channel_mode	= (receive >> 6)	& 0x0000003;	// チャンネルモード(2ビット)
+	BYTE mode_extention = (receive >> 4)	& 0x0000003;	// モードエクステンション。チャンネルモードが01の場合に有効、他の場合0に設定(2ビット)
+	BOOL copy_light		= (receive >> 3)	& 0x0000001;	// 著作権(1ビット)	0:保護なし 1:保護あり
+	BOOL original		= (receive >> 2)	& 0x00000001;	// オリジナル(1ビット)	0:コピー 1:オリジナル
+	BYTE emphasis		= receive			& 0x00000003;	// エンファシス。信号調整の一種(2ビット)
+
+	/*
+	MPEG Audio のバージョンID
+	[00] - MPEG v2.5 / [01] - (予約)
+	[10] - MPEG v2 / [11] - MPEG v1
+
+	レイヤーの種類
+	[00] - (予約) / [01] - Layer3
+	[10] - Layer2 / [11] - Layer1
+
+	CRCエラー検査による保護
+	[0] - 保護あり。この場合、16ビットのCRCがフレームヘッダの後に付加される
+	[1] - 保護なし
+
+	*/
+
+	// サンプリングレート表
+	static const int sampring_rate_list[3][3]=
+	{
+		{ 44100, 22050, 11025 },
+		{ 48000, 24000, 12000 },
+		{ 32000, 16000, 8000 }
+	};
+
+	// ビットレート表(頭おかしい)
+	static const int bit_rate_list[14][5] =
+	{
+		{ 32,	32,		32,		32,		8 },
+		{ 64,	48,		40,		48,		16 },
+		{ 96,	56,		48,		56,		24 },
+		{ 128,	64,		56,		64,		32 },
+		{ 160,	80,		64,		80,		40 },
+		{ 192,	96,		80,		96,		48 },
+		{ 224,	112,	96,		112,	56 },
+		{ 256,	128,	112,	128,	64 },
+		{ 288,	160,	128,	144,	80 },
+		{ 320,	192,	160,	160,	96 },
+		{ 352,	224,	192,	176,	112 },
+		{ 384,	256,	224,	192,	128 },
+		{ 416,	320,	256,	224,	144 },
+		{ 448,	384,	320,	256,	160 }
+	};
+
+
+	// サンプリングレート設定
+	DWORD samplesPerSec;
+	{
+		int column(0), row(0);
+		// リストの列
+		switch (mpeg_ver)
+		{
+		case MPEG_VERSION::MPEG_V1:column = 0; break;
+		case MPEG_VERSION::MPEG_V2:column = 1; break;
+		case MPEG_VERSION::MPEG_V2_5:column = 2; break;
+		}
+
+		// リストの行
+		switch (sampling_rate & 0x03)
+		{
+		case 0x00:row = 0; break;
+		case 0x01:row = 1; break;
+		case 0x02:row = 2; break;
+		case 0x03:break;	// 「予約」らしい。よく分からん
+		}
+
+		samplesPerSec = sampring_rate_list[row][column];			// サンプリングレート
+	}
+
+	// ビットレート設定
+	DWORD bitRate;
+	{
+		int column(0), row(0);
+		// リストの列
+		column = 4;		// 現状リストの右端の数字以外の数字がまず見ないし使わない数字なので今は右端を指定
+
+		// リストの行
+		switch (bit_rate & 0x0f)
+		{
+		case 0x01:row = 0; break;
+		case 0x02:row = 1; break;
+		case 0x03:row = 2; break;
+		case 0x04:row = 3; break;
+		default:assert(0); break;	// まずビットレートで40以上ってあるのか・・・？
+		}
+		bitRate = bit_rate_list[row][column];				// サンプルあたりのビット数
+	}
+
+	MPEGLAYER3WAVEFORMAT    mwf;        // Source MP3
+
+	mwf.wfx.cbSize = MPEGLAYER3_WFX_EXTRA_BYTES;
+	mwf.wfx.nChannels = (channel_mode & 0x3) ? 1 : 2;
+	mwf.wfx.wFormatTag = WAVE_FORMAT_MPEGLAYER3;
+	mwf.wfx.nBlockAlign = 1;
+	mwf.wfx.wBitsPerSample = 0;
+	mwf.wfx.nSamplesPerSec = samplesPerSec;
+	mwf.wfx.nAvgBytesPerSec = bitRate * 1000 / 8;
+
+	mwf.wID = MPEGLAYER3_ID_MPEG;
+	mwf.fdwFlags = padding ? MPEGLAYER3_FLAG_PADDING_ON : MPEGLAYER3_FLAG_PADDING_OFF;
+
+	mwf.nFramesPerBlock = 1;
+
+	DWORD frameSize;
+
+	// MPEGバージョン1
+	if (mpeg_ver == MPEG_VERSION::MPEG_V1)
+	{
+		frameSize = (DWORD)(144000 * bitRate / samplesPerSec) + padding;
+	}
+	// MPEGバージョン2・バージョン2.5
+	else
+	{
+		frameSize = (DWORD)(72000 * bitRate / samplesPerSec) + padding;
+	}
+	mwf.nBlockSize = (WORD)(frameSize * mwf.nFramesPerBlock);
+	mwf.nCodecDelay = 0x571;
+
+	
+	wfx->wFormatTag = WAVE_FORMAT_PCM;
+
+	// フォーマット変換が可能かどうか調べます。
+	MMRESULT MMresult = acmFormatSuggest(
+		NULL,
+		(LPWAVEFORMATEX)&mwf,
+		wfx,
+		sizeof(WAVEFORMATEX),
+		ACM_FORMATSUGGESTF_WFORMATTAG);
+	MyAssert(MMresult == MMSYSERR_NOERROR, "エラー: MP3変換のacmFormatSuggest関数");
+
+	// ストリームハンドル
+	HACMSTREAM has;
+
+	// ★フォーマット変換ストリームオープン！！！
+	MMresult = acmStreamOpen(
+		&has,								// 変換に用いるストリームハンドルへのポインターです。ストリームがオープンされるとハンドルが戻ります。
+		NULL,								// 変換を行うドライバーを指定します。NULLを指定すると、システムは最も適当と思われるドライバーを検索します。
+		(LPWAVEFORMATEX)&mwf,				// 変換元のウェーブフォーマットを指定します。acmFormatSuggest()に渡したものと同じものを使います。
+		wfx,								// 変換先のウェーブフォーマットを指定します。acmFormatSuggest()によって設定されたものを使います。
+		NULL,								// 変換操作で用いるフィルターを指定します。フォーマット変換の時は用いないのでNULLを指定します。
+		(DWORD_PTR)tdnSystem::GetWindow(),	// 変換操作を非同期で行う場合、アプリケーションは変換処理の終了を知ることができます。
+		NULL,								// コールバック関数で渡されるユーザーインスタンスデータです。コールバック関数以外の方式では使いませんのでNULLを指定します。
+		CALLBACK_WINDOW);					// 変換ストリームを開くためのフラグで以下のものが定義されています。
+	MyAssert(MMresult == MMSYSERR_NOERROR, "エラー: MP3変換のacmStreamOpen関数");
+
+
+	// 変換前後のサイズ計算
+	MMresult = acmStreamSize(
+		has,						// ストリームハンドル
+		mwf.nBlockSize,				// 変換前のサイズ
+		size,						// 変換後のサイズ
+		ACM_STREAMSIZEF_SOURCE);
+
+	// ACMSTREAMHEADER構造体を準備する。
+	ACMSTREAMHEADER ash;
+	ZeroMemory(&ash, sizeof(ACMSTREAMHEADER));
+	ash.cbStruct = sizeof(ACMSTREAMHEADER);
+
+	acmStreamPrepareHeader(
+		has,		// ストリームハンドル
+		&ash,		// 準備するACMSTREAMHEADER構造体のアドレス。
+		0			// 予約済みなので0を指定するらしい
+		);
+
+
+	// ★フォーマット変換！！
+	acmStreamConvert(
+		has,						// ストリームハンドル
+		&ash,						// ACMSTREAMHEADER構造体のアドレス。acmStreamPrepareHeaderで準備する必要がある
+		ACM_STREAMCONVERTF_END);	// 資料が少ないため不明だが、これが無難っぽい
+	// MyAssert(ash.cbDstLengthUsed > 0, "エラー: MP3変換のacmStreamConvert関数");	// 非同期の場合のみ、よってここのエラーチェックは不採用
+
+
+	/* データ吸い上げ */
+	buf = (LPBYTE)GlobalAlloc(LPTR, *size);
+	DWORD remain = *size; // 書き込むべき残りのバイト数
+	BYTE work[READBYTE];
+
+	// xBytesずつ読み込む(メモリパンクさせないように)
+	for (int i = 0; remain > 0; i++)
+	{
+		int readSize = min(READBYTE, remain);
+		memcpy(work, &ash.pbDst[i*READBYTE], readSize);
+		remain -= readSize;
+
+		memcpy(&buf[i*READBYTE], work, readSize);
+	}
+
+	// SCMDTREAMHEADERの開放
+	acmStreamUnprepareHeader(
+		has,	// ストリームハンドル
+		&ash,	// 解放するACMSTREAMHEADER構造体のアドレス。
+		0		// 予約済みなので0を指定するらしい
+		);
+
+	// フォーマット変換ストリームを閉じる
+	acmStreamClose(has, 0);
 
 	return buf;
 }
@@ -603,7 +857,7 @@ void tdnSoundBuffer::SetFX(DXA_FX flag)
 	// 演奏を停止し、エフェクトを全削除する(演奏中は設定不可らしい)
 	if (isPlay)this->Pause();
 	lpBuf->SetFX(0, nullptr, nullptr);
-	if (flag == DXA_FX::DXAFX_OFF)
+	if (flag == DXA_FX::OFF)
 	{
 		if (isPlay)this->PauseOff();
 		return;
@@ -616,30 +870,30 @@ void tdnSoundBuffer::SetFX(DXA_FX flag)
 
 	switch (flag)
 	{
-	case DXA_FX::DXAFX_CHORUS:ed.guidDSFXClass = GUID_DSFX_STANDARD_CHORUS;
+	case DXA_FX::CHORUS:ed.guidDSFXClass = GUID_DSFX_STANDARD_CHORUS;
 		break;
-	case DXA_FX::DXAFX_COMPRESSOR:ed.guidDSFXClass = GUID_DSFX_STANDARD_COMPRESSOR;
+	case DXA_FX::COMPRESSOR:ed.guidDSFXClass = GUID_DSFX_STANDARD_COMPRESSOR;
 		break;
-	case DXA_FX::DXAFX_DISTORTION:ed.guidDSFXClass = GUID_DSFX_STANDARD_DISTORTION;
+	case DXA_FX::DISTORTION:ed.guidDSFXClass = GUID_DSFX_STANDARD_DISTORTION;
 		break;
-	case DXA_FX::DXAFX_ECHO:ed.guidDSFXClass = GUID_DSFX_STANDARD_ECHO;
+	case DXA_FX::ECHO:ed.guidDSFXClass = GUID_DSFX_STANDARD_ECHO;
 		break;
-	case DXA_FX::DXAFX_FLANGER:ed.guidDSFXClass = GUID_DSFX_STANDARD_FLANGER;
+	case DXA_FX::FLANGER:ed.guidDSFXClass = GUID_DSFX_STANDARD_FLANGER;
 		break;
-	case DXA_FX::DXAFX_GARGLE:ed.guidDSFXClass = GUID_DSFX_STANDARD_GARGLE;
+	case DXA_FX::GARGLE:ed.guidDSFXClass = GUID_DSFX_STANDARD_GARGLE;
 		break;
-	case DXA_FX::DXAFX_ENVREVERB:ed.guidDSFXClass = GUID_DSFX_STANDARD_I3DL2REVERB;
+	case DXA_FX::ENVREVERB:ed.guidDSFXClass = GUID_DSFX_STANDARD_I3DL2REVERB;
 		break;
-	case DXA_FX::DXAFX_PARAMEQ:ed.guidDSFXClass = GUID_DSFX_STANDARD_PARAMEQ;
+	case DXA_FX::PARAMEQ:ed.guidDSFXClass = GUID_DSFX_STANDARD_PARAMEQ;
 		break;
-	case DXA_FX::DXAFX_WAVESREVERB:ed.guidDSFXClass = GUID_DSFX_WAVES_REVERB;
+	case DXA_FX::WAVESREVERB:ed.guidDSFXClass = GUID_DSFX_WAVES_REVERB;
 		break;
 	}
 
 	// DirectSoundに渡す
 	result_sound = lpBuf->SetFX(1, &ed, nullptr);
 
-	MyAssert(result_sound == S_OK || format.wBitsPerSample == 16 || flag != DXA_FX::DXAFX_WAVESREVERB, "ミュージックリバーブエフェクトの設定は16bitのオーディオフォーマットのみです");
+	MyAssert(result_sound == S_OK || format.wBitsPerSample == 16 || flag != DXA_FX::WAVESREVERB, "ミュージックリバーブエフェクトの設定は16bitのオーディオフォーマットのみです");
 
 	// 再生
 	if (isPlay)this->PauseOff();
@@ -1156,7 +1410,32 @@ int tdnSoundSE::Play(int ID, bool loop)
 	}
 	
 	// 全員再生状態だったので、再生失敗
-	return -1;
+	return TDNSOUND_PLAY_NONE;
+}
+
+int tdnSoundSE::Play(int ID, const Vector3 &pos, const Vector3 &move, bool loop)
+{
+	MyAssert(data[ID][0]->b3D, "ERROR:b3DフラグOFFの状態で3Dサウンドを使用しています。Setのb3Dをtrueにすると解決します");
+
+	//	初期化チェック
+	assert(lpDS);
+	//	データが無い！！
+	assert(data[ID].size() != 0);
+
+	for (UINT play_no = 0; play_no < data[ID].size(); play_no++)
+	{
+		// 再生してないからいつでも514状態の人を検索
+		if (!data[ID][play_no]->buffer->isPlay())
+		{	// 見つかった！
+			data[ID][play_no]->buffer->SetPos(pos);
+			data[ID][play_no]->buffer->SetMove(move);
+			data[ID][play_no]->buffer->Play(loop);
+			return play_no;
+		}
+	}
+
+	// 全員再生状態だったので、再生失敗
+	return TDNSOUND_PLAY_NONE;
 }
 
 int tdnSoundSE::Play(int ID, const Vector3 &pos, const Vector3 &front, const Vector3 &move, bool loop)
@@ -1180,7 +1459,7 @@ int tdnSoundSE::Play(int ID, const Vector3 &pos, const Vector3 &front, const Vec
 	}
 
 	// 全員再生状態だったので、再生失敗
-	return -1;
+	return TDNSOUND_PLAY_NONE;
 }
 //
 //=============================================================================================
@@ -1893,4 +2172,29 @@ WAVE_LoadError:	/*	エラー終了	*/
 	mmioClose(hMMIO, 0);
 	if (buf != nullptr) GlobalFree(buf);
 	return nullptr;
+}
+
+void WriteOWD(char *filename, OWDInfo *info)
+{
+	// バイナリ書き出し
+	std::ofstream ofs(filename, std::ios::binary);
+
+	// 何かファイルパス間違えてね？
+	assert(ofs);
+
+	// バージョン
+	BYTE ver = 0;
+	ofs.write((char*)&ver, 1);
+
+	ofs.write((char*)&info->wfx, sizeof(WAVEFORMATEX));
+	ofs.write((char*)&info->size, 4);
+	int remain = info->size; // 書き込むべき残りのバイト数
+	for (int i = 0; remain > 0; i++)
+	{
+		// 1024Bytesずつ書き込む(メモリパンクさせないように)
+		int writeSize = min(1024, remain);
+		ofs.write((char*)&info->data[i*1024], sizeof(char)* writeSize);
+		remain -= writeSize;
+	}
+	//ofs.write((char*)info->data, info->size);
 }
